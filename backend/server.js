@@ -272,4 +272,9 @@ app.post('/api/admin/requests/:id/reject', auth, requireRole('admin'), (req, res
   res.json({ ok: true });
 });
 
-app.listen(PORT, () => console.log('Pay It Forward Meal backend on http://localhost:' + PORT + ' payment_mode=' + PAYMENT_MODE));
+// On Vercel serverless this file is imported by api/index.js — do NOT listen
+// there (Vercel owns the port). Locally, "npm start" runs this file directly.
+if (require.main === module) {
+  app.listen(PORT, () => console.log('Pay It Forward Meal backend on http://localhost:' + PORT + ' payment_mode=' + PAYMENT_MODE));
+}
+module.exports = app;

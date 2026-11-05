@@ -1,0 +1,1 @@
+{"$schema":"https://json.schemastore.org/vercel.json","buildCommand":"cd frontend && npm install && npm run build","framework":"vite","functions":{"api/index.js":{"maxDuration":30}},"outputDirectory":"frontend/dist","rewrites":[{"destination":"/api/index","source":"/api/:path*"}]}

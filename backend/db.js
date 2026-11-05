@@ -9,7 +9,11 @@ const fs = require('fs');
 const path = require('path');
 
 // Make sure backend/data/ exists, then open (or create) the database file.
-const dataDir = path.join(__dirname, 'data');
+// On Vercel serverless the disk is read-only except /tmp, and each function
+// instance gets its own /tmp — so the DB there is per-instance and resets
+// when Vercel spins a new instance. Fine for a contest demo, NOT for real
+// multi-user data. Locally it stays in backend/data/ as before.
+const dataDir = process.env.VERCEL ? '/tmp/pifm-data' : path.join(__dirname, 'data');
 fs.mkdirSync(dataDir, { recursive: true });
 const db = new DatabaseSync(path.join(dataDir, 'payitforward.db'));
 

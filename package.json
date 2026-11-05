@@ -1,0 +1,1 @@
+{"dependencies":{"bcryptjs":"^2.4.3","cors":"^2.8.5","express":"^4.19.2","jsonwebtoken":"^9.0.2"},"description":"Pay It Forward Meal — Jeejal Aman Public School, Bhittaibad. Frontend + Express backend in one Vercel project (backend as a serverless function).","engines":{"node":"22.x"},"name":"pay-it-forward-meal","private":true,"version":"1.0.0"}
