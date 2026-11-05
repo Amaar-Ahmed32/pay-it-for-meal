@@ -1,0 +1,104 @@
+/* Pay It Forward Meal — styles, Step 4: styled to match the design PDF.
+   Colours from the PDF: cream page #fdf6ec, teal #17765f (trust/main),
+   orange #f59e0b (donate action), dark footer #1f2937.
+   Plain CSS only — no framework. Change a colour here, the whole site changes. */
+
+* { box-sizing: border-box; }
+body { margin: 0; font-family: system-ui, Arial, sans-serif; background: #fdf6ec; color: #1f2937; }
+
+/* White top bar, like the PDF header — inner content is centred like main */
+header { background: #fff; border-bottom: 1px solid #e7ddc9; padding: 16px 20px; }
+header h1 { margin: 0; font-size: 24px; color: #17765f; }
+header p { margin: 4px 0 0; color: #6b7280; font-size: 14px; }
+
+/* Centred container shared by header, nav and footer, so they line up with main */
+.wrap { max-width: 1080px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.wrap.navwrap { justify-content: center; }
+.wrap.footwrap { display: block; text-align: center; }
+
+/* ---- BUTTON DESIGN SYSTEM (every button on the site uses this) ----
+   Rule: no bare browser-default buttons anywhere. A button always has
+   a shape, a colour, a hover lift, a pressed state, and a visible focus ring.
+   Variants: .teal = main action, .orange = donate action, .green = approve,
+   .danger = reject/cancel (outline), .outline = secondary, .ghost = text link,
+   .small = inline actions (Verify, Mark read, Logout). */
+button { font-family: inherit; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease; }
+button:hover { transform: translateY(-1px); }
+button:active { transform: translateY(0); }
+button:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
+button:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
+
+/* Nav links under the header — buttons centred, not left-aligned */
+nav { padding: 12px 20px; background: #fff; border-bottom: 1px solid #e7ddc9; }
+nav button, .btn { border: 0; border-radius: 999px; padding: 10px 16px; cursor: pointer; background: #e5e7eb; color: #1f2937; font-weight: 700; font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+nav button:hover, .btn:hover { box-shadow: 0 4px 12px rgba(0,0,0,.12); }
+nav button.active, .btn.teal { background: #17765f; color: #fff; }
+.btn.primary, .btn.orange { background: #f59e0b; color: #1f2937; }
+.btn.green { background: #15803d; color: #fff; }
+.btn.danger { background: #fff; color: #b91c1c; border: 2px solid #fecaca; }
+.btn.outline { background: #fff; color: #17765f; border: 2px solid #17765f; }
+.btn.ghost { background: transparent; color: #17765f; box-shadow: none; text-decoration: underline; padding: 8px 10px; }
+.btn.small { padding: 7px 13px; font-size: 14px; border-radius: 999px; }
+.btn.teal-lg { background: linear-gradient(180deg, #1a8a6d, #17765f); color: #fff; border-radius: 14px; padding: 18px; font-size: 22px; font-weight: 800; width: 100%; box-shadow: 0 8px 20px rgba(23,118,95,.35); }
+.btn.teal-lg:hover { box-shadow: 0 12px 24px rgba(23,118,95,.4); }
+
+/* Language pills, like the PDF (EN / اردو / سنڌي) — same size as Log in, aligned in a row */
+.lang { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.lang button { border: 1px solid #17765f; background: #fff; color: #17765f; padding: 10px 14px; border-radius: 999px; font-weight: 600; font-size: 15px; line-height: 1.2; cursor: pointer; }
+.lang button.active { background: #17765f; color: #fff; }
+.lang .btn.teal { margin-left: 8px; }
+
+main { max-width: 1080px; margin: 0 auto; padding: 20px; }
+footer { background: #1f2937; color: #fff; padding: 20px; margin-top: 30px; text-align: center; }
+footer p { margin: 4px 0; }
+
+/* Hero: left text, right dashboard card — exactly like PDF page 1 */
+.hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 20px; align-items: start; }
+.hero h2 { font-size: 48px; line-height: 1.1; margin: 10px 0; }
+.hero p.lead { font-size: 18px; color: #4b5563; line-height: 1.5; }
+
+.card { background: #fff; border: 1px solid #e7ddc9; border-radius: 16px; padding: 18px; margin: 14px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+.trustbar { background: #dcf5ec; border-radius: 16px; padding: 16px 18px; font-weight: 700; color: #14532d; }
+
+/* Dashboard numbers, like the PDF: big teal numbers */
+.dash { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 12px 0; }
+.dash b { font-size: 42px; color: #17765f; display: block; }
+.dash span { color: #6b7280; }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.stat { background: #17765f; color: #fff; border-radius: 16px; padding: 18px; text-align: center; }
+.stat b { font-size: 34px; display: block; }
+.stat.orange { background: #f59e0b; color: #1f2937; }
+
+/* Cards in a row: How it works (3), Finder restaurants (3) */
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* Big staff number, like PDF page 4 */
+.big-number { font-size: 96px; font-weight: 900; color: #17765f; text-align: center; line-height: 1; margin: 8px 0; }
+
+input, select { width: 100%; padding: 11px; border: 1px solid #d1d5db; border-radius: 10px; margin: 6px 0 12px; font-size: 15px; }
+label { font-weight: 600; }
+/* Quantity pills: big, tappable, selected = filled teal */
+.qty { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 6px 0 12px; }
+.qty button { min-width: 48px; height: 48px; padding: 0 14px; border-radius: 999px; border: 2px solid #d1d5db; background: #fff; font-weight: 800; font-size: 16px; color: #1f2937; margin: 0; }
+.qty button.active { background: #17765f; border-color: #17765f; color: #fff; box-shadow: 0 4px 12px rgba(23,118,95,.35); }
+/* Payment method cards: icon + name + sublabel, selected = teal border + tint + check */
+.method { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 6px 0 12px; }
+.method button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 14px 8px; border-radius: 14px; border: 2px solid #d1d5db; background: #fff; font-weight: 800; font-size: 15px; color: #1f2937; margin: 0; }
+.method button small { font-weight: 600; font-size: 12px; color: #6b7280; }
+.method button.active { border-color: #17765f; background: #dcf5ec; color: #14532d; box-shadow: 0 4px 14px rgba(23,118,95,.25); }
+.method button.active small { color: #14532d; }
+@media (max-width: 600px) { .method { grid-template-columns: 1fr; } }
+
+.badge { display: inline-block; background: #dcfce7; color: #166534; border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.badge.warn { background: #fef3c7; color: #92400e; }
+.muted { color: #6b7280; }
+.notice { background: #fef3c7; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; }
+.success { background: #dcfce7; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px; }
+.notif { border-left: 4px solid #17765f; background: #f0fdfa; padding: 12px; border-radius: 8px; margin: 10px 0; }
+
+@media (max-width: 800px) {
+  .hero, .grid, .grid3, .stats, .dash { grid-template-columns: 1fr; }
+  .hero h2 { font-size: 34px; }
+}

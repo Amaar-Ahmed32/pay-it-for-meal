@@ -1,0 +1,26 @@
+# Render Blueprint — Pay It Forward Meal (step-by-step copy)
+# Deploy with: Render Dashboard -> New -> Blueprint -> connect the GitHub repo
+# containing THIS folder as the repo root, and Render reads this file.
+services:
+  - type: web
+    name: pay-it-forward-meal-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /api/stats
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: PAYMENT_MODE
+        value: sandbox
+      - key: MEAL_PRICE_PKR
+        value: "250"
+      - key: JWT_SECRET
+        generateValue: true
+      # JazzCash / Easypaisa sandbox keys: add them in the Render dashboard
+      # ONLY after pgw@jazz.com.pk replies. Never commit them to git.
+      # JAZZCASH_MERCHANT_ID, JAZZCASH_PASSWORD, JAZZCASH_INTEGRITY_SALT
+      # JAZZCASH_RETURN_URL must then be changed to:
+      # https://<your-render-service>.onrender.com/api/payments/jazzcash/return
