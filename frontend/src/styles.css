@@ -1,104 +1,128 @@
-/* Pay It Forward Meal — styles, Step 4: styled to match the design PDF.
-   Colours from the PDF: cream page #fdf6ec, teal #17765f (trust/main),
-   orange #f59e0b (donate action), dark footer #1f2937.
-   Plain CSS only — no framework. Change a colour here, the whole site changes. */
+/* Pay It Forward Meal — Lovable-style skin (2026-11-06).
+   Palette from the Lovable preview: cream #FDF6EB, peach #FCEACC, mint #E0F1E1,
+   emerald #2E9E6B / #41A577, deep green #116A4D, amber #F4C35E / #E7A043,
+   text #172428. Fonts: Fredoka (headings) + Nunito (body), with system
+   fallbacks so the site still looks right offline. Plain CSS only. */
 
 * { box-sizing: border-box; }
-body { margin: 0; font-family: system-ui, Arial, sans-serif; background: #fdf6ec; color: #1f2937; }
+body { margin: 0; font-family: 'Nunito', system-ui, Arial, sans-serif; background: #FDF6EB; color: #172428; }
+h1, h2, h3 { font-family: 'Fredoka', 'Nunito', system-ui, sans-serif; font-weight: 700; color: #172428; }
 
-/* White top bar, like the PDF header — inner content is centred like main */
-header { background: #fff; border-bottom: 1px solid #e7ddc9; padding: 16px 20px; }
-header h1 { margin: 0; font-size: 24px; color: #17765f; }
+header { background: #fff; border-bottom: 1px solid #efe3cd; padding: 14px 20px; }
+header h1 { margin: 0; font-size: 24px; color: #116A4D; }
 header p { margin: 4px 0 0; color: #6b7280; font-size: 14px; }
+.logo { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(145deg, #41A577, #116A4D); color: #fff; font-size: 22px; box-shadow: 0 4px 10px rgba(17,106,77,.35); }
+.brand { display: flex; align-items: center; gap: 10px; }
 
-/* Centred container shared by header, nav and footer, so they line up with main */
 .wrap { max-width: 1080px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
 .wrap.navwrap { justify-content: center; }
-.wrap.footwrap { display: block; text-align: center; }
 
-/* ---- BUTTON DESIGN SYSTEM (every button on the site uses this) ----
-   Rule: no bare browser-default buttons anywhere. A button always has
-   a shape, a colour, a hover lift, a pressed state, and a visible focus ring.
-   Variants: .teal = main action, .orange = donate action, .green = approve,
-   .danger = reject/cancel (outline), .outline = secondary, .ghost = text link,
-   .small = inline actions (Verify, Mark read, Logout). */
-button { font-family: inherit; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease, background .12s ease, border-color .12s ease; }
+/* Buttons: big pills with a darker 3D pressed edge, like the Lovable preview */
+button { font-family: inherit; cursor: pointer; transition: transform .12s ease, box-shadow .12s ease, background .12s ease; }
 button:hover { transform: translateY(-1px); }
-button:active { transform: translateY(0); }
-button:focus-visible { outline: 3px solid #f59e0b; outline-offset: 2px; }
+button:active { transform: translateY(3px); }
+button:focus-visible { outline: 3px solid #F4C35E; outline-offset: 2px; }
 button:disabled { opacity: .55; cursor: not-allowed; transform: none; box-shadow: none; }
 
-/* Nav links under the header — buttons centred, not left-aligned */
-nav { padding: 12px 20px; background: #fff; border-bottom: 1px solid #e7ddc9; }
-nav button, .btn { border: 0; border-radius: 999px; padding: 10px 16px; cursor: pointer; background: #e5e7eb; color: #1f2937; font-weight: 700; font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+nav { padding: 12px 20px; background: #fff; border-bottom: 1px solid #efe3cd; }
+nav button, .btn { border: 0; border-radius: 999px; padding: 10px 18px; cursor: pointer; background: #f1ece2; color: #172428; font-weight: 800; font-size: 15px; box-shadow: 0 2px 0 rgba(0,0,0,.06); }
 nav button:hover, .btn:hover { box-shadow: 0 4px 12px rgba(0,0,0,.12); }
-nav button.active, .btn.teal { background: #17765f; color: #fff; }
-.btn.primary, .btn.orange { background: #f59e0b; color: #1f2937; }
+nav button.active, .btn.teal { background: linear-gradient(#41A577, #2E9E6B); color: #fff; box-shadow: 0 5px 0 #116A4D, 0 10px 18px rgba(17,106,77,.3); }
+.btn.teal:active { transform: translateY(4px); box-shadow: 0 1px 0 #116A4D; }
+.btn.primary, .btn.orange { background: linear-gradient(#F4C35E, #E7A043); color: #172428; box-shadow: 0 5px 0 #b97f1e, 0 10px 18px rgba(231,160,67,.35); }
+.btn.orange:active { transform: translateY(4px); box-shadow: 0 1px 0 #b97f1e; }
 .btn.green { background: #15803d; color: #fff; }
 .btn.danger { background: #fff; color: #b91c1c; border: 2px solid #fecaca; }
-.btn.outline { background: #fff; color: #17765f; border: 2px solid #17765f; }
-.btn.ghost { background: transparent; color: #17765f; box-shadow: none; text-decoration: underline; padding: 8px 10px; }
+.btn.outline { background: #fff; color: #116A4D; border: 2px solid #116A4D; }
+.btn.ghost { background: transparent; color: #116A4D; box-shadow: none; text-decoration: underline; padding: 8px 10px; }
 .btn.small { padding: 7px 13px; font-size: 14px; border-radius: 999px; }
-.btn.teal-lg { background: linear-gradient(180deg, #1a8a6d, #17765f); color: #fff; border-radius: 14px; padding: 18px; font-size: 22px; font-weight: 800; width: 100%; box-shadow: 0 8px 20px rgba(23,118,95,.35); }
-.btn.teal-lg:hover { box-shadow: 0 12px 24px rgba(23,118,95,.4); }
+.btn.teal-lg { background: linear-gradient(180deg, #41A577, #2E9E6B); color: #fff; border-radius: 16px; padding: 18px; font-size: 22px; font-weight: 800; width: 100%; box-shadow: 0 6px 0 #116A4D, 0 12px 22px rgba(17,106,77,.35); }
+.btn.teal-lg:hover { box-shadow: 0 8px 0 #116A4D, 0 14px 26px rgba(17,106,77,.4); }
 
-/* Language pills, like the PDF (EN / اردو / سنڌي) — same size as Log in, aligned in a row */
 .lang { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.lang button { border: 1px solid #17765f; background: #fff; color: #17765f; padding: 10px 14px; border-radius: 999px; font-weight: 600; font-size: 15px; line-height: 1.2; cursor: pointer; }
-.lang button.active { background: #17765f; color: #fff; }
+.lang button { border: 1px solid #116A4D; background: #fff; color: #116A4D; padding: 10px 14px; border-radius: 999px; font-weight: 700; font-size: 15px; line-height: 1.2; cursor: pointer; }
+.lang button.active { background: #116A4D; color: #fff; }
 .lang .btn.teal { margin-left: 8px; }
 
 main { max-width: 1080px; margin: 0 auto; padding: 20px; }
-footer { background: #1f2937; color: #fff; padding: 20px; margin-top: 30px; text-align: center; }
-footer p { margin: 4px 0; }
 
-/* Hero: left text, right dashboard card — exactly like PDF page 1 */
-.hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 20px; align-items: start; }
-.hero h2 { font-size: 48px; line-height: 1.1; margin: 10px 0; }
+/* Hero: cream -> peach gradient, mint grid floor at the bottom */
+.hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 20px; align-items: center; background: linear-gradient(135deg, #FDF6EB 0%, #FCEACC 55%, #E0F1E1 100%); border-radius: 24px; padding: 28px 24px; margin-top: 8px; }
+.hero h2 { font-size: 52px; line-height: 1.05; margin: 10px 0; }
 .hero p.lead { font-size: 18px; color: #4b5563; line-height: 1.5; }
+.eyebrow { display: inline-block; background: #fff; border: 1px solid #e7ddc9; border-radius: 999px; padding: 6px 14px; font-size: 13px; font-weight: 800; color: #116A4D; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
 
-.card { background: #fff; border: 1px solid #e7ddc9; border-radius: 16px; padding: 18px; margin: 14px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.04); }
+/* CSS bowl scene (no photo, no WebGL — works offline): green bowl, gold rim,
+   biryani mound, floating heart, glass stat chips with LIVE numbers */
+.bowl-scene { position: relative; display: flex; flex-direction: column; align-items: center; padding: 10px 0 0; }
+.bowl-heart { font-size: 44px; animation: floaty 3s ease-in-out infinite; filter: drop-shadow(0 6px 10px rgba(17,106,77,.35)); }
+@keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.bowl { width: 230px; height: 130px; background: linear-gradient(180deg, #41A577, #116A4D); border-top: 10px solid #F4C35E; border-radius: 0 0 115px 115px; box-shadow: 0 18px 30px rgba(17,106,77,.3), inset 0 -12px 20px rgba(0,0,0,.15); position: relative; margin-top: -6px; }
+.bowl::before { content: '🍛'; position: absolute; top: -52px; left: 50%; transform: translateX(-50%); font-size: 64px; }
+.bowl::after { content: ''; position: absolute; bottom: -14px; left: 50%; transform: translateX(-50%); width: 190px; height: 16px; background: rgba(23,36,40,.15); border-radius: 50%; filter: blur(4px); }
+.glass-chip { position: absolute; background: rgba(255,255,255,.75); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.9); border-radius: 16px; padding: 8px 14px; font-weight: 800; box-shadow: 0 8px 20px rgba(0,0,0,.12); }
+.glass-chip b { font-size: 22px; color: #116A4D; display: block; line-height: 1; }
+.glass-chip.amber b { color: #b97f1e; }
+.chip-left { top: 18px; left: 0; }
+.chip-right { bottom: 6px; right: 0; }
+
+/* Live dashboard card overlapping the hero, like the Lovable preview */
+.dashcard { margin-top: -14px; position: relative; z-index: 2; }
+.card { background: #fff; border: 1px solid #efe3cd; border-radius: 22px; padding: 22px; margin: 14px 0; box-shadow: inset 0 2px 0 #fff, 0 12px 26px rgba(80,50,10,.11), 0 2px 4px rgba(80,50,10,.06); }
 .trustbar { background: #dcf5ec; border-radius: 16px; padding: 16px 18px; font-weight: 700; color: #14532d; }
+.trust-chips { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.trust-chips span { background: #dcf5ec; color: #14532d; border-radius: 999px; padding: 8px 14px; font-weight: 800; font-size: 14px; }
 
-/* Dashboard numbers, like the PDF: big teal numbers */
 .dash { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 12px 0; }
-.dash b { font-size: 42px; color: #17765f; display: block; }
+.dash > div { background: #F8F3EB; border-radius: 18px; padding: 14px; text-align: center; }
+.dash b { font-size: 42px; color: #116A4D; display: block; }
 .dash span { color: #6b7280; }
 
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.stat { background: #17765f; color: #fff; border-radius: 16px; padding: 18px; text-align: center; }
+.stat { background: #116A4D; color: #fff; border-radius: 16px; padding: 18px; text-align: center; }
 .stat b { font-size: 34px; display: block; }
-.stat.orange { background: #f59e0b; color: #1f2937; }
+.stat.orange { background: #F4C35E; color: #172428; }
 
-/* Cards in a row: How it works (3), Finder restaurants (3) */
 .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.step-num { font-size: 44px; font-weight: 900; color: #F4C35E; line-height: 1; }
 
-/* Big staff number, like PDF page 4 */
-.big-number { font-size: 96px; font-weight: 900; color: #17765f; text-align: center; line-height: 1; margin: 8px 0; }
+.partner-banner { background: linear-gradient(135deg, #116A4D, #14201B); color: #fff; border-radius: 24px; padding: 26px; margin: 18px 0; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.partner-banner h3 { color: #fff; margin: 0 0 6px; font-size: 26px; }
+.partner-banner p { color: #d1fae5; margin: 0; }
 
-input, select { width: 100%; padding: 11px; border: 1px solid #d1d5db; border-radius: 10px; margin: 6px 0 12px; font-size: 15px; }
-label { font-weight: 600; }
-/* Quantity pills: big, tappable, selected = filled teal */
+.big-number { font-size: 96px; font-weight: 900; color: #116A4D; text-align: center; line-height: 1; margin: 8px 0; }
+
+input, select { width: 100%; padding: 11px; border: 1px solid #d1d5db; border-radius: 12px; margin: 6px 0 12px; font-size: 15px; }
+label { font-weight: 700; }
 .qty { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 6px 0 12px; }
-.qty button { min-width: 48px; height: 48px; padding: 0 14px; border-radius: 999px; border: 2px solid #d1d5db; background: #fff; font-weight: 800; font-size: 16px; color: #1f2937; margin: 0; }
-.qty button.active { background: #17765f; border-color: #17765f; color: #fff; box-shadow: 0 4px 12px rgba(23,118,95,.35); }
-/* Payment method cards: icon + name + sublabel, selected = teal border + tint + check */
+.qty button { min-width: 48px; height: 48px; padding: 0 14px; border-radius: 999px; border: 2px solid #d1d5db; background: #fff; font-weight: 800; font-size: 16px; color: #172428; margin: 0; }
+.qty button.active { background: #116A4D; border-color: #116A4D; color: #fff; box-shadow: 0 4px 12px rgba(17,106,77,.35); }
 .method { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 6px 0 12px; }
-.method button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 14px 8px; border-radius: 14px; border: 2px solid #d1d5db; background: #fff; font-weight: 800; font-size: 15px; color: #1f2937; margin: 0; }
+.method button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 14px 8px; border-radius: 14px; border: 2px solid #d1d5db; background: #fff; font-weight: 800; font-size: 15px; color: #172428; margin: 0; }
 .method button small { font-weight: 600; font-size: 12px; color: #6b7280; }
-.method button.active { border-color: #17765f; background: #dcf5ec; color: #14532d; box-shadow: 0 4px 14px rgba(23,118,95,.25); }
+.method button.active { border-color: #116A4D; background: #dcf5ec; color: #14532d; box-shadow: 0 4px 14px rgba(17,106,77,.25); }
 .method button.active small { color: #14532d; }
 @media (max-width: 600px) { .method { grid-template-columns: 1fr; } }
 
-.badge { display: inline-block; background: #dcfce7; color: #166534; border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 700; }
+.badge { display: inline-block; background: #dcfce7; color: #166534; border-radius: 999px; padding: 4px 10px; font-size: 13px; font-weight: 800; }
 .badge.warn { background: #fef3c7; color: #92400e; }
 .muted { color: #6b7280; }
 .notice { background: #fef3c7; border: 1px solid #fde68a; border-radius: 12px; padding: 12px; }
 .success { background: #dcfce7; border: 1px solid #bbf7d0; border-radius: 12px; padding: 12px; }
-.notif { border-left: 4px solid #17765f; background: #f0fdfa; padding: 12px; border-radius: 8px; margin: 10px 0; }
+.notif { border-left: 4px solid #116A4D; background: #f0fdfa; padding: 12px; border-radius: 8px; margin: 10px 0; }
+
+footer { background: #14201B; color: #fff; padding: 28px 20px; margin-top: 30px; }
+footer .wrap { align-items: start; }
+footer h3, footer p { color: #fff; }
+footer a, footer button { color: #d1fae5; }
+.foot-bottom { text-align: center; border-top: 1px solid rgba(255,255,255,.15); margin-top: 18px; padding-top: 14px; color: #a7f3d0; }
 
 @media (max-width: 800px) {
   .hero, .grid, .grid3, .stats, .dash { grid-template-columns: 1fr; }
   .hero h2 { font-size: 34px; }
+  .chip-left { left: 6px; } .chip-right { right: 6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
 }

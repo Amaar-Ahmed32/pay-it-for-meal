@@ -150,7 +150,7 @@ export default function App() {
     <div dir={lang === 'en' ? 'ltr' : 'rtl'}>
       <header>
         <div className="wrap">
-        <div><h1>Pay It Forward Meal</h1><p>Jeejal Aman Public School, Bhittaibad • SDG 1 + SDG 2</p></div>
+        <div className="brand"><span className="logo">💚</span><div><h1>Pay It Forward Meal</h1><p>Jeejal Aman Public School, Bhittaibad • SDG 1 + SDG 2</p></div></div>
         <div className="lang">
           {['en', 'ur', 'sd'].map((l) => (<button key={l} className={lang === l ? 'active' : ''} onClick={() => setLang(l)}>{l === 'en' ? 'EN' : l === 'ur' ? 'اردو' : 'سنڌي'}</button>))}
           {' '}
@@ -175,30 +175,40 @@ export default function App() {
           <>
             <div className="hero">
               <div>
-                <p style={{ margin: '0 0 4px', fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#17765f' }}>Jeejal Aman Public School, Bhittaibad • Sindh STREAM 2026–27 • SDG 1 + SDG 2</p>
+                <p><span className="eyebrow">● Live in Pakistan · Test pilot</span></p>
+                <p className="muted" style={{ margin: '0 0 4px', fontSize: 13, fontWeight: 700 }}>Jeejal Aman Public School, Bhittaibad • Sindh STREAM 2026–27 • SDG 1 + SDG 2</p>
                 <h2>A normal dinner becomes someone else’s dinner.</h2>
                 <p className="lead">Pay for your meal and add one for someone in need. The restaurant serves it, and you get proof — no names, no questions, no data about the person.</p>
                 <p><button className="btn teal" onClick={() => go('donate')}>Donate a meal</button>{' '}<button className="btn orange" onClick={() => go('finder')}>Find a free meal</button></p>
                 <p className="muted">Need a meal? No login, no questions, no form — just ask staff at a listed restaurant.</p>
                 {stats && (<p>{stats.available > 0 ? (<><b>🍽️ {stats.available} meal{stats.available === 1 ? '' : 's'} available right now</b> — find one near you, or donate to keep the shelf full.</>) : (<><b>No meals available right now</b> — be the first donor today.</>)}</p>)}
               </div>
-              <div className="card">
-                <h3>Live dashboard</h3>
-                {stats && (<div className="dash"><div><b>{stats.donated}</b><span>Donated</span></div><div><b>{stats.served}</b><span>Served</span></div><div><b>{stats.available}</b><span>Available now</span></div></div>)}
-                {restaurants.filter((r) => r.available > 0).map((r) => (<p key={r.id}>{r.name} <span className="badge" style={{ float: 'right' }}>{r.available} available</span></p>))}
-                {restaurants.filter((r) => r.available > 0).length === 0 && <p className="muted">No meals available right now — check back after a donation.</p>}
-                {stats && (<div style={{ marginTop: 12 }}><p style={{ margin: '0 0 6px' }}><b>Pilot goal: {stats.donated} of {PILOT_DONATION_GOAL} meals donated</b></p><div style={{ background: '#e5e7eb', borderRadius: 999, height: 14, overflow: 'hidden' }}><div style={{ width: Math.min(100, Math.round((stats.donated / PILOT_DONATION_GOAL) * 100)) + '%', background: '#17765f', height: '100%' }} /></div><p className="muted" style={{ margin: '6px 0 0' }}>{Math.min(100, Math.round((stats.donated / PILOT_DONATION_GOAL) * 100))}% of pilot goal • {stats.served} served so far{stats.donated >= PILOT_DONATION_GOAL ? ' • 🎉 Pilot goal reached!' : ''}</p></div>)}
+              <div className="bowl-scene">
+                <div className="bowl-heart">💚</div>
+                <div className="bowl" />
+                <div className="glass-chip chip-left"><b>{stats ? stats.donated : 0}</b>Donated</div>
+                <div className="glass-chip amber chip-right"><b>{stats ? stats.available : 0}</b>Available now</div>
               </div>
+            </div>
+            <div className="card dashcard">
+              <h3>Live dashboard</h3>
+              <p className="muted">Numbers come live from the database. Nothing is typed in by hand.</p>
+              {stats && (<div className="dash"><div><b>{stats.donated}</b><span>Donated</span></div><div><b>{stats.served}</b><span>Served</span></div><div><b>{stats.available}</b><span>Available now</span></div></div>)}
+              {stats && (<div style={{ marginTop: 12 }}><p style={{ margin: '0 0 6px' }}><b>Pilot goal: {stats.donated} of {PILOT_DONATION_GOAL} meals donated</b></p><div style={{ background: '#e5e7eb', borderRadius: 999, height: 14, overflow: 'hidden' }}><div style={{ width: Math.min(100, Math.round((stats.donated / PILOT_DONATION_GOAL) * 100)) + '%', background: '#116A4D', height: '100%' }} /></div><p className="muted" style={{ margin: '6px 0 0' }}>{Math.min(100, Math.round((stats.donated / PILOT_DONATION_GOAL) * 100))}% of pilot goal • {stats.served} served so far{stats.donated >= PILOT_DONATION_GOAL ? ' • 🎉 Pilot goal reached!' : ''}</p></div>)}
+              <h3 style={{ marginTop: 18 }}>By restaurant</h3>
+              {restaurants.filter((r) => r.available > 0).map((r) => (<p key={r.id}>{r.name} <span className="badge" style={{ float: 'right' }}>{r.available} available</span></p>))}
+              {restaurants.filter((r) => r.available > 0).length === 0 && <p className="muted">No partner restaurants with meals right now. Be the first donor!</p>}
             </div>
             <h3>How it works</h3>
             <div className="grid3">
-              <div className="card"><h3>1. Donate</h3><p>Choose a verified restaurant and pay for one or more extra meals.</p></div>
-              <div className="card"><h3>2. Served</h3><p>A person in need asks staff for a Pay It Forward meal. No questions, no payment.</p></div>
-              <div className="card"><h3>3. You get a message</h3><p>“Your meal was served.” You see proof and never learn who received it.</p></div>
+              <div className="card"><div className="step-num">1</div><h3>Donate</h3><p>Choose a verified restaurant and pay for one or more extra meals.</p></div>
+              <div className="card"><div className="step-num">2</div><h3>Served</h3><p>A person in need asks staff for a Pay It Forward meal. No questions, no payment.</p></div>
+              <div className="card"><div className="step-num">3</div><h3>You get a message</h3><p>“Your meal was served.” You see proof and never learn who received it.</p></div>
             </div>
+            <div className="trust-chips"><span>✓ Verified restaurants only</span><span>✓ No recipient data stored</span><span>✓ Money released only after serving</span></div>
             {restaurants.some((r) => r.available <= 1) && (<div className="notice">⚠️ Urgent: {restaurants.filter((r) => r.available <= 1).map((r) => `${r.name} — ${r.available} meal${r.available === 1 ? '' : 's'} left`).join(' • ')} — donate where most needed below.</div>)}
-            <p><button className="btn teal" onClick={() => { if (mostNeeded) { setDonRest(String(mostNeeded.id)); } go('donate'); }}>💛 Give where most needed{mostNeeded ? ` — ${mostNeeded.name}` : ''}</button>{' '}<button className="btn outline" onClick={() => go('request')}>Restaurant? Join as a partner</button></p>
-            <div className="trustbar">Verified restaurants only • No recipient data stored • Money released only after serving</div>
+            <p><button className="btn teal" onClick={() => { if (mostNeeded) { setDonRest(String(mostNeeded.id)); } go('donate'); }}>💛 Give where most needed{mostNeeded ? ` — ${mostNeeded.name}` : ''}</button></p>
+            <div className="partner-banner"><div><h3>Run a restaurant?</h3><p>Join as a partner and serve free meals paid for by your own customers.</p></div><button className="btn orange" onClick={() => go('request')}>Become a partner</button></div>
             <div className="card"><h3>Recent activity (recipients never named)</h3>
               {activity.slice(0, 6).map((a, i) => (<p key={i}>{a.type === 'served' ? '🍽️ A meal was served' : `💛 ${a.donor} donated ${a.qty}`} at {a.restaurant}</p>))}
               {activity.length === 0 && <p className="muted">No activity yet — be the first donor.</p>}
@@ -385,11 +395,12 @@ export default function App() {
       </main>
 
       <footer>
-        <div className="wrap footwrap">
-        <p>Supports SDG 1 (No Poverty) and SDG 2 (Zero Hunger). No recipient data is ever stored.</p>
-        <p>Jeejal Aman Public School, Bhittaibad • Pay It Forward Meal • Payment: test mode in the pilot — no real money moves.</p>
-        <p><button className="btn small ghost" style={{ color: '#fff' }} onClick={() => go('request')}>Restaurant? Join as a partner</button></p>
+        <div className="wrap">
+          <div><h3>Pay It Forward Meal</h3><p>A normal dinner becomes someone else’s dinner. Pay for one extra meal and a verified restaurant serves it to a person in need.</p></div>
+          <div><h3>Explore</h3><p><button className="btn ghost" style={{ color: '#d1fae5' }} onClick={() => go('finder')}>Find a free meal</button><br /><button className="btn ghost" style={{ color: '#d1fae5' }} onClick={() => go('donate')}>Donate</button><br /><button className="btn ghost" style={{ color: '#d1fae5' }} onClick={() => go('request')}>Become a partner</button></p></div>
+          <div><h3>Languages</h3><p>EN • اردو • سنڌي</p><p>Jeejal Aman Public School, Bhittaibad</p></div>
         </div>
+        <div className="foot-bottom"><p>© 2026 Pay It Forward Meal • Supports SDG 1 (No Poverty) and SDG 2 (Zero Hunger). No recipient data is ever stored. Payment: test mode in the pilot — no real money moves.</p></div>
       </footer>
     </div>
   );
