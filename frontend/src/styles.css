@@ -122,6 +122,34 @@ footer a, footer button { color: #d1fae5; }
   .hero, .grid, .grid3, .stats, .dash { grid-template-columns: 1fr; }
   .hero h2 { font-size: 34px; }
   .chip-left { left: 6px; } .chip-right { right: 6px; }
+  footer .wrap { flex-direction: column; align-items: flex-start; }
+  .partner-banner { flex-direction: column; align-items: flex-start; }
+  .partner-banner .btn { width: 100%; text-align: center; }
+}
+
+@media (max-width: 600px) {
+  main { padding: 12px; }
+  header { padding: 12px; }
+  header h1 { font-size: 20px; }
+  .lang button { padding: 8px 10px; font-size: 14px; }
+  nav { padding: 10px 8px; }
+  nav button, .btn { padding: 8px 12px; font-size: 14px; }
+  .hero { padding: 20px 16px; margin-top: 0; }
+  .hero h2 { font-size: 30px; }
+  .hero p.lead { font-size: 16px; }
+  .card { padding: 16px; border-radius: 18px; }
+  .dash { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .dash > div { padding: 10px 6px; }
+  .dash b { font-size: 28px; }
+  .dash span { font-size: 12px; }
+  .bowl { width: 190px; height: 110px; }
+  .bowl::before { font-size: 52px; top: -44px; }
+  .glass-chip { padding: 6px 10px; font-size: 13px; }
+  .glass-chip b { font-size: 18px; }
+  .big-number { font-size: 64px; }
+  .step-num { font-size: 36px; }
+  input, select { font-size: 16px; }
+  .qty button { min-width: 44px; height: 44px; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
