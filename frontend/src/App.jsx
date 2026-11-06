@@ -20,6 +20,7 @@ const badgeFor = (served) => (served >= 10 ? '🏆 Meal Hero (10+ served)' : ser
 
 export default function App() {
   const [page, setPage] = useState('home');
+  const [menuOpen, setMenuOpen] = useState(false);
   const [lang, setLang] = useState('en');
   const [stats, setStats] = useState(null);
   const [restaurants, setRestaurants] = useState([]);
@@ -87,7 +88,7 @@ export default function App() {
   useEffect(() => { if (page === 'admin' && user?.role === 'admin') loadAdmin(); }, [page, user]);
   useEffect(() => { if (page === 'transparency') api('/transparency').then(setTransparency).catch(() => {}); }, [page]);
 
-  const go = (p) => { setPage(p); setMsg(''); };
+  const go = (p) => { setPage(p); setMsg(''); setMenuOpen(false); window.scrollTo(0, 0); };
   const doAuth = async () => {
     try {
       const data = await api(isRegister ? '/auth/register' : '/auth/login', { method: 'POST', body: JSON.stringify(authForm) });
@@ -150,16 +151,17 @@ export default function App() {
     <div dir={lang === 'en' ? 'ltr' : 'rtl'}>
       <header>
         <div className="wrap">
-        <div className="brand"><span className="logo">💚</span><div><h1>Pay It Forward Meal</h1><p>Jeejal Aman Public School, Bhittaibad • SDG 1 + SDG 2</p></div></div>
+        <div className="brand"><span className="logo">💚</span><div><h1>Pay It Forward Meal</h1><p className="brand-sub">Jeejal Aman Public School, Bhittaibad • SDG 1 + SDG 2</p></div></div>
         <div className="lang">
           {['en', 'ur', 'sd'].map((l) => (<button key={l} className={lang === l ? 'active' : ''} onClick={() => setLang(l)}>{l === 'en' ? 'EN' : l === 'ur' ? 'اردو' : 'سنڌي'}</button>))}
           {' '}
           {user ? <button className="btn teal" onClick={() => go(user.role === 'admin' ? 'admin' : user.role === 'staff' ? 'staff' : 'mine')}>Dashboard</button> : <button className="btn teal" onClick={() => go('auth')}>Log in</button>}
         </div>
+        <button className="menu-btn" aria-label="Menu" onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? '✕' : '☰'}</button>
         </div>
       </header>
 
-      <nav>
+      <nav className={menuOpen ? 'nav-open' : ''}>
         <div className="wrap navwrap">
         {['home', 'finder', 'donate', 'board', 'transparency'].map((p) => (
           <button key={p} className={page === p ? 'active' : ''} onClick={() => go(p)}>{t[p]}</button>

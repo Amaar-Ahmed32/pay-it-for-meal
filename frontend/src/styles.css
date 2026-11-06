@@ -119,6 +119,9 @@ footer h3, footer p { color: #fff; }
 footer a, footer button { color: #d1fae5; }
 .foot-bottom { text-align: center; border-top: 1px solid rgba(255,255,255,.15); margin-top: 18px; padding-top: 14px; color: #a7f3d0; }
 
+/* Hamburger menu button — hidden on desktop, shown on phones */
+.menu-btn { display: none; border: 2px solid #116A4D; background: #fff; color: #116A4D; border-radius: 12px; padding: 8px 12px; font-size: 20px; font-weight: 800; line-height: 1; }
+
 @media (max-width: 800px) {
   .hero, .grid, .grid3, .stats, .dash { grid-template-columns: 1fr; }
   .hero h2 { font-size: 34px; }
@@ -126,6 +129,23 @@ footer a, footer button { color: #d1fae5; }
   footer .wrap { flex-direction: column; align-items: flex-start; }
   .partner-banner { flex-direction: column; align-items: flex-start; }
   .partner-banner .btn { width: 100%; text-align: center; }
+  /* Compact phone header: logo + title on one row, hamburger on the right,
+     subtitle hidden (it repeats in the hero), language row below, slim. */
+  header { padding: 10px 12px; }
+  header .wrap { gap: 8px; }
+  .brand { flex: 1 1 auto; min-width: 0; }
+  .brand h1 { font-size: 20px; }
+  .logo { width: 36px; height: 36px; font-size: 18px; flex-shrink: 0; }
+  .brand-sub { display: none; }
+  .menu-btn { display: inline-flex; flex-shrink: 0; }
+  .lang { flex-wrap: wrap; }
+  .lang .btn.teal { margin-left: 0; }
+  /* Nav becomes a dropdown menu, opened by the hamburger */
+  nav { display: none; padding: 0; }
+  nav.nav-open { display: block; }
+  nav.nav-open .wrap.navwrap { flex-direction: column; align-items: stretch; padding: 8px 12px; gap: 6px; }
+  nav.nav-open button { width: 100%; text-align: left; border-radius: 12px; }
+  nav.nav-open .muted { text-align: center; }
 }
 
 @media (max-width: 600px) {
