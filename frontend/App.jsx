@@ -1,0 +1,842 @@
+// App.jsx — Chunky 3D dark-blue rebuild (2026-11-10).
+// Approved look from the visuals board: deep navy page, cream cards,
+// 3px ink borders, hard offset shadows, press-down pill buttons.
+// Hero: "One meal forward, one plate filled today." + cartoon illustration.
+// FULL translation: every UI string lives in T below (en / ur / sd) —
+// no hard-coded English UI text outside these dictionaries (proper nouns
+// and numbers excepted). Restaurant owners manage their own staff.
+// Pages: Home, Finder, Donate, My Donations, Staff, Restaurant (owner),
+// Admin, Leaderboard, Transparency, Join, Login. All data from the API.
+
+import React, { useEffect, useState } from 'react';
+
+const API = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) || 'http://localhost:5001/api';
+const PILOT_DONATION_GOAL = 30; // pilot target from the teacher plan — change this one number if the target changes
+
+// ---------- FULL TRANSLATION DICTIONARIES ----------
+// {n} is replaced at render time with a number. Restaurant names, "Pay It
+// Forward Meal" and "SDG 1 / SDG 2" stay in English inside translations.
+const T = {
+  en: {
+    home: 'Home', finder: 'Find a free meal', donate: 'Donate', mine: 'My donations', staff: 'Staff', restaurant: 'Restaurant', admin: 'Admin', board: 'Leaderboard', transparency: 'Transparency', request: 'Join as restaurant', auth: 'Login / Sign Up',
+    dashboard: 'Dashboard', login: 'Log in', logout: 'Logout', menu: 'Menu',
+    schoolLine: 'Jeejal Aman Public School, Bhittaibad • Sindh STREAM 2026–27 • SDG 1 + SDG 2',
+    eyebrow: '● Live in Pakistan · Test pilot',
+    heroHead1: 'One meal forward,', heroHead2: 'one plate filled today.',
+    heroLead: 'A diner pays for their own meal — and one extra. That extra meal waits at a verified partner restaurant for anyone who needs it. No explanation, no payment, no shame.',
+    oldLine: 'A normal dinner becomes someone else’s dinner.',
+    donateBtn: 'Donate a meal', findBtn: 'Find a free meal',
+    needLine: 'Need a meal? No login, no questions, no form — just ask staff at a listed restaurant.',
+    availLine: '{n} meal(s) available right now — find one near you, or donate to keep the shelf full.',
+    noAvailLine: 'No meals available right now — be the first donor today.',
+    servedChip: 'Your meal was served!', availChip: '{n} meals available today', donatedChip: 'Donated',
+    tickerDonate: 'DONATE A MEAL', tickerHunger: 'ZERO HUNGER', tickerPoverty: 'NO POVERTY', tickerVerified: 'VERIFIED PARTNER RESTAURANTS', tickerPrivate: 'THE PERSON WHO RECEIVES STAYS PRIVATE', tickerLang: 'ENGLISH · اردو · سنڌي',
+    liveDash: 'Live dashboard', liveNote: 'Numbers come live from the database. Nothing is typed in by hand.',
+    donated: 'Donated', served: 'Served', available: 'Available now', byRest: 'By restaurant', noRest: 'No partner restaurants with meals right now. Be the first donor!',
+    goal: 'Pilot goal: {n} of {g} meals donated', goalPct: '{p}% of pilot goal', goalServed: '{n} served so far', goalReached: '🎉 Pilot goal reached!',
+    howTitle: 'How it works',
+    step1t: 'Donate', step1d: 'Choose a verified restaurant and pay for one or more extra meals.',
+    step2t: 'Served', step2d: 'A person in need asks staff for a Pay It Forward meal. No questions, no payment.',
+    step3t: 'You get a message', step3d: '“Your meal was served.” You see proof and never learn who received it.',
+    trust1: '✓ Verified restaurants only', trust2: '✓ No recipient data stored', trust3: '✓ Money released only after serving',
+    urgent: 'Urgent:', mealsLeft: '{n} meal(s) left', giveMost: '💛 Give where most needed', giveMostName: '💛 Give where most needed — {n}',
+    partnerTitle: 'Run a restaurant?', partnerText: 'Join as a partner and serve free meals paid for by your own customers.', partnerBtn: 'Become a partner',
+    activityTitle: 'Recent activity (recipients never named)', activityServed: '🍽️ A meal was served', activityDonated: '💛 {n} donated {q}', activityAt: 'at {n}', activityNone: 'No activity yet — be the first donor.',
+    finderTitle: 'Free meals today', finderNote: 'Free meals available here today. Just ask staff for a Pay It Forward meal.',
+    finderArea: 'Area / city', finderOnly: 'Only show restaurants with meals available',
+    finderUrgent: '⚠️ {n} left — urgent', finderMeals: '{n} meals', finderPerMeal: 'Rs {n} per meal', finderServed: '{n} served so far',
+    finderEmptyAvail: 'No restaurant with meals available in that area right now — try All areas, or check back after a donation.',
+    finderEmptyArea: 'No verified restaurant in that area yet.', finderNoLogin: 'No login. No form. We never ask for or store anything about you.',
+    allAreas: 'All areas',
+    donateTitle: 'Donate a meal', donateLoginFirst: 'Please log in as a donor first — public sign-up creates a donor account.',
+    donateMost: '💛 Give where most needed', donateMostName: '💛 Give where most needed — {n} ({m} left)',
+    donateRest: '1. Restaurant', donateChoose: 'Choose a verified restaurant…', donateVerified: 'verified',
+    donateQty: '2. Number of meals', donateCustom: '(1–10, custom allowed)',
+    donateMethod: '3. Pay with', methodWallet: 'Mobile wallet', methodCard: 'Debit / Credit',
+    summary: 'Summary', summaryMeals: 'Meals:', summaryMethod: 'Method:', summaryPrice: 'Price:', summaryPerMeal: 'per meal at {n} — admin sets each restaurant’s price',
+    summaryChoose: 'Choose a restaurant first to see its meal price. Each restaurant has its own price, set by admin.',
+    testMode: 'Test mode: no real money moves in the pilot.', continueBtn: 'Continue to Sandbox Checkout',
+    statusNote: 'Status: Pending → Paid (sandbox) → Available → Served. Meals are NOT Available while Pending.',
+    sandboxTitle: 'Sandbox Checkout — {n} (SIMULATOR, not the real gateway site)',
+    sandboxPay: 'Pay Rs {n} for {q} meal(s)', sandboxTxn: 'Txn ref:', sandboxNote: 'This is our own sandbox simulator for the contest demo. No real money moves. Real JazzCash/Easypaisa gateway needs merchant sandbox keys in backend/.env.',
+    sandboxMobile: 'Test mobile number (any test number, e.g. 0300-1234567)', sandboxPayBtn: 'Pay Rs {n} in Sandbox', sandboxCancel: 'Cancel payment',
+    pendingMsg: 'Sandbox payment created — it is PENDING. Meals become Available only after you confirm on the Sandbox Checkout below.',
+    paidMsg: 'Sandbox payment successful! {n} PKR paid in sandbox (no real money). Meals are now Available.',
+    cancelMsg: 'Sandbox payment cancelled. No meals were created.',
+    mineTitle: 'My donations', mineLogin: 'Log in to see your donations and messages.',
+    mineDonated: 'Donated', mineServed: 'Served', mineAvail: 'Still available', yourBadge: 'Your badge:',
+    privacy: 'Show my name on Leaderboard and Transparency (untick = Anonymous donor)',
+    donationsTitle: 'Donations', mealsAt: '{q} meal(s) at {n}', servedOf: '{s}/{q} served', noDonations: 'No donations yet.',
+    printReceipt: 'Print receipt', messagesTitle: 'Messages', noMessages: 'No messages yet — you’ll get one here when your meal is served.',
+    markRead: 'Mark read', readMark: '✓ read', popups: 'Please allow pop-ups for this site to print the receipt.',
+    signedIn: 'Signed in as {n} ({r})',
+    staffTitle: 'Staff', staffNoRest: 'no restaurant linked yet', staffLogin: 'Staff accounts are created by admin and linked to ONE restaurant. Log in as staff (or admin to test).',
+    staffAvail: 'Available meals today', serveBtn: 'Serve 1 meal', servedTotal: 'Served in total', restLabel: 'Restaurant',
+    serveNote: 'Tap Serve, no questions. Only a count and the time are recorded, nothing about the person.',
+    servedMsg: 'Served! Available now: {a}, served total: {s}. Donor (if any) got a message.',
+    restTitle: 'Restaurant — my team', restLogin: 'Log in as a restaurant owner to manage your team. Owners are created by admin and linked to ONE restaurant.',
+    teamTitle: 'Your team', teamMembers: '{n} team members', teamNone: 'No staff yet — add your first team member below.',
+    addStaffTitle: 'Add a staff member', addStaffNote: 'They get a sign-in with their email and password — no password to remember for you.',
+    fullName: 'Full name', phoneEmail: 'Email', password: 'Password', roleLabel: 'Role', addBtn: 'Add to team', removeBtn: 'Remove',
+    roleOwner: 'Owner', roleManager: 'Manager', roleCounter: 'Counter', roleKitchen: 'Kitchen', active: 'Active',
+    permTitle: 'What each role can do',
+    permOwner: 'Owner — everything, including staff and payouts',
+    permManager: 'Manager — mark meals served, see daily totals',
+    permCounter: 'Counter — mark meals served only',
+    permKitchen: 'Kitchen — see how many meals to prepare',
+    staffAdded: 'Staff member added.', staffRemoved: 'Staff member removed.', staffAddFail: 'Could not add staff member.',
+    adminTitle: 'Admin dashboard', adminLogin: 'Admin only. Log in as admin@payitforward.school (seeded account, change the password before real use).',
+    adminLoading: 'Loading admin data… if this stays blank, read the message above — it is the backend error.',
+    dailyTitle: 'Daily check', dailyText: 'Donated − served = available', matches: 'matches', mismatch: 'MISMATCH — check!',
+    overviewLine: '{u} users • {d} donations • {p} pending requests',
+    verifyTitle: 'Verify restaurants', noUnverified: 'No unverified restaurants. All {n} are verified.', verifyBtn: 'Verify',
+    reqTitle: 'Restaurant requests', noReq: 'No requests yet.', approveBtn: 'Approve', rejectBtn: 'Reject',
+    weeklyTitle: 'Weekly report (last 7 days)', weeklyNote: 'Paid donations and serves in the last 7 days, per restaurant. No recipient data — counts only.',
+    loadReport: 'Load weekly report', downloadCsv: 'Download CSV',
+    weeklyRow: '{n} — {d} donated, {s} served (last 7 days) • {a} available now • {t} served total',
+    weeklyTotal: 'Total: {d} donated, {s} served (last 7 days) • {a} available now',
+    gTitle: 'Graphs — meals at a glance', gNote: 'Admin only. Counts only — no recipient data.', gDaily: 'Last 7 days — donated vs served', gAvail: 'Available meals per restaurant', gDonated: 'Donated', gServed: 'Served', gServedPct: 'Served %', gRestaurants: 'Restaurants',
+    pricesTitle: 'Restaurant prices (per restaurant)', pricePerMeal: 'Rs {n}/meal', unverified: '(unverified)',
+    chooseRest: 'Choose restaurant…', newPrice: 'New meal price (Rs 50–2000)', savePrice: 'Save price', priceSaved: 'Meal price updated.',
+    createStaffTitle: 'Create staff / admin account', roleRestLabel: 'Role + linked restaurant (staff must have one)',
+    createStaffBtn: 'Create staff account', staffCreated: 'Staff account created.', usersOnFile: 'Users on file: {n}',
+    addRestTitle: 'Add a restaurant', restName: 'Name', restArea: 'Area', restMeal: 'Meal', restTimings: 'Timings', mealPrice: 'Meal price (Rs)',
+    addRestBtn: 'Add restaurant (unverified)', restAdded: 'Restaurant added (unverified until you Verify it).',
+    boardDonors: 'Top donors (by meals served)', boardRest: 'Top restaurants', noDonors: 'No donors yet.',
+    boardDonated: '{d} donated, {s} served',
+    transTitle: 'Transparency — every paid meal, in public',
+    transNote: 'Paid donations and serves only. No recipient is ever named, photographed, or described. Donors appear by name only if they chose to — otherwise ‘Anonymous donor’.',
+    transServed: '🍽️ Served', transDonated: '💛 {n} donated {q}', transAt: 'at {n}', transNone: 'No paid donations or serves yet.',
+    anon: 'Anonymous donor',
+    joinTitle: 'Join as a restaurant', joinNote: 'Your request starts UNVERIFIED and hidden from the public Finder until admin approves it. Checklist: name, area, meal and timings, and you agree to serve without questions.',
+    contactLabel: 'Contact name / phone', sendBtn: 'Send request', joinSent: 'Request sent! Admin will review it. It will NOT show publicly until approved.',
+    authTitle: 'Login / Sign Up', authNote: 'Public sign-up creates a donor account. Staff and admin accounts are created by an admin.',
+    authName: 'Full name', authEmail: 'Email', authPass: 'Password (min 6 characters, stored hashed)',
+    createAccount: 'Create donor account', loginBtn: 'Login', toLogin: 'Already have an account? Login', toRegister: 'New here? Create an account',
+    seedNote: 'School admin (seeded, change before real use): admin@payitforward.school / Admin123!',
+    ownerSeedNote: 'Demo restaurant owner: owner@payitforward.school / Owner123! (Sindh Biryani House)',
+    welcome: 'Welcome, {n} ({r}).', backendErr: 'Backend not running? Start it: cd backend && npm start  •  {e}',
+    footerTag: 'A normal dinner becomes someone else’s dinner. Pay for one extra meal and a verified restaurant serves it to a person in need.',
+    footerExplore: 'Explore', footerLang: 'Languages', footerCopy: '© 2026 Pay It Forward Meal • Supports SDG 1 (No Poverty) and SDG 2 (Zero Hunger). No recipient data is ever stored. Payment: test mode in the pilot — no real money moves.',
+    badgeHero: '🏆 Meal Hero (10+ served)', badgeHeart: '💛 Kind Heart (5+ served)', badgeNew: '🌱 New Giver (1+ served)', badgeNone: '— no badge yet, donate first',
+    receiptTitle: '💛 Pay It Forward Meal — Donation receipt', receiptDonor: 'Donor:', receiptRest: 'Restaurant:', receiptMeals: 'Meals donated:', receiptServed: 'Served so far from this donation:', receiptAmount: 'Amount:', receiptMethod: 'Method:', receiptStatus: 'Status:', receiptTxn: 'Txn ref:', receiptDate: 'Date:',
+    receiptNote: 'Thank you — your meal will be served with no questions asked, and no recipient data is ever stored. Payment: test/sandbox mode in the pilot — no real money moves.',
+  },
+  ur: {
+    home: 'ہوم', finder: 'مفت کھانا تلاش کریں', donate: 'عطیہ دیں', mine: 'میرے عطیات', staff: 'اسٹاف', restaurant: 'ریسٹورنٹ', admin: 'ایڈمن', board: 'لیڈر بورڈ', transparency: 'شفافیت', request: 'ریسٹورنٹ بنیں', auth: 'لاگ ان / سائن اپ',
+    dashboard: 'ڈیش بورڈ', login: 'لاگ ان', logout: 'لاگ آؤٹ', menu: 'مینیو',
+    schoolLine: 'جیجل امن پبلک اسکول، بھٹائی آباد • سندھ اسٹریم 2026–27 • SDG 1 + SDG 2',
+    eyebrow: '● پاکستان میں لائیو · آزمائشی منصوبہ',
+    heroHead1: 'ایک کھانا آگے،', heroHead2: 'آج ایک پلیٹ بھر گئی۔',
+    heroLead: 'کھانے والا اپنے کھانے کے ساتھ ایک اضافی کھانا ادا کرتا ہے۔ وہ اضافی کھانا کسی ضرورت مند کے لیے تصدیق شدہ پارٹنر ریسٹورنٹ میں انتظار کرتا ہے۔ کوئی وضاحت نہیں، کوئی ادائیگی نہیں، کوئی شرم نہیں۔',
+    oldLine: 'ایک عام رات کا کھانا کسی اور کا رات کا کھانا بن جاتا ہے۔',
+    donateBtn: 'کھانا عطیہ کریں', findBtn: 'مفت کھانا تلاش کریں',
+    needLine: 'کھانا چاہیے؟ کوئی لاگ ان نہیں، کوئی سوال نہیں، کوئی فارم نہیں — بس درج ریسٹورنٹ کے عملے سے پوچھیں۔',
+    availLine: 'ابھی {n} کھانے دستیاب ہیں — اپنے قریب تلاش کریں، یا عطیہ دے کر شیلف بھرا رکھیں۔',
+    noAvailLine: 'ابھی کوئی کھانا دستیاب نہیں — آج پہلے عطیہ دہندہ بنیں۔',
+    servedChip: 'آپ کا کھانا پیش کر دیا گیا!', availChip: 'آج {n} کھانے دستیاب ہیں', donatedChip: 'عطیہ شدہ',
+    tickerDonate: 'کھانا عطیہ کریں', tickerHunger: 'بھوک ختم کریں', tickerPoverty: 'غربت ختم کریں', tickerVerified: 'تصدیق شدہ پارٹنر ریسٹورنٹ', tickerPrivate: 'وصول کنندہ کی شناخت ہمیشہ نجی رہتی ہے', tickerLang: 'ENGLISH · اردو · سنڌي',
+    liveDash: 'لائیو ڈیش بورڈ', liveNote: 'اعداد ڈیٹا بیس سے براہ راست آتے ہیں۔ کچھ بھی ہاتھ سے نہیں لکھا جاتا۔',
+    donated: 'عطیہ شدہ', served: 'پیش شدہ', available: 'ابھی دستیاب', byRest: 'ریسٹورنٹ کے حساب سے', noRest: 'ابھی کسی پارٹنر ریسٹورنٹ میں کھانا نہیں ہے۔ پہلے عطیہ دہندہ بنیں!',
+    goal: 'پائلٹ ہدف: {g} میں سے {n} کھانے عطیہ ہوئے', goalPct: 'ہدف کا {p}٪', goalServed: 'اب تک {n} پیش ہوئے', goalReached: '🎉 پائلٹ ہدف مکمل!',
+    howTitle: 'یہ کیسے کام کرتا ہے',
+    step1t: 'عطیہ دیں', step1d: 'تصدیق شدہ ریسٹورنٹ منتخب کریں اور ایک یا زیادہ اضافی کھانوں کی ادائیگی کریں۔',
+    step2t: 'پیش کیا گیا', step2d: 'ضرورت مند شخص عملے سے Pay It Forward کھانا مانگتا ہے۔ کوئی سوال نہیں، کوئی ادائیگی نہیں۔',
+    step3t: 'آپ کو پیغام ملتا ہے', step3d: '”آپ کا کھانا پیش کر دیا گیا۔“ آپ کو ثبوت ملتا ہے اور آپ کبھی نہیں جانتے کہ کس نے وصول کیا۔',
+    trust1: '✓ صرف تصدیق شدہ ریسٹورنٹ', trust2: '✓ وصول کنندہ کا کوئی ڈیٹا محفوظ نہیں', trust3: '✓ رقم صرف پیش کرنے کے بعد ملتی ہے',
+    urgent: 'فوری:', mealsLeft: '{n} کھانے باقی', giveMost: '💛 جہاں سب سے زیادہ ضرورت ہے وہاں دیں', giveMostName: '💛 جہاں سب سے زیادہ ضرورت ہے — {n}',
+    partnerTitle: 'ریسٹورنٹ چلاتے ہیں؟', partnerText: 'پارٹنر بنیں اور اپنے صارفین کے پیسوں سے مفت کھانے پیش کریں۔', partnerBtn: 'پارٹنر بنیں',
+    activityTitle: 'تازہ سرگرمی (وصول کنندہ کا نام کبھی نہیں)', activityServed: '🍽️ ایک کھانا پیش کیا گیا', activityDonated: '💛 {n} نے {q} عطیہ کیے', activityAt: '{n} میں', activityNone: 'ابھی کوئی سرگرمی نہیں — پہلے عطیہ دہندہ بنیں۔',
+    finderTitle: 'آج کے مفت کھانے', finderNote: 'آج یہاں مفت کھانے دستیاب ہیں۔ بس عملے سے Pay It Forward کھانا مانگیں۔',
+    finderArea: 'علاقہ / شہر', finderOnly: 'صرف وہ ریسٹورنٹ دکھائیں جن میں کھانا دستیاب ہے',
+    finderUrgent: '⚠️ {n} باقی — فوری', finderMeals: '{n} کھانے', finderPerMeal: 'فی کھانا {n} روپے', finderServed: 'اب تک {n} پیش ہوئے',
+    finderEmptyAvail: 'اس علاقے میں ابھی کوئی ریسٹورنٹ میں کھانا دستیاب نہیں — تمام علاقے آزمائیں، یا عطیے کے بعد دوبارہ دیکھیں۔',
+    finderEmptyArea: 'اس علاقے میں ابھی کوئی تصدیق شدہ ریسٹورنٹ نہیں۔', finderNoLogin: 'کوئی لاگ ان نہیں۔ کوئی فارم نہیں۔ ہم آپ کے بارے میں کچھ نہیں پوچھتے اور نہ محفوظ کرتے ہیں۔',
+    allAreas: 'تمام علاقے',
+    donateTitle: 'کھانا عطیہ کریں', donateLoginFirst: 'پہلے عطیہ دہندہ کے طور پر لاگ ان کریں — عوامی سائن اپ سے عطیہ دہندہ کا اکاؤنٹ بنتا ہے۔',
+    donateMost: '💛 جہاں سب سے زیادہ ضرورت ہے وہاں دیں', donateMostName: '💛 جہاں سب سے زیادہ ضرورت ہے — {n} ({m} باقی)',
+    donateRest: '1۔ ریسٹورنٹ', donateChoose: 'تصدیق شدہ ریسٹورنٹ منتخب کریں…', donateVerified: 'تصدیق شدہ',
+    donateQty: '2۔ کھانوں کی تعداد', donateCustom: '(1–10، اپنی مرضی بھی)',
+    donateMethod: '3۔ ادائیگی کا طریقہ', methodWallet: 'موبائل والیٹ', methodCard: 'ڈیبٹ / کریڈٹ',
+    summary: 'خلاصہ', summaryMeals: 'کھانے:', summaryMethod: 'طریقہ:', summaryPrice: 'قیمت:', summaryPerMeal: 'فی کھانا {n} میں — ہر ریسٹورنٹ کی قیمت ایڈمن طے کرتا ہے',
+    summaryChoose: 'کھانے کی قیمت دیکھنے کے لیے پہلے ریسٹورنٹ منتخب کریں۔ ہر ریسٹورنٹ کی اپنی قیمت ہے، جو ایڈمن طے کرتا ہے۔',
+    testMode: 'ٹیسٹ موڈ: پائلٹ میں کوئی اصلی رقم نہیں چلتی۔', continueBtn: 'سینڈ باکس چیک آؤٹ پر جائیں',
+    statusNote: 'حالت: زیر التواء → ادا شدہ (سینڈ باکس) → دستیاب → پیش شدہ۔ زیر التواء کھانے دستیاب نہیں ہوتے۔',
+    sandboxTitle: 'سینڈ باکس چیک آؤٹ — {n} (سیمولیٹر، اصلی گیٹ وے سائٹ نہیں)',
+    sandboxPay: '{q} کھانوں کے لیے {n} روپے ادا کریں', sandboxTxn: 'لین دین نمبر:', sandboxNote: 'یہ مقابلے کے ڈیمو کے لیے ہمارا اپنا سینڈ باکس سیمولیٹر ہے۔ کوئی اصلی رقم نہیں چلتی۔ اصلی JazzCash/Easypaisa گیٹ وے کے لیے backend/.env میں مرچنٹ سینڈ باکس کیز چاہییں۔',
+    sandboxMobile: 'ٹیسٹ موبائل نمبر (کوئی بھی ٹیسٹ نمبر، مثلاً 0300-1234567)', sandboxPayBtn: 'سینڈ باکس میں {n} روپے ادا کریں', sandboxCancel: 'ادائیگی منسوخ کریں',
+    pendingMsg: 'سینڈ باکس ادائیگی بن گئی — یہ زیر التواء ہے۔ کھانے صرف نیچے سینڈ باکس چیک آؤٹ پر تصدیق کے بعد دستیاب ہوں گے۔',
+    paidMsg: 'سینڈ باکس ادائیگی کامیاب! سینڈ باکس میں {n} روپے ادا ہوئے (کوئی اصلی رقم نہیں)۔ کھانے اب دستیاب ہیں۔',
+    cancelMsg: 'سینڈ باکس ادائیگی منسوخ کر دی گئی۔ کوئی کھانا نہیں بنا۔',
+    mineTitle: 'میرے عطیات', mineLogin: 'اپنے عطیات اور پیغامات دیکھنے کے لیے لاگ ان کریں۔',
+    mineDonated: 'عطیہ شدہ', mineServed: 'پیش شدہ', mineAvail: 'ابھی دستیاب', yourBadge: 'آپ کا بیج:',
+    privacy: 'لیڈر بورڈ اور شفافیت پر میرا نام دکھائیں (ان ٹک کریں تو Anonymous donor)',
+    donationsTitle: 'عطیات', mealsAt: '{n} میں {q} کھانے', servedOf: '{s}/{q} پیش ہوئے', noDonations: 'ابھی کوئی عطیہ نہیں۔',
+    printReceipt: 'رسید پرنٹ کریں', messagesTitle: 'پیغامات', noMessages: 'ابھی کوئی پیغام نہیں — جب آپ کا کھانا پیش ہوگا تو یہاں پیغام آئے گا۔',
+    markRead: 'پڑھا ہوا کریں', readMark: '✓ پڑھا ہوا', popups: 'رسید پرنٹ کرنے کے لیے اس سائٹ کے لیے پاپ اپ کی اجازت دیں۔',
+    signedIn: '{n} ({r}) کے طور پر لاگ ان ہیں',
+    staffTitle: 'اسٹاف', staffNoRest: 'ابھی کوئی ریسٹورنٹ منسلک نہیں', staffLogin: 'اسٹاف اکاؤنٹ ایڈمن بناتا ہے اور ایک ریسٹورنٹ سے منسلک ہوتا ہے۔ اسٹاف کے طور پر لاگ ان کریں (یا جانچ کے لیے ایڈمن)۔',
+    staffAvail: 'آج دستیاب کھانے', serveBtn: '1 کھانا پیش کریں', servedTotal: 'کل پیش شدہ', restLabel: 'ریسٹورنٹ',
+    serveNote: 'Serve دبائیں، کوئی سوال نہیں۔ صرف تعداد اور وقت ریکارڈ ہوتا ہے، اس شخص کے بارے میں کچھ نہیں۔',
+    servedMsg: 'پیش کر دیا! اب دستیاب: {a}، کل پیش شدہ: {s}۔ عطیہ دہندہ (اگر کوئی ہو) کو پیغام مل گیا۔',
+    restTitle: 'ریسٹورنٹ — میری ٹیم', restLogin: 'اپنی ٹیم سنبھالنے کے لیے ریسٹورنٹ مالک کے طور پر لاگ ان کریں۔ مالک اکاؤنٹ ایڈمن بناتا ہے اور ایک ریسٹورنٹ سے منسلک ہوتا ہے۔',
+    teamTitle: 'آپ کی ٹیم', teamMembers: '{n} ٹیم ممبر', teamNone: 'ابھی کوئی اسٹاف نہیں — نیچے پہلا ٹیم ممبر شامل کریں۔',
+    addStaffTitle: 'اسٹاف ممبر شامل کریں', addStaffNote: 'وہ اپنے ای میل اور پاس ورڈ سے سائن ان کریں گے — آپ کو پاس ورڈ یاد رکھنے کی ضرورت نہیں۔',
+    fullName: 'پورا نام', phoneEmail: 'ای میل', password: 'پاس ورڈ', roleLabel: 'کردار', addBtn: 'ٹیم میں شامل کریں', removeBtn: 'ہٹائیں',
+    roleOwner: 'مالک', roleManager: 'مینجر', roleCounter: 'کاؤنٹر', roleKitchen: 'باورچی خانہ', active: 'فعال',
+    permTitle: 'ہر کردار کیا کر سکتا ہے',
+    permOwner: 'مالک — سب کچھ، بشمول اسٹاف اور ادائیگیاں',
+    permManager: 'مینجر — کھانے پیش کریں، روزانہ کل دیکھیں',
+    permCounter: 'کاؤنٹر — صرف کھانے پیش کریں',
+    permKitchen: 'باورچی خانہ — دیکھیں کتنے کھانے تیار کرنے ہیں',
+    staffAdded: 'اسٹاف ممبر شامل کر دیا گیا۔', staffRemoved: 'اسٹاف ممبر ہٹا دیا گیا۔', staffAddFail: 'اسٹاف ممبر شامل نہیں ہو سکا۔',
+    adminTitle: 'ایڈمن ڈیش بورڈ', adminLogin: 'صرف ایڈمن۔ admin@payitforward.school سے لاگ ان کریں (سیڈ اکاؤنٹ، اصلی استعمال سے پہلے پاس ورڈ بدل لیں)۔',
+    adminLoading: 'ایڈمن ڈیٹا لوڈ ہو رہا ہے… اگر یہ خالی رہے تو اوپر والا پیغام پڑھیں — وہی بیک اینڈ کی خرابی ہے۔',
+    dailyTitle: 'روزانہ جانچ', dailyText: 'عطیہ − پیش شدہ = دستیاب', matches: 'ملتا ہے', mismatch: 'غلط ہے — جانچیں!',
+    overviewLine: '{u} صارفین • {d} عطیات • {p} زیر التواء درخواستیں',
+    verifyTitle: 'ریسٹورنٹ کی تصدیق کریں', noUnverified: 'کوئی غیر تصدیق شدہ ریسٹورنٹ نہیں۔ تمام {n} تصدیق شدہ ہیں۔', verifyBtn: 'تصدیق کریں',
+    reqTitle: 'ریسٹورنٹ کی درخواستیں', noReq: 'ابھی کوئی درخواست نہیں۔', approveBtn: 'منظور کریں', rejectBtn: 'مسترد کریں',
+    weeklyTitle: 'ہفتہ وار رپورٹ (پچھلے 7 دن)', weeklyNote: 'پچھلے 7 دنوں میں ادا شدہ عطیات اور پیش شدہ کھانے، فی ریسٹورنٹ۔ وصول کنندہ کا کوئی ڈیٹا نہیں — صرف تعداد۔',
+    loadReport: 'ہفتہ وار رپورٹ لوڈ کریں', downloadCsv: 'CSV ڈاؤن لوڈ کریں',
+    weeklyRow: '{n} — {d} عطیہ، {s} پیش شدہ (پچھلے 7 دن) • {a} ابھی دستیاب • {t} کل پیش شدہ',
+    weeklyTotal: 'کل: {d} عطیہ، {s} پیش شدہ (پچھلے 7 دن) • {a} ابھی دستیاب',
+    gTitle: 'گراف — کھانوں کا جائزہ', gNote: 'صرف ایڈمن کے لیے۔ صرف تعداد — وصول کنندہ کا کوئی ڈیٹا نہیں۔', gDaily: 'آخری 7 دن — عطیہ بمقابلہ پیش کردہ', gAvail: 'ہر ریسٹورنٹ میں دستیاب کھانے', gDonated: 'عطیہ', gServed: 'پیش کردہ', gServedPct: 'پیش کردہ ٪', gRestaurants: 'ریسٹورنٹس',
+    pricesTitle: 'ریسٹورنٹ کی قیمتیں (فی ریسٹورنٹ)', pricePerMeal: 'فی کھانا {n} روپے', unverified: '(غیر تصدیق شدہ)',
+    chooseRest: 'ریسٹورنٹ منتخب کریں…', newPrice: 'کھانے کی نئی قیمت (50–2000 روپے)', savePrice: 'قیمت محفوظ کریں', priceSaved: 'کھانے کی قیمت اپ ڈیٹ ہو گئی۔',
+    createStaffTitle: 'اسٹاف / ایڈمن اکاؤنٹ بنائیں', roleRestLabel: 'کردار + منسلک ریسٹورنٹ (اسٹاف کے لیے ضروری)',
+    createStaffBtn: 'اسٹاف اکاؤنٹ بنائیں', staffCreated: 'اسٹاف اکاؤنٹ بن گیا۔', usersOnFile: 'رجسٹرڈ صارفین: {n}',
+    addRestTitle: 'ریسٹورنٹ شامل کریں', restName: 'نام', restArea: 'علاقہ', restMeal: 'کھانا', restTimings: 'اوقات', mealPrice: 'کھانے کی قیمت (روپے)',
+    addRestBtn: 'ریسٹورنٹ شامل کریں (غیر تصدیق شدہ)', restAdded: 'ریسٹورنٹ شامل کر دیا گیا (تصدیق تک غیر تصدیق شدہ)۔',
+    boardDonors: 'سب سے زیادہ عطیہ دہندگان (پیش شدہ کھانوں کے حساب سے)', boardRest: 'سب سے زیادہ ریسٹورنٹ', noDonors: 'ابھی کوئی عطیہ دہندہ نہیں۔',
+    boardDonated: '{d} عطیہ، {s} پیش شدہ',
+    transTitle: 'شفافیت — ہر ادا شدہ کھانا، سب کے سامنے',
+    transNote: 'صرف ادا شدہ عطیات اور پیش شدہ کھانے۔ وصول کنندہ کا نام، تصویر یا تفصیل کبھی نہیں۔ عطیہ دہندہ کا نام صرف اس صورت میں ظاہر ہوتا ہے جب اس نے چاہا ہو — ورنہ ‘Anonymous donor’۔',
+    transServed: '🍽️ پیش کیا گیا', transDonated: '💛 {n} نے {q} عطیہ کیے', transAt: '{n} میں', transNone: 'ابھی کوئی ادا شدہ عطیہ یا پیش شدہ کھانا نہیں۔',
+    anon: 'Anonymous donor',
+    joinTitle: 'ریسٹورنٹ بنیں', joinNote: 'آپ کی درخواست غیر تصدیق شدہ شروع ہوتی ہے اور ایڈمن کی منظوری تک عوامی Finder میں چھپی رہتی ہے۔ چیک لسٹ: نام، علاقہ، کھانا اور اوقات، اور آپ بغیر سوال پوچھے پیش کرنے پر راضی ہیں۔',
+    contactLabel: 'رابطہ نام / فون', sendBtn: 'درخواست بھیجیں', joinSent: 'درخواست بھیج دی گئی! ایڈمن جائزہ لے گا۔ منظوری تک یہ عوامی طور پر نہیں دکھائی دے گی۔',
+    authTitle: 'لاگ ان / سائن اپ', authNote: 'عوامی سائن اپ سے عطیہ دہندہ کا اکاؤنٹ بنتا ہے۔ اسٹاف اور ایڈمن اکاؤنٹ ایڈمن بناتا ہے۔',
+    authName: 'پورا نام', authEmail: 'ای میل', authPass: 'پاس ورڈ (کم از کم 6 حروف، ہیش کر کے محفوظ)',
+    createAccount: 'عطیہ دہندہ اکاؤنٹ بنائیں', loginBtn: 'لاگ ان', toLogin: 'پہلے سے اکاؤنٹ ہے؟ لاگ ان کریں', toRegister: 'نئے ہیں؟ اکاؤنٹ بنائیں',
+    seedNote: 'اسکول ایڈمن (سیڈ، اصلی استعمال سے پہلے پاس ورڈ بدل لیں): admin@payitforward.school / Admin123!',
+    ownerSeedNote: 'ڈیمو ریسٹورنٹ مالک: owner@payitforward.school / Owner123! (سندھ بریانی ہاؤس)',
+    welcome: 'خوش آمدید، {n} ({r})۔', backendErr: 'بیک اینڈ نہیں چل رہا؟ شروع کریں: cd backend && npm start  •  {e}',
+    footerTag: 'ایک عام رات کا کھانا کسی اور کا رات کا کھانا بن جاتا ہے۔ ایک اضافی کھانے کی ادائیگی کریں اور تصدیق شدہ ریسٹورنٹ اسے ضرورت مند کو پیش کرے۔',
+    footerExplore: 'دریافت کریں', footerLang: 'زبانیں', footerCopy: '© 2026 Pay It Forward Meal • SDG 1 (غربت ختم کریں) اور SDG 2 (بھوک ختم کریں) کی حمایت کرتا ہے۔ وصول کنندہ کا کوئی ڈیٹا کبھی محفوظ نہیں ہوتا۔ ادائیگی: پائلٹ میں ٹیسٹ موڈ — کوئی اصلی رقم نہیں چلتی۔',
+    badgeHero: '🏆 Meal Hero (10+ پیش شدہ)', badgeHeart: '💛 Kind Heart (5+ پیش شدہ)', badgeNew: '🌱 New Giver (1+ پیش شدہ)', badgeNone: '— ابھی کوئی بیج نہیں، پہلے عطیہ دیں',
+    receiptTitle: '💛 Pay It Forward Meal — عطیہ کی رسید', receiptDonor: 'عطیہ دہندہ:', receiptRest: 'ریسٹورنٹ:', receiptMeals: 'عطیہ شدہ کھانے:', receiptServed: 'اس عطیے سے اب تک پیش شدہ:', receiptAmount: 'رقم:', receiptMethod: 'طریقہ:', receiptStatus: 'حالت:', receiptTxn: 'لین دین نمبر:', receiptDate: 'تاریخ:',
+    receiptNote: 'شکریہ — آپ کا کھانا بغیر سوال پوچھے پیش کیا جائے گا، اور وصول کنندہ کا کوئی ڈیٹا کبھی محفوظ نہیں ہوتا۔ ادائیگی: پائلٹ میں ٹیسٹ/سینڈ باکس موڈ — کوئی اصلی رقم نہیں چلتی۔',
+  },
+  sd: {
+    home: 'گھر', finder: 'مفت کاڌو ڳوليو', donate: 'عطيو ڏيو', mine: 'منهنجا عطيا', staff: 'اسٽاف', restaurant: 'ريسٽورنٽ', admin: 'ايڊمن', board: 'ليڊر بورڊ', transparency: 'شفافيت', request: 'ريسٽورنٽ ٿيو', auth: 'لاگ ان / سائن اپ',
+    dashboard: 'ڊيش بورڊ', login: 'لاگ ان', logout: 'لاگ آئوٽ', menu: 'مينيو',
+    schoolLine: 'جيجل امن پبلڪ اسڪول، ڀٽائي آباد • سنڌ اسٽريم 2026–27 • SDG 1 + SDG 2',
+    eyebrow: '● پاڪستان ۾ لائيو · آزمائشي منصوبو',
+    heroHead1: 'هڪ کاڌو اڳتي،', heroHead2: 'اڄ هڪ پليٽ ڀرجي وئي۔',
+    heroLead: 'کاڌو کائڻ وارو پنهنجي کاڌي سان گڏ هڪ اضافي کاڌو ادا ڪري ٿو. اهو اضافي کاڌو ڪنهن ضرورت مند لاءِ تصديق ٿيل پارٽنر ريسٽورنٽ ۾ انتظار ڪري ٿو. ڪا وضاحت ناهي، ڪا ادائيگي ناهي، ڪا شرم ناهي.',
+    oldLine: 'هڪ عام رات جو کاڌو ڪنهن ٻئي جو رات جو کاڌو بڻجي وڃي ٿو.',
+    donateBtn: 'کاڌو عطيو ڪريو', findBtn: 'مفت کاڌو ڳوليو',
+    needLine: 'کاڌو گهرجي؟ ڪو لاگ ان ناهي، ڪو سوال ناهي، ڪو فارم ناهي — بس درج ٿيل ريسٽورنٽ جي اسٽاف کان پڇو.',
+    availLine: 'هاڻي {n} کاڌا دستياب آهن — پنهنجي ويجهو ڳوليو، يا عطيو ڏئي شيلف ڀريو رکو.',
+    noAvailLine: 'هاڻي ڪو کاڌو دستياب ناهي — اڄ پهريون عطيو ڏيندڙ ٿيو.',
+    servedChip: 'توهان جو کاڌو پيش ڪيو ويو!', availChip: 'اڄ {n} کاڌا دستياب آهن', donatedChip: 'عطيو ٿيل',
+    tickerDonate: 'کاڌو عطيو ڪريو', tickerHunger: 'بک ختم ڪريو', tickerPoverty: 'غربت ختم ڪريو', tickerVerified: 'تصديق ٿيل پارٽنر ريسٽورنٽ', tickerPrivate: 'وصول ڪندڙ جي سڃاڻپ هميشه خانگي رهي ٿي', tickerLang: 'ENGLISH · اردو · سنڌي',
+    liveDash: 'لائيو ڊيش بورڊ', liveNote: 'انگ ڊيٽابيس مان سڌو اچن ٿا. ڪجهه به هٿ سان ناهي لکيو ويندو.',
+    donated: 'عطيو ٿيل', served: 'پيش ٿيل', available: 'هاڻي دستياب', byRest: 'ريسٽورنٽ موجب', noRest: 'هاڻي ڪنهن پارٽنر ريسٽورنٽ ۾ کاڌو ناهي. پهريون عطيو ڏيندڙ ٿيو!',
+    goal: 'پائلٽ هدف: {g} مان {n} کاڌا عطيا ٿيا', goalPct: 'هدف جو {p}٪', goalServed: 'هينئر تائين {n} پيش ٿيا', goalReached: '🎉 پائلٽ هدف پورو!',
+    howTitle: 'هي ڪيئن ڪم ڪري ٿو',
+    step1t: 'عطيو ڏيو', step1d: 'تصديق ٿيل ريسٽورنٽ چونڊيو ۽ هڪ يا وڌيڪ اضافي کاڌن جي ادائيگي ڪريو.',
+    step2t: 'پيش ڪيو ويو', step2d: 'ضرورت مند ماڻهو اسٽاف کان Pay It Forward کاڌو گهري ٿو. ڪو سوال ناهي، ڪا ادائيگي ناهي.',
+    step3t: 'توهان کي پيغام ملي ٿو', step3d: '”توهان جو کاڌو پيش ڪيو ويو.“ توهان کي ثبوت ملي ٿو ۽ توهان ڪڏهن نٿا ڄاڻو ته ڪنهن وصول ڪيو.',
+    trust1: '✓ صرف تصديق ٿيل ريسٽورنٽ', trust2: '✓ وصول ڪندڙ جو ڪو ڊيٽا محفوظ ناهي', trust3: '✓ رقم صرف پيش ڪرڻ کان پوءِ ملي ٿي',
+    urgent: 'تڪڙ:', mealsLeft: '{n} کاڌا باقي', giveMost: '💛 جتي سڀ کان وڌيڪ ضرورت آهي اتي ڏيو', giveMostName: '💛 جتي سڀ کان وڌيڪ ضرورت آهي — {n}',
+    partnerTitle: 'ريسٽورنٽ هلايو ٿا؟', partnerText: 'پارٽنر ٿيو ۽ پنهنجن گراهڪن جي پئسن سان مفت کاڌا پيش ڪريو.', partnerBtn: 'پارٽنر ٿيو',
+    activityTitle: 'تازي سرگرمي (وصول ڪندڙ جو نالو ڪڏهن ناهي)', activityServed: '🍽️ هڪ کاڌو پيش ڪيو ويو', activityDonated: '💛 {n} {q} عطيا ڪيا', activityAt: '{n} ۾', activityNone: 'هينئر تائين ڪا سرگرمي ناهي — پهريون عطيو ڏيندڙ ٿيو.',
+    finderTitle: 'اڄ جا مفت کاڌا', finderNote: 'اڄ هتي مفت کاڌا دستياب آهن. بس اسٽاف کان Pay It Forward کاڌو گهرو.',
+    finderArea: 'علائقو / شهر', finderOnly: 'صرف اهي ريسٽورنٽ ڏيکاريو جن ۾ کاڌو دستياب آهي',
+    finderUrgent: '⚠️ {n} باقي — تڪڙ', finderMeals: '{n} کاڌا', finderPerMeal: 'في کاڌو {n} رپيا', finderServed: 'هينئر تائين {n} پيش ٿيا',
+    finderEmptyAvail: 'هن علائقي ۾ هاڻي ڪنهن ريسٽورنٽ ۾ کاڌو دستياب ناهي — سڀ علائقا آزمايو، يا عطيي کان پوءِ واپس ڏسو.',
+    finderEmptyArea: 'هن علائقي ۾ هينئر تائين ڪو تصديق ٿيل ريسٽورنٽ ناهي.', finderNoLogin: 'ڪو لاگ ان ناهي. ڪو فارم ناهي. اسان توهان بابت ڪجهه نٿا پڇون ۽ نه محفوظ ڪريون ٿا.',
+    allAreas: 'سڀ علائقا',
+    donateTitle: 'کاڌو عطيو ڪريو', donateLoginFirst: 'پهرين عطيو ڏيندڙ طور لاگ ان ڪريو — عوامي سائن اپ سان عطيو ڏيندڙ جو اڪائونٽ ٺهي ٿو.',
+    donateMost: '💛 جتي سڀ کان وڌيڪ ضرورت آهي اتي ڏيو', donateMostName: '💛 جتي سڀ کان وڌيڪ ضرورت آهي — {n} ({m} باقي)',
+    donateRest: '1. ريسٽورنٽ', donateChoose: 'تصديق ٿيل ريسٽورنٽ چونڊيو…', donateVerified: 'تصديق ٿيل',
+    donateQty: '2. کاڌن جو تعداد', donateCustom: '(1–10، پنهنجي مرضي به)',
+    donateMethod: '3. ادائيگي جو طريقو', methodWallet: 'موبائل واليٽ', methodCard: 'ڊيبٽ / ڪريڊٽ',
+    summary: 'خلاصو', summaryMeals: 'کاڌا:', summaryMethod: 'طريقو:', summaryPrice: 'قيمت:', summaryPerMeal: 'في کاڌو {n} ۾ — هر ريسٽورنٽ جي قيمت ايڊمن طئي ڪري ٿو',
+    summaryChoose: 'کاڌي جي قيمت ڏسڻ لاءِ پهرين ريسٽورنٽ چونڊيو. هر ريسٽورنٽ جي پنهنجي قيمت آهي، جيڪا ايڊمن طئي ڪري ٿو.',
+    testMode: 'ٽيسٽ موڊ: پائلٽ ۾ ڪا حقيقي رقم نٿي هلي.', continueBtn: 'سينڊ باڪس چيڪ آئوٽ ڏانهن وڃو',
+    statusNote: 'حالت: التوا ۾ → ادا ٿيل (سينڊ باڪس) → دستياب → پيش ٿيل. التوا وارا کاڌا دستياب ناهن.',
+    sandboxTitle: 'سينڊ باڪس چيڪ آئوٽ — {n} (سيموليٽر، حقيقي گيٽ وي سائيٽ ناهي)',
+    sandboxPay: '{q} کاڌن لاءِ {n} رپيا ادا ڪريو', sandboxTxn: 'لين دين نمبر:', sandboxNote: 'هي مقابلي جي ڊيمو لاءِ اسان جو پنهنجو سينڊ باڪس سيموليٽر آهي. ڪا حقيقي رقم نٿي هلي. حقيقي JazzCash/Easypaisa گيٽ وي لاءِ backend/.env ۾ مرچنٽ سينڊ باڪس ڪيز گهرجن.',
+    sandboxMobile: 'ٽيسٽ موبائل نمبر (ڪو به ٽيسٽ نمبر، مثال 0300-1234567)', sandboxPayBtn: 'سينڊ باڪس ۾ {n} رپيا ادا ڪريو', sandboxCancel: 'ادائيگي رد ڪريو',
+    pendingMsg: 'سينڊ باڪس ادائيگي ٺهي وئي — اها التوا ۾ آهي. کاڌا صرف هيٺ سينڊ باڪس چيڪ آئوٽ تي تصديق کان پوءِ دستياب ٿيندا.',
+    paidMsg: 'سينڊ باڪس ادائيگي ڪامياب! سينڊ باڪس ۾ {n} رپيا ادا ٿيا (ڪا حقيقي رقم ناهي). کاڌا هاڻي دستياب آهن.',
+    cancelMsg: 'سينڊ باڪس ادائيگي رد ڪئي وئي. ڪو کاڌو ناهي ٺهيو.',
+    mineTitle: 'منهنجا عطيا', mineLogin: 'پنهنجا عطيا ۽ پيغام ڏسڻ لاءِ لاگ ان ڪريو.',
+    mineDonated: 'عطيو ٿيل', mineServed: 'پيش ٿيل', mineAvail: 'اڃا دستياب', yourBadge: 'توهان جو بيج:',
+    privacy: 'ليڊر بورڊ ۽ شفافيت تي منهنجو نالو ڏيکاريو (ان ٽڪ ڪريو ته Anonymous donor)',
+    donationsTitle: 'عطيا', mealsAt: '{n} ۾ {q} کاڌا', servedOf: '{s}/{q} پيش ٿيا', noDonations: 'هينئر تائين ڪو عطيو ناهي.',
+    printReceipt: 'رسيد پرنٽ ڪريو', messagesTitle: 'پيغام', noMessages: 'هينئر تائين ڪو پيغام ناهي — جڏهن توهان جو کاڌو پيش ٿيندو ته هتي پيغام ايندو.',
+    markRead: 'پڙهيل ڪريو', readMark: '✓ پڙهيل', popups: 'رسيد پرنٽ ڪرڻ لاءِ هن سائيٽ لاءِ پاپ اپ جي اجازت ڏيو.',
+    signedIn: '{n} ({r}) طور لاگ ان آهيو',
+    staffTitle: 'اسٽاف', staffNoRest: 'هينئر تائين ڪو ريسٽورنٽ ڳنڍيل ناهي', staffLogin: 'اسٽاف اڪائونٽ ايڊمن ٺاهي ٿو ۽ هڪ ريسٽورنٽ سان ڳنڍيل هوندو آهي. اسٽاف طور لاگ ان ڪريو (يا جاچ لاءِ ايڊمن).',
+    staffAvail: 'اڄ دستياب کاڌا', serveBtn: '1 کاڌو پيش ڪريو', servedTotal: 'ڪل پيش ٿيل', restLabel: 'ريسٽورنٽ',
+    serveNote: 'Serve دٻايو، ڪو سوال ناهي. صرف تعداد ۽ وقت رڪارڊ ٿئي ٿو، ان ماڻهو بابت ڪجهه ناهي.',
+    servedMsg: 'پيش ڪيو ويو! هاڻي دستياب: {a}، ڪل پيش ٿيل: {s}. عطيو ڏيندڙ (جيڪڏهن ڪو آهي) کي پيغام ملي ويو.',
+    restTitle: 'ريسٽورنٽ — منهنجي ٽيم', restLogin: 'پنهنجي ٽيم سنڀالڻ لاءِ ريسٽورنٽ مالڪ طور لاگ ان ڪريو. مالڪ اڪائونٽ ايڊمن ٺاهي ٿو ۽ هڪ ريسٽورنٽ سان ڳنڍيل هوندو آهي.',
+    teamTitle: 'توهان جي ٽيم', teamMembers: '{n} ٽيم ميمبر', teamNone: 'هينئر تائين ڪو اسٽاف ناهي — هيٺ پهريون ٽيم ميمبر شامل ڪريو.',
+    addStaffTitle: 'اسٽاف ميمبر شامل ڪريو', addStaffNote: 'اهي پنهنجي اي ميل ۽ پاس ورڊ سان سائن ان ڪندا — توهان کي پاس ورڊ ياد رکڻ جي ضرورت ناهي.',
+    fullName: 'پورو نالو', phoneEmail: 'اي ميل', password: 'پاس ورڊ', roleLabel: 'ڪردار', addBtn: 'ٽيم ۾ شامل ڪريو', removeBtn: 'هٽايو',
+    roleOwner: 'مالڪ', roleManager: 'مينجر', roleCounter: 'ڪائونٽر', roleKitchen: 'باورچي خانو', active: 'فعال',
+    permTitle: 'هر ڪردار ڇا ڪري سگهي ٿو',
+    permOwner: 'مالڪ — سڀ ڪجهه، اسٽاف ۽ ادائيگين سميت',
+    permManager: 'مينجر — کاڌا پيش ڪريو، روزانو ڪل ڏسو',
+    permCounter: 'ڪائونٽر — صرف کاڌا پيش ڪريو',
+    permKitchen: 'باورچي خانو — ڏسو ڪيترا کاڌا تيار ڪرڻا آهن',
+    staffAdded: 'اسٽاف ميمبر شامل ڪيو ويو.', staffRemoved: 'اسٽاف ميمبر هٽايو ويو.', staffAddFail: 'اسٽاف ميمبر شامل نه ٿي سگهيو.',
+    adminTitle: 'ايڊمن ڊيش بورڊ', adminLogin: 'صرف ايڊمن. admin@payitforward.school سان لاگ ان ڪريو (سيڊ اڪائونٽ، حقيقي استعمال کان اڳ پاس ورڊ تبديل ڪريو).',
+    adminLoading: 'ايڊمن ڊيٽا لوڊ ٿي رهي آهي… جيڪڏهن هي خالي رهي ته مٿي وارو پيغام پڙهو — اهو ئي بيڪ اينڊ جي خرابي آهي.',
+    dailyTitle: 'روزانو جاچ', dailyText: 'عطيو − پيش ٿيل = دستياب', matches: 'ملي ٿو', mismatch: 'غلط آهي — جاچيو!',
+    overviewLine: '{u} استعمال ڪندڙ • {d} عطيا • {p} التوا واريون درخواستون',
+    verifyTitle: 'ريسٽورنٽ جي تصديق ڪريو', noUnverified: 'ڪو غير تصديق ٿيل ريسٽورنٽ ناهي. سڀ {n} تصديق ٿيل آهن.', verifyBtn: 'تصديق ڪريو',
+    reqTitle: 'ريسٽورنٽ جون درخواستون', noReq: 'هينئر تائين ڪا درخواست ناهي.', approveBtn: 'منظور ڪريو', rejectBtn: 'رد ڪريو',
+    weeklyTitle: 'هفتيوار رپورٽ (پوئين 7 ڏينهن)', weeklyNote: 'پوئين 7 ڏينهن ۾ ادا ٿيل عطيا ۽ پيش ٿيل کاڌا، في ريسٽورنٽ. وصول ڪندڙ جو ڪو ڊيٽا ناهي — صرف تعداد.',
+    loadReport: 'هفتيوار رپورٽ لوڊ ڪريو', downloadCsv: 'CSV ڊائون لوڊ ڪريو',
+    weeklyRow: '{n} — {d} عطيا، {s} پيش ٿيل (پوئين 7 ڏينهن) • {a} هاڻي دستياب • {t} ڪل پيش ٿيل',
+    weeklyTotal: 'ڪل: {d} عطيا، {s} پيش ٿيل (پوئين 7 ڏينهن) • {a} هاڻي دستياب',
+    gTitle: 'گراف — کاڌن جو جائزو', gNote: 'صرف ايڊمن لاءِ. صرف تعداد — وصول ڪندڙ جو ڪو ڊيٽا ناهي.', gDaily: 'پوئين 7 ڏينهن — عطيو بمقابلو پيش ٿيل', gAvail: 'هر ريسٽورنٽ ۾ دستياب کاڌا', gDonated: 'عطيو', gServed: 'پيش ٿيل', gServedPct: 'پيش ٿيل ٪', gRestaurants: 'ريسٽورنٽ',
+    pricesTitle: 'ريسٽورنٽ جون قيمتون (في ريسٽورنٽ)', pricePerMeal: 'في کاڌو {n} رپيا', unverified: '(غير تصديق ٿيل)',
+    chooseRest: 'ريسٽورنٽ چونڊيو…', newPrice: 'کاڌي جي نئين قيمت (50–2000 رپيا)', savePrice: 'قيمت محفوظ ڪريو', priceSaved: 'کاڌي جي قيمت اپڊيٽ ٿي وئي.',
+    createStaffTitle: 'اسٽاف / ايڊمن اڪائونٽ ٺاهيو', roleRestLabel: 'ڪردار + ڳنڍيل ريسٽورنٽ (اسٽاف لاءِ ضروري)',
+    createStaffBtn: 'اسٽاف اڪائونٽ ٺاهيو', staffCreated: 'اسٽاف اڪائونٽ ٺهي ويو.', usersOnFile: 'رجسٽرڊ استعمال ڪندڙ: {n}',
+    addRestTitle: 'ريسٽورنٽ شامل ڪريو', restName: 'نالو', restArea: 'علائقو', restMeal: 'کاڌو', restTimings: 'وقت', mealPrice: 'کاڌي جي قيمت (رپيا)',
+    addRestBtn: 'ريسٽورنٽ شامل ڪريو (غير تصديق ٿيل)', restAdded: 'ريسٽورنٽ شامل ڪيو ويو (تصديق تائين غير تصديق ٿيل).',
+    boardDonors: 'سڀ کان وڌيڪ عطيو ڏيندڙ (پيش ٿيل کاڌن موجب)', boardRest: 'سڀ کان وڌيڪ ريسٽورنٽ', noDonors: 'هينئر تائين ڪو عطيو ڏيندڙ ناهي.',
+    boardDonated: '{d} عطيا، {s} پيش ٿيل',
+    transTitle: 'شفافيت — هر ادا ٿيل کاڌو، سڀني جي سامهون',
+    transNote: 'صرف ادا ٿيل عطيا ۽ پيش ٿيل کاڌا. وصول ڪندڙ جو نالو، تصوير يا تفصيل ڪڏهن ناهي. عطيو ڏيندڙ جو نالو صرف ان صورت ۾ ظاهر ٿئي ٿو جڏهن هن چاهيو هجي — ورنه ‘Anonymous donor’.',
+    transServed: '🍽️ پيش ڪيو ويو', transDonated: '💛 {n} {q} عطيا ڪيا', transAt: '{n} ۾', transNone: 'هينئر تائين ڪو ادا ٿيل عطيو يا پيش ٿيل کاڌو ناهي.',
+    anon: 'Anonymous donor',
+    joinTitle: 'ريسٽورنٽ ٿيو', joinNote: 'توهان جي درخواست غير تصديق ٿيل شروع ٿئي ٿي ۽ ايڊمن جي منظوري تائين عوامي Finder ۾ لڪيل رهي ٿي. چيڪ لسٽ: نالو، علائقو، کاڌو ۽ وقت، ۽ توهان بغير سوال پڇڻ جي پيش ڪرڻ تي راضي آهيو.',
+    contactLabel: 'رابطو نالو / فون', sendBtn: 'درخواست موڪليو', joinSent: 'درخواست موڪلي وئي! ايڊمن جائزو وٺندو. منظوري تائين هي عوامي طور تي نه ڏيکاري ويندي.',
+    authTitle: 'لاگ ان / سائن اپ', authNote: 'عوامي سائن اپ سان عطيو ڏيندڙ جو اڪائونٽ ٺهي ٿو. اسٽاف ۽ ايڊمن اڪائونٽ ايڊمن ٺاهي ٿو.',
+    authName: 'پورو نالو', authEmail: 'اي ميل', authPass: 'پاس ورڊ (گهٽ ۾ گهٽ 6 اکر، هيش ڪري محفوظ)',
+    createAccount: 'عطيو ڏيندڙ اڪائونٽ ٺاهيو', loginBtn: 'لاگ ان', toLogin: 'اڳ ئي اڪائونٽ آهي؟ لاگ ان ڪريو', toRegister: 'نوان آهيو؟ اڪائونٽ ٺاهيو',
+    seedNote: 'اسڪول ايڊمن (سيڊ، حقيقي استعمال کان اڳ پاس ورڊ تبديل ڪريو): admin@payitforward.school / Admin123!',
+    ownerSeedNote: 'ڊيمو ريسٽورنٽ مالڪ: owner@payitforward.school / Owner123! (سنڌ برياني هائوس)',
+    welcome: 'ڀليڪار، {n} ({r}).', backendErr: 'بيڪ اينڊ نٿو هلي؟ شروع ڪريو: cd backend && npm start  •  {e}',
+    footerTag: 'هڪ عام رات جو کاڌو ڪنهن ٻئي جو رات جو کاڌو بڻجي وڃي ٿو. هڪ اضافي کاڌي جي ادائيگي ڪريو ۽ تصديق ٿيل ريسٽورنٽ ان کي ضرورت مند کي پيش ڪري.',
+    footerExplore: 'دريافت ڪريو', footerLang: 'ٻوليون', footerCopy: '© 2026 Pay It Forward Meal • SDG 1 (غربت ختم ڪريو) ۽ SDG 2 (بک ختم ڪريو) جي حمايت ڪري ٿو. وصول ڪندڙ جو ڪو ڊيٽا ڪڏهن محفوظ نٿو ٿئي. ادائيگي: پائلٽ ۾ ٽيسٽ موڊ — ڪا حقيقي رقم نٿي هلي.',
+    badgeHero: '🏆 Meal Hero (10+ پيش ٿيل)', badgeHeart: '💛 Kind Heart (5+ پيش ٿيل)', badgeNew: '🌱 New Giver (1+ پيش ٿيل)', badgeNone: '— هينئر تائين ڪو بيج ناهي، پهرين عطيو ڏيو',
+    receiptTitle: '💛 Pay It Forward Meal — عطيي جي رسيد', receiptDonor: 'عطيو ڏيندڙ:', receiptRest: 'ريسٽورنٽ:', receiptMeals: 'عطيو ٿيل کاڌا:', receiptServed: 'هن عطيي مان هينئر تائين پيش ٿيل:', receiptAmount: 'رقم:', receiptMethod: 'طريقو:', receiptStatus: 'حالت:', receiptTxn: 'لين دين نمبر:', receiptDate: 'تاريخ:',
+    receiptNote: 'مهرباني — توهان جو کاڌو بغير سوال پڇڻ جي پيش ڪيو ويندو، ۽ وصول ڪندڙ جو ڪو ڊيٽا ڪڏهن محفوظ نٿو ٿئي. ادائيگي: پائلٽ ۾ ٽيسٽ/سينڊ باڪس موڊ — ڪا حقيقي رقم نٿي هلي.',
+  },
+};
+
+// fmt: replace {n}/{q}/{s}/{a}/{d}/{p}/{g}/{m}/{u}/{e}/{r}/{t} placeholders.
+const fmt = (s, v = {}) => String(s).replace(/\{(\w)\}/g, (_, k) => (v[k] !== undefined ? v[k] : `{${k}}`));
+const badgeFor = (t, served) => (served >= 10 ? t.badgeHero : served >= 5 ? t.badgeHeart : served >= 1 ? t.badgeNew : t.badgeNone);
+
+// ---------- Logo ----------
+// Inline SVG logo mark: a gold heart over a serving plate, in a green ring.
+// Crisp at any size, no external file. The header shows this mark + the
+// school line — the big text title is gone on purpose (simple, like the PDF).
+const LogoMark = () => (
+  <svg className="logo-svg" viewBox="0 0 64 64" role="img" aria-label="Pay It Forward Meal">
+    <circle cx="32" cy="32" r="29" fill="#116A4D" stroke="#172428" strokeWidth="3" />
+    <circle cx="32" cy="32" r="23" fill="none" stroke="#F4C35E" strokeWidth="2" />
+    <path d="M32 40 C25 35 21 30.5 21 25.5 A6 6 0 0 1 32 21.5 A6 6 0 0 1 43 25.5 C43 30.5 39 35 32 40 Z" fill="#F4C35E" stroke="#172428" strokeWidth="2" />
+    <ellipse cx="32" cy="47" rx="13" ry="3.5" fill="#FDF6EB" stroke="#172428" strokeWidth="2" />
+  </svg>
+);
+
+// ---------- Admin graphs (pure SVG, no new dependencies) ----------
+// Grouped bars: donated (gold) vs served (green) per day, last 7 days.
+const DailyBars = ({ daily }) => {
+  const max = Math.max(1, ...daily.flatMap((d) => [d.donated, d.served]));
+  const W = 560, H = 200, base = 170, bw = 26, gap = 14;
+  const x0 = 20;
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto' }} role="img">
+      <line x1="10" y1={base} x2={W - 10} y2={base} stroke="#172428" strokeWidth="2" />
+      {daily.map((d, i) => {
+        const x = x0 + i * (bw * 2 + gap + 22);
+        const hD = Math.round((d.donated / max) * 130);
+        const hS = Math.round((d.served / max) * 130);
+        return (
+          <g key={d.day}>
+            <rect x={x} y={base - hD} width={bw} height={hD} fill="#F4C35E" stroke="#172428" strokeWidth="2" rx="4" />
+            <rect x={x + bw + 4} y={base - hS} width={bw} height={hS} fill="#2E9E6B" stroke="#172428" strokeWidth="2" rx="4" />
+            <text x={x + bw} y={base + 16} textAnchor="middle" fontSize="12" fontWeight="700" fill="#172428">{d.label}</text>
+            <text x={x + bw} y={base - Math.max(hD, hS) - 6} textAnchor="middle" fontSize="11" fontWeight="800" fill="#172428">{d.donated}/{d.served}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
+export default function App() {
+  const [page, setPage] = useState('home');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [lang, setLang] = useState('en');
+  const [stats, setStats] = useState(null);
+  const [restaurants, setRestaurants] = useState([]);
+  const [board, setBoard] = useState(null);
+  const [activity, setActivity] = useState([]);
+  const [mostNeeded, setMostNeeded] = useState(null);
+  const [transparency, setTransparency] = useState([]);
+  const [filter, setFilter] = useState('All areas');
+  const [onlyAvailable, setOnlyAvailable] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('pifm_token') || '');
+  const [authForm, setAuthForm] = useState({ name: '', email: '', password: '' });
+  const [isRegister, setIsRegister] = useState(false);
+  const [donRest, setDonRest] = useState('');
+  const [donQty, setDonQty] = useState(1);
+  const [donMethod, setDonMethod] = useState('JazzCash');
+  const [checkout, setCheckout] = useState(null);
+  const [testMobile, setTestMobile] = useState('');
+  const [mine, setMine] = useState([]);
+  const [notifs, setNotifs] = useState([]);
+  const [adminData, setAdminData] = useState(null);
+  const [report, setReport] = useState(null);
+  const [staffForm, setStaffForm] = useState({ name: '', email: '', password: '', restaurant_id: '' });
+  const [newRest, setNewRest] = useState({ name: '', area: '', meal: '', timings: '', meal_price_pkr: '' });
+  const [priceEdit, setPriceEdit] = useState({ id: '', price: '' });
+  const [reqForm, setReqForm] = useState({ name: '', area: '', meal: '', timings: '', contact_name: '', contact_phone: '' });
+  // Restaurant owner team
+  const [team, setTeam] = useState(null);
+  const [ownerForm, setOwnerForm] = useState({ name: '', email: '', password: '', staffRole: 'Counter' });
+  const t = T[lang];
+
+  const api = async (path, opts = {}) => {
+    const res = await fetch(API + path, { ...opts, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}), ...(opts.headers || {}) } });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  };
+
+  const load = async () => {
+    try {
+      setStats(await api('/stats'));
+      setRestaurants(await api('/restaurants'));
+      setBoard(await api('/leaderboard'));
+      setActivity(await api('/activity'));
+      setMostNeeded(await api('/restaurants/most-needed').catch(() => null));
+      if (token) {
+        const me = await api('/me'); setUser(me.user);
+        setMine(await api('/donations/mine').catch(() => []));
+        setNotifs(await api('/notifications/mine').catch(() => []));
+      }
+    } catch (e) { if (!String(e.message).includes('Login')) setMsg(fmt(t.backendErr, { e: e.message })); }
+  };
+  useEffect(() => { load(); }, [token]);
+
+  const loadAdmin = async () => {
+    try {
+      setAdminData({
+        overview: await api('/admin/overview'),
+        all: await api('/restaurants/all'),
+        users: await api('/admin/users'),
+        requests: await api('/admin/requests'),
+      });
+      // Graphs load with the page (admin only) — no extra button needed.
+      setReport(await api('/admin/report').catch(() => null));
+    } catch (e) { setMsg(e.message); }
+  };
+  useEffect(() => { if (page === 'admin' && user?.role === 'admin') loadAdmin(); }, [page, user]);
+  useEffect(() => { if (page === 'transparency') api('/transparency').then(setTransparency).catch(() => {}); }, [page]);
+
+  const loadTeam = async () => {
+    try { setTeam(await api('/restaurant/staff')); } catch (e) { setMsg(e.message); }
+  };
+  useEffect(() => { if (page === 'restaurant' && user?.role === 'owner') loadTeam(); }, [page, user]);
+
+  const go = (p) => { setPage(p); setMsg(''); setMenuOpen(false); window.scrollTo(0, 0); };
+  const dashPage = (u) => (u.role === 'admin' ? 'admin' : u.role === 'staff' ? 'staff' : u.role === 'owner' ? 'restaurant' : 'mine');
+  const doAuth = async () => {
+    try {
+      const data = await api(isRegister ? '/auth/register' : '/auth/login', { method: 'POST', body: JSON.stringify(authForm) });
+      localStorage.setItem('pifm_token', data.token); setToken(data.token); setUser(data.user);
+      setMsg(fmt(t.welcome, { n: data.user.name, r: data.user.role }));
+      go(dashPage(data.user));
+    } catch (e) { setMsg(e.message); }
+  };
+  const printReceipt = (d) => {
+    const rest = restaurants.find((r) => r.id === d.restaurant_id);
+    const price = rest?.meal_price_pkr || 250;
+    const amount = d.amount_pkr || (d.quantity * price);
+    const donorName = user?.show_name === 0 ? t.anon : (user?.name || 'Donor');
+    const w = window.open('', '_blank', 'width=600,height=700');
+    if (!w) { setMsg(t.popups); return; }
+    w.document.write(`<html><head><title>${t.receiptTitle}</title></head><body style="font-family: sans-serif; max-width: 520px; margin: 30px auto; color: #111;"><h2>${t.receiptTitle}</h2><p>${t.schoolLine}</p><hr /><p><b>${t.receiptDonor}</b> ${donorName}</p><p><b>${t.receiptRest}</b> ${d.restaurantName}</p><p><b>${t.receiptMeals}</b> ${d.quantity}</p><p><b>${t.receiptServed}</b> ${d.served_qty}/${d.quantity}</p><p><b>${t.receiptAmount}</b> Rs ${amount}</p><p><b>${t.receiptMethod}</b> ${d.method} • <b>${t.receiptStatus}</b> ${d.payment_status}</p>${d.txn_ref ? `<p><b>${t.receiptTxn}</b> ${d.txn_ref}</p>` : ''}<p><b>${t.receiptDate}</b> ${d.created_at || ''}</p><hr /><p><small>${t.receiptNote}</small></p></body></html>`);
+    w.document.close(); w.focus(); w.print();
+  };
+  const logout = () => { localStorage.removeItem('pifm_token'); setToken(''); setUser(null); setTeam(null); go('home'); };
+
+  const doDonate = async () => {
+    try {
+      const r = await api('/payments/initiate', { method: 'POST', body: JSON.stringify({ restaurantId: donRest, quantity: donQty, method: donMethod }) });
+      setCheckout(r.checkout); setMsg(t.pendingMsg);
+    } catch (e) { setMsg(e.message); }
+  };
+  const doSandboxPay = async () => {
+    try {
+      const r = await api('/payments/sandbox/confirm', { method: 'POST', body: JSON.stringify({ txnRef: checkout.txnRef }) });
+      setStats(r.stats); setCheckout(null);
+      setMine(await api('/donations/mine')); setRestaurants(await api('/restaurants'));
+      setMsg(fmt(t.paidMsg, { n: checkout.amountPkr }));
+      go('mine');
+    } catch (e) { setMsg(e.message); }
+  };
+  const doSandboxCancel = async () => {
+    try { await api('/payments/sandbox/cancel', { method: 'POST', body: JSON.stringify({ txnRef: checkout.txnRef }) }); } catch {}
+    setCheckout(null); setMsg(t.cancelMsg);
+  };
+  const doServe = async () => {
+    try {
+      const r = await api('/serve', { method: 'POST', body: JSON.stringify({ restaurantId: user?.role === 'admin' ? restaurants[0]?.id : undefined }) });
+      setStats(r.stats); setRestaurants(await api('/restaurants'));
+      setMsg(fmt(t.servedMsg, { a: r.restaurant.available, s: r.restaurant.served }));
+    } catch (e) { setMsg(e.message); }
+  };
+  const doAddStaff = async () => {
+    try {
+      await api('/restaurant/staff', { method: 'POST', body: JSON.stringify(ownerForm) });
+      setOwnerForm({ name: '', email: '', password: '', staffRole: 'Counter' });
+      setMsg(t.staffAdded); loadTeam();
+    } catch (e) { setMsg(e.message || t.staffAddFail); }
+  };
+  const doRemoveStaff = async (id) => {
+    try { await api(`/restaurant/staff/${id}`, { method: 'DELETE' }); setMsg(t.staffRemoved); loadTeam(); } catch (e) { setMsg(e.message); }
+  };
+
+  const areas = [t.allAreas, ...new Set(restaurants.map((r) => r.area))];
+  const shown = restaurants.filter((r) => (filter === t.allAreas || r.area === filter) && (!onlyAvailable || r.available > 0));
+  const myRest = restaurants.find((r) => r.id === user?.restaurant_id);
+  const myDonated = mine.reduce((s, d) => s + d.quantity, 0);
+  const myServed = mine.reduce((s, d) => s + (d.served_qty || 0), 0);
+  const dailyOk = stats ? stats.donated - stats.served === stats.available : false;
+  const selRest = restaurants.find((r) => String(r.id) === String(donRest));
+
+  return (
+    <div dir={lang === 'en' ? 'ltr' : 'rtl'}>
+      <header>
+        <div className="wrap">
+        <div className="brand"><LogoMark /><div><p className="brand-sub">{t.schoolLine}</p></div></div>
+        <div className="lang">
+          {['en', 'ur', 'sd'].map((l) => (<button key={l} className={lang === l ? 'active' : ''} onClick={() => setLang(l)}>{l === 'en' ? 'EN' : l === 'ur' ? 'اردو' : 'سنڌي'}</button>))}
+          {' '}
+          {user ? <button className="btn tomato" onClick={() => go(dashPage(user))}>{t.dashboard}</button> : <button className="btn tomato" onClick={() => go('auth')}>{t.login}</button>}
+        </div>
+        <button className="menu-btn" aria-label={t.menu} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? '✕' : '☰'}</button>
+        </div>
+      </header>
+
+      <nav className={menuOpen ? 'nav-open' : ''}>
+        <div className="wrap navwrap">
+        {['home', 'finder', 'donate', 'board', 'transparency'].map((p) => (
+          <button key={p} className={page === p ? 'active' : ''} onClick={() => go(p)}>{t[p]}</button>
+        ))}
+        {user && <span className="muted">👤 {user.name} ({user.role}){myRest ? ` • ${myRest.name}` : ''}</span>}
+        </div>
+      </nav>
+
+      <main>
+        {msg && <div className="success">{msg}</div>}
+
+        {page === 'home' && (
+          <>
+            <div className="hero">
+              <div>
+                <p><span className="eyebrow">{t.eyebrow}</span></p>
+                <p className="muted" style={{ margin: '0 0 4px', fontSize: 13, fontWeight: 700 }}>{t.schoolLine}</p>
+                <h2>{t.heroHead1} <span className="hl">{t.heroHead2}</span></h2>
+                <p className="lead">{t.heroLead}</p>
+                <p className="muted">{t.oldLine}</p>
+                <p><button className="btn tomato" onClick={() => go('donate')}>{t.donateBtn}</button>{' '}<button className="btn turmeric" onClick={() => go('finder')}>{t.findBtn}</button></p>
+                <p className="muted">{t.needLine}</p>
+                {stats && (<p>{stats.available > 0 ? (<><b>🍽️ {fmt(t.availLine, { n: stats.available })}</b></>) : (<><b>{t.noAvailLine}</b></>)}</p>)}
+              </div>
+              <div className="hero-art">
+                <img src="/hero-cartoon.webp" alt={t.heroHead1 + ' ' + t.heroHead2} />
+                <div className="glass-chip chip-left"><b>✅</b>{t.servedChip}</div>
+                <div className="glass-chip amber chip-right"><b>{stats ? stats.available : 0}</b>{fmt(t.availChip, { n: stats ? stats.available : 0 })}</div>
+              </div>
+            </div>
+            <div className="card dashcard">
+              <h3>{t.liveDash}</h3>
+              <p className="muted">{t.liveNote}</p>
+              {stats && (<div className="dash"><div><b>{stats.donated}</b><span>{t.donated}</span></div><div><b>{stats.served}</b><span>{t.served}</span></div><div><b>{stats.available}</b><span>{t.available}</span></div></div>)}
+              {stats && (<div style={{ marginTop: 12 }}><p style={{ margin: '0 0 6px' }}><b>{fmt(t.goal, { n: stats.donated, g: PILOT_DONATION_GOAL })}</b></p><div style={{ background: '#e5e7eb', borderRadius: 999, height: 14, overflow: 'hidden' }}><div style={{ width: Math.min(100, Math.round((stats.donated / PILOT_DONATION_GOAL) * 100)) + '%', background: '#f4c35e', height: '100%' }} /></div><p className="muted" style={{ margin: '6px 0 0' }}>{fmt(t.goalPct, { p: Math.min(100, Math.round((stats.donated / PILOT_DONATION_GOAL) * 100)) })} • {fmt(t.goalServed, { n: stats.served })}{stats.donated >= PILOT_DONATION_GOAL ? ' • ' + t.goalReached : ''}</p></div>)}
+              <h3 style={{ marginTop: 18 }}>{t.byRest}</h3>
+              {restaurants.filter((r) => r.available > 0).map((r) => (<p key={r.id}>{r.name} <span className="badge" style={{ float: 'right' }}>{r.available} {t.available}</span></p>))}
+              {restaurants.filter((r) => r.available > 0).length === 0 && <p className="muted">{t.noRest}</p>}
+            </div>
+            <h3>{t.howTitle}</h3>
+            <div className="grid3">
+              <div className="card tilt"><div className="step-num">1</div><h3>{t.step1t}</h3><p>{t.step1d}</p></div>
+              <div className="card tilt"><div className="step-num">2</div><h3>{t.step2t}</h3><p>{t.step2d}</p></div>
+              <div className="card tilt"><div className="step-num">3</div><h3>{t.step3t}</h3><p>{t.step3d}</p></div>
+            </div>
+            <p className="muted" style={{ marginTop: 18 }}>{t.trust1} • {t.trust2} • {t.trust3}</p>
+            {restaurants.some((r) => r.available <= 1) && (<div className="notice">⚠️ {t.urgent} {restaurants.filter((r) => r.available <= 1).map((r) => `${r.name} — ${fmt(t.mealsLeft, { n: r.available })}`).join(' • ')}</div>)}
+            <p><button className="btn tomato" onClick={() => { if (mostNeeded) { setDonRest(String(mostNeeded.id)); } go('donate'); }}>{mostNeeded ? fmt(t.giveMostName, { n: mostNeeded.name }) : t.giveMost}</button></p>
+            <div className="partner-banner"><div><h3>{t.partnerTitle}</h3><p>{t.partnerText}</p></div><button className="btn turmeric" onClick={() => go('request')}>{t.partnerBtn}</button></div>
+            <div className="card"><h3>{t.activityTitle}</h3>
+              {activity.slice(0, 6).map((a, i) => (<p key={i}>{a.type === 'served' ? t.activityServed : fmt(t.activityDonated, { n: a.donor, q: a.qty })} {fmt(t.activityAt, { n: a.restaurant })}</p>))}
+              {activity.length === 0 && <p className="muted">{t.activityNone}</p>}
+            </div>
+          </>
+        )}
+
+        {page === 'finder' && (
+          <div>
+            <h2>{t.finderTitle}</h2>
+            <div className="card" style={{ background: '#dcf5ec' }}><b>{t.finderNote}</b></div>
+            <label>{t.finderArea}</label>
+            <select value={filter} onChange={(e) => setFilter(e.target.value)}>{areas.map((a) => (<option key={a}>{a}</option>))}</select>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px', cursor: 'pointer' }}><input type="checkbox" checked={onlyAvailable} onChange={(e) => setOnlyAvailable(e.target.checked)} /> {t.finderOnly}</label>
+            <div className="grid3">
+              {shown.map((r) => (
+                <div className="card" key={r.id}>
+                  <h3>{r.name} <span className={r.available <= 1 ? 'badge warn' : 'badge'} style={{ float: 'right' }}>{r.available <= 1 ? fmt(t.finderUrgent, { n: r.available }) : fmt(t.finderMeals, { n: r.available })}</span></h3>
+                  <p>{r.area} • {r.meal}<br />{r.timings} • {fmt(t.finderPerMeal, { n: r.meal_price_pkr || 250 })}</p>
+                  <p className="muted">{fmt(t.finderServed, { n: r.served })}</p>
+                </div>
+              ))}
+            </div>
+            {shown.length === 0 && <p>{onlyAvailable ? t.finderEmptyAvail : t.finderEmptyArea}</p>}
+            <p className="muted">{t.finderNoLogin}</p>
+          </div>
+        )}
+
+        {page === 'donate' && (
+          <div className="grid">
+            <div className="card">
+              <h2>{t.donateTitle}</h2>
+              {!user && <p className="notice" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}><span>{t.donateLoginFirst}</span><button className="btn small tomato" onClick={() => go('auth')}>{t.login}</button></p>}
+              <p><button className="btn small turmeric" onClick={() => { if (mostNeeded) { setDonRest(String(mostNeeded.id)); setMsg(fmt(t.donateMostName, { n: mostNeeded.name, m: mostNeeded.available })); } }}>{mostNeeded ? fmt(t.donateMostName, { n: mostNeeded.name, m: mostNeeded.available }) : t.donateMost}</button></p>
+              <label>{t.donateRest}</label>
+              <select value={donRest} onChange={(e) => setDonRest(e.target.value)}><option value="">{t.donateChoose}</option>{restaurants.map((r) => (<option key={r.id} value={r.id}>{r.name} ({r.area}) — Rs {r.meal_price_pkr || 250}/{t.donateVerified}</option>))}</select>
+              <label>{t.donateQty}</label>
+              <div className="qty">{[1, 2, 5].map((n) => (<button key={n} className={donQty === n ? 'active' : ''} onClick={() => setDonQty(n)}>{n}</button>))}
+                <input type="number" min="1" max="10" value={donQty} onChange={(e) => setDonQty(parseInt(e.target.value, 10) || 1)} style={{ width: 90 }} /> <span className="muted">{t.donateCustom}</span></div>
+              <label>{t.donateMethod}</label>
+              <div className="method">{[{ name: 'JazzCash', icon: '📱', sub: t.methodWallet }, { name: 'Easypaisa', icon: '💚', sub: t.methodWallet }, { name: 'Card', icon: '💳', sub: t.methodCard }].map((m) => (<button key={m.name} className={donMethod === m.name ? 'active' : ''} onClick={() => setDonMethod(m.name)}><span>{m.icon} {m.name}{donMethod === m.name ? ' ✓' : ''}</span><small>{m.sub}</small></button>))}</div>
+            </div>
+            <div className="card dark-panel">
+              <h3>{t.summary}</h3>
+              {donRest && selRest ? (<p>{t.summaryMeals} <b>{donQty}</b> • {t.summaryMethod} <b>{donMethod}</b> • {t.summaryPrice} <b>Rs {donQty * (selRest.meal_price_pkr || 250)}</b> (Rs {selRest.meal_price_pkr || 250} {fmt(t.summaryPerMeal, { n: selRest.name })})</p>) : (<p className="muted">{t.summaryChoose}</p>)}
+              <p className="notice">{t.testMode}</p>
+              <button className="btn tomato" disabled={!user || !donRest} onClick={doDonate}>{t.continueBtn}</button>
+              <p className="muted">{t.statusNote}</p>
+              {checkout && (
+                <div className="card" style={{ background: '#fef3c7' }}>
+                  <h3>{fmt(t.sandboxTitle, { n: checkout.gateway })}</h3>
+                  <p>{fmt(t.sandboxPay, { n: checkout.amountPkr, q: donQty })} • {t.sandboxTxn} <b>{checkout.txnRef}</b></p>
+                  <p className="muted">{t.sandboxNote}</p>
+                  <label>{t.sandboxMobile}</label>
+                  <input value={testMobile} onChange={(e) => setTestMobile(e.target.value)} placeholder="03XX-XXXXXXX" />
+                  <button className="btn tomato" onClick={doSandboxPay}>{fmt(t.sandboxPayBtn, { n: checkout.amountPkr })}</button>{' '}
+                  <button className="btn outline" onClick={doSandboxCancel}>{t.sandboxCancel}</button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {page === 'mine' && (
+          <div>
+            <h2>{t.mineTitle}</h2>
+            {user && <p><button className="btn small outline" onClick={logout}>{t.logout}</button> <span className="muted">{fmt(t.signedIn, { n: user.name, r: user.role })}</span></p>}
+            {!user && <p className="notice">{t.mineLogin}</p>}
+            {user && (<>
+              <div className="stats"><div className="stat"><b>{myDonated}</b>{t.mineDonated}</div><div className="stat orange"><b>{myServed}</b>{t.mineServed}</div><div className="stat"><b>{myDonated - myServed}</b>{t.mineAvail}</div></div>
+              <p><b>{t.yourBadge}</b> {badgeFor(t, myServed)}</p>
+              <p><label><input type="checkbox" style={{ width: 'auto' }} checked={user.show_name !== 0} onChange={async (e) => { const data = await api('/me/privacy', { method: 'POST', body: JSON.stringify({ showName: e.target.checked }) }); setUser(data.user); load(); }} /> {t.privacy}</label></p>
+              <div className="card"><h3>{t.donationsTitle}</h3>{mine.map((d) => (<p key={d.id}>{fmt(t.mealsAt, { q: d.quantity, n: d.restaurantName })} • {fmt(t.servedOf, { s: d.served_qty, q: d.quantity })} • {d.method} • {d.payment_status}{d.txn_ref ? ` • ${d.txn_ref}` : ''} <button className="btn small outline" onClick={() => printReceipt(d)}>{t.printReceipt}</button></p>))}{mine.length === 0 && <p className="muted">{t.noDonations}</p>}</div>
+              <div className="card"><h3>{t.messagesTitle}</h3>{notifs.map((n) => (<div className="notif" key={n.id}>{n.message} <button className="btn small outline" onClick={async () => { await api(`/notifications/${n.id}/read`, { method: 'POST' }); setNotifs(await api('/notifications/mine')); }}>{t.markRead}</button> {n.is_read ? t.readMark : ''}</div>))}{notifs.length === 0 && <p className="muted">{t.noMessages}</p>}</div>
+            </>)}
+          </div>
+        )}
+
+        {page === 'staff' && (
+          <div className="card" style={{ maxWidth: 620, margin: '14px auto' }}>
+            <h2>{t.staffTitle} — {myRest ? myRest.name : t.staffNoRest}</h2>
+            {user && <p><button className="btn small outline" onClick={logout}>{t.logout}</button> <span className="muted">{fmt(t.signedIn, { n: user.name, r: user.role })}</span></p>}
+            {(!user || (user.role !== 'staff' && user.role !== 'admin')) && <p className="notice">{t.staffLogin}</p>}
+            {user && (user.role === 'staff' || user.role === 'admin') && (<>
+              <p className="muted" style={{ textAlign: 'center' }}>{t.staffAvail}</p>
+              <div className="big-number">{myRest ? myRest.available : (restaurants[0]?.available ?? 0)}</div>
+              <button className="btn teal-lg" onClick={doServe}>{t.serveBtn}</button>
+              <div className="grid" style={{ marginTop: 14 }}>
+                <div className="card"><span className="muted">{t.servedTotal}</span><div><b style={{ fontSize: 30, color: '#2e9e6b' }}>{myRest ? myRest.served : (restaurants[0]?.served ?? 0)}</b></div></div>
+                <div className="card"><span className="muted">{t.restLabel}</span><div><b>{myRest ? myRest.name : restaurants[0]?.name}</b></div></div>
+              </div>
+              <p className="muted">{t.serveNote}</p>
+            </>)}
+          </div>
+        )}
+
+        {page === 'restaurant' && (
+          <div>
+            <h2>{t.restTitle}</h2>
+            {user && <p><button className="btn small outline" onClick={logout}>{t.logout}</button> <span className="muted">{fmt(t.signedIn, { n: user.name, r: user.role })}</span></p>}
+            {(!user || user.role !== 'owner') && <p className="notice">{t.restLogin}</p>}
+            {user?.role === 'owner' && (<>
+              <div className="grid">
+                <div className="card"><h3>{t.teamTitle} {team ? `• ${fmt(t.teamMembers, { n: team.staff.length })}` : ''}</h3>
+                  <p className="muted">{team?.restaurant ? `${team.restaurant.name} — ${team.restaurant.area}` : ''}</p>
+                  {team?.staff.map((s) => (<p key={s.id}><b>{s.name}</b> — {s.email} <span className="badge">{s.staff_role || t.roleCounter}</span> <span className="badge">● {t.active}</span> <button className="btn small danger" onClick={() => doRemoveStaff(s.id)}>{t.removeBtn}</button></p>))}
+                  {team && team.staff.length === 0 && <p className="muted">{t.teamNone}</p>}
+                  {!team && <p className="muted">{t.adminLoading}</p>}
+                </div>
+                <div className="card"><h3>{t.addStaffTitle}</h3>
+                  <p className="muted">{t.addStaffNote}</p>
+                  <label>{t.fullName}</label><input value={ownerForm.name} onChange={(e) => setOwnerForm({ ...ownerForm, name: e.target.value })} placeholder="e.g. Fatima Noor" />
+                  <label>{t.phoneEmail}</label><input value={ownerForm.email} onChange={(e) => setOwnerForm({ ...ownerForm, email: e.target.value })} placeholder="name@example.com" />
+                  <label>{t.password}</label><input type="password" value={ownerForm.password} onChange={(e) => setOwnerForm({ ...ownerForm, password: e.target.value })} />
+                  <label>{t.roleLabel}</label>
+                  <select value={ownerForm.staffRole} onChange={(e) => setOwnerForm({ ...ownerForm, staffRole: e.target.value })}>
+                    <option value="Counter">{t.roleCounter}</option><option value="Kitchen">{t.roleKitchen}</option><option value="Manager">{t.roleManager}</option>
+                  </select>
+                  <button className="btn tomato" onClick={doAddStaff}>{t.addBtn}</button>
+                </div>
+              </div>
+              <div className="card"><h3>{t.permTitle}</h3>
+                <p>👑 <b>{t.roleOwner}</b> — {t.permOwner}</p>
+                <p>🧑‍💼 <b>{t.roleManager}</b> — {t.permManager}</p>
+                <p>🧾 <b>{t.roleCounter}</b> — {t.permCounter}</p>
+                <p>👨‍🍳 <b>{t.roleKitchen}</b> — {t.permKitchen}</p>
+              </div>
+            </>)}
+          </div>
+        )}
+
+        {page === 'admin' && (
+          <div>
+            <h2>{t.adminTitle}</h2>
+            {user?.role === 'admin' && <p><button className="btn small outline" onClick={logout}>{t.logout}</button> <span className="muted">{fmt(t.signedIn, { n: user.name, r: 'admin' })}</span></p>}
+            {(!user || user.role !== 'admin') && <p className="notice">{t.adminLogin}</p>}
+            {user?.role === 'admin' && !adminData && <p className="muted">{t.adminLoading}</p>}
+            {user?.role === 'admin' && adminData && (<>
+              <div className="grid3">
+                <div className="card"><h3>{t.dailyTitle}</h3><p>{t.dailyText}</p><p>{stats.donated} − {stats.served} <span className={dailyOk ? 'badge' : 'badge warn'}>= {stats.available}, {dailyOk ? t.matches : t.mismatch}</span></p><p className="muted">{fmt(t.overviewLine, { u: adminData.overview.users, d: adminData.overview.donations, p: adminData.overview.pendingRequests })}</p></div>
+                <div className="card"><h3>{t.verifyTitle}</h3>{adminData.all.filter((r) => !r.verified).map((r) => (<p key={r.id}>{r.name} — {r.area} <button className="btn small tomato" onClick={async () => { await api('/admin/verify', { method: 'POST', body: JSON.stringify({ restaurantId: r.id }) }); loadAdmin(); load(); }}>{t.verifyBtn}</button></p>))}{adminData.all.filter((r) => !r.verified).length === 0 && <p className="muted">{fmt(t.noUnverified, { n: adminData.all.length })}</p>}</div>
+                <div className="card"><h3>{t.reqTitle}</h3>{adminData.requests.map((q) => (<p key={q.id}>{q.name} — {q.area} ({q.status}) {q.status === 'pending' && (<><button onClick={async () => { await api(`/admin/requests/${q.id}/approve`, { method: 'POST' }); loadAdmin(); load(); }}>{t.approveBtn}</button>{' '}<button onClick={async () => { await api(`/admin/requests/${q.id}/reject`, { method: 'POST' }); loadAdmin(); }}>{t.rejectBtn}</button></>)}</p>))}{adminData.requests.length === 0 && <p className="muted">{t.noReq}</p>}</div>
+              </div>
+              {report && report.daily && (
+                <div className="card"><h3>{t.gTitle}</h3>
+                  <p className="muted">{t.gNote}</p>
+                  <div className="chart-tiles">
+                    <div className="chart-tile"><b>{stats.donated}</b><span>{t.donated}</span></div>
+                    <div className="chart-tile"><b>{stats.served}</b><span>{t.served}</span></div>
+                    <div className="chart-tile"><b>{stats.available}</b><span>{t.available}</span></div>
+                    <div className="chart-tile"><b>{stats.donated ? Math.round((stats.served / stats.donated) * 100) : 0}%</b><span>{t.gServedPct}</span></div>
+                  </div>
+                  <h3 style={{ marginTop: 18 }}>{t.gDaily}</h3>
+                  <p className="muted"><span style={{ color: '#b97f1e' }}>■</span> {t.gDonated} &nbsp; <span style={{ color: '#2E9E6B' }}>■</span> {t.gServed}</p>
+                  <DailyBars daily={report.daily} />
+                  <h3 style={{ marginTop: 18 }}>{t.gAvail}</h3>
+                  {report.rows.map((r) => (
+                    <div className="chart-bar-row" key={r.id}>
+                      <span className="lbl">{r.name}</span>
+                      <div className="chart-bar-track"><div className="chart-bar-fill" style={{ width: Math.min(100, (r.available / Math.max(1, ...report.rows.map((x) => x.available))) * 100) + '%' }} /></div>
+                      <b>{r.available}</b>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="card"><h3>{t.weeklyTitle}</h3>
+                <p className="muted">{t.weeklyNote}</p>
+                <button className="btn tomato" onClick={async () => { try { setReport(await api('/admin/report')); } catch (e) { setMsg(e.message); } }}>{t.loadReport}</button>{' '}
+                {report && (<button className="btn outline" onClick={() => { const rows = [['Restaurant', 'Area', 'Donated (last 7 days)', 'Served (last 7 days)', 'Available now', 'Served total']]; report.rows.forEach((r) => rows.push([r.name, r.area, r.donated7, r.served7, r.available, r.servedTotal])); rows.push(['TOTAL', '', report.totals.donated7, report.totals.served7, report.totals.available, report.totals.servedTotal]); const csv = rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n'); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'pay-it-forward-weekly-report.csv'; a.click(); }}>{t.downloadCsv}</button>)}
+                {report && (<div style={{ marginTop: 12 }}>{report.rows.map((r) => (<p key={r.id}>{fmt(t.weeklyRow, { n: r.name, d: r.donated7, s: r.served7, a: r.available, t: r.servedTotal })}</p>))}<p><b>{fmt(t.weeklyTotal, { d: report.totals.donated7, s: report.totals.served7, a: report.totals.available })}</b></p></div>)}
+              </div>
+              <div className="card"><h3>{t.pricesTitle}</h3>
+                {adminData.all.map((r) => (<p key={r.id}>{r.name} — {fmt(t.pricePerMeal, { n: r.meal_price_pkr || 250 })} {r.verified ? '' : t.unverified}</p>))}
+                <label>{t.restLabel}</label><select value={priceEdit.id} onChange={(e) => setPriceEdit({ ...priceEdit, id: e.target.value })}><option value="">{t.chooseRest}</option>{adminData.all.map((r) => (<option key={r.id} value={r.id}>{r.name}</option>))}</select>
+                <label>{t.newPrice}</label><input type="number" min="50" max="2000" value={priceEdit.price} onChange={(e) => setPriceEdit({ ...priceEdit, price: e.target.value })} />
+                <button className="btn tomato" onClick={async () => { try { await api(`/admin/restaurants/${priceEdit.id}/price`, { method: 'POST', body: JSON.stringify({ mealPricePkr: priceEdit.price }) }); setMsg(t.priceSaved); loadAdmin(); load(); } catch (e) { setMsg(e.message); } }}>{t.savePrice}</button>
+              </div>
+              <div className="grid">
+                <div className="card"><h3>{t.createStaffTitle}</h3>
+                  <label>{t.fullName}</label><input value={staffForm.name} onChange={(e) => setStaffForm({ ...staffForm, name: e.target.value })} />
+                  <label>{t.phoneEmail}</label><input value={staffForm.email} onChange={(e) => setStaffForm({ ...staffForm, email: e.target.value })} />
+                  <label>{t.password}</label><input type="password" value={staffForm.password} onChange={(e) => setStaffForm({ ...staffForm, password: e.target.value })} />
+                  <label>{t.roleRestLabel}</label>
+                  <select value={staffForm.restaurant_id} onChange={(e) => setStaffForm({ ...staffForm, restaurant_id: e.target.value })}><option value="">{t.chooseRest}</option>{adminData.all.map((r) => (<option key={r.id} value={r.id}>{r.name}</option>))}</select>
+                  <button className="btn tomato" onClick={async () => { try { await api('/admin/users', { method: 'POST', body: JSON.stringify({ ...staffForm, role: 'staff' }) }); setMsg(t.staffCreated); loadAdmin(); } catch (e) { setMsg(e.message); } }}>{t.createStaffBtn}</button>
+                  <p className="muted">{fmt(t.usersOnFile, { n: adminData.users.map((u) => `${u.name} (${u.role})`).join(', ') })}</p>
+                </div>
+                <div className="card"><h3>{t.addRestTitle}</h3>
+                  <label>{t.restName}</label><input value={newRest.name} onChange={(e) => setNewRest({ ...newRest, name: e.target.value })} />
+                  <label>{t.restArea}</label><input value={newRest.area} onChange={(e) => setNewRest({ ...newRest, area: e.target.value })} />
+                  <label>{t.restMeal}</label><input value={newRest.meal} onChange={(e) => setNewRest({ ...newRest, meal: e.target.value })} />
+                  <label>{t.restTimings}</label><input value={newRest.timings} onChange={(e) => setNewRest({ ...newRest, timings: e.target.value })} />
+                  <label>{t.mealPrice}</label><input type="number" min="50" max="2000" value={newRest.meal_price_pkr || ''} onChange={(e) => setNewRest({ ...newRest, meal_price_pkr: e.target.value })} placeholder="250" />
+                  <button className="btn tomato" onClick={async () => { try { await api('/admin/restaurant', { method: 'POST', body: JSON.stringify({ ...newRest, contact_person: '' }) }); setMsg(t.restAdded); loadAdmin(); load(); } catch (e) { setMsg(e.message); } }}>{t.addRestBtn}</button>
+                </div>
+              </div>
+            </>)}
+          </div>
+        )}
+
+        {page === 'board' && (
+          <div className="grid">
+            <div className="card"><h3>{t.boardDonors}</h3>{board?.donors.map((d, i) => (<p key={i}>{i + 1}. {d.name} — {fmt(t.boardDonated, { d: d.donated, s: d.served })} • {badgeFor(t, d.served)}</p>))}{!board?.donors.length && <p className="muted">{t.noDonors}</p>}</div>
+            <div className="card"><h3>{t.boardRest}</h3>{board?.restaurants.map((r, i) => (<p key={r.id}>{i + 1}. {r.name} — {r.area} • {r.served} {t.served}, {r.available} {t.available}</p>))}</div>
+          </div>
+        )}
+
+        {page === 'transparency' && (
+          <div>
+            <h2>{t.transTitle}</h2>
+            <p className="muted">{t.transNote}</p>
+            <div className="card">{transparency.map((a, i) => (<p key={i}>{a.kind === 'served' ? t.transServed : fmt(t.transDonated, { n: a.donor, q: a.qty })} {fmt(t.transAt, { n: a.restaurant })}{a.amount ? ` — Rs ${a.amount}` : ''}{a.txn ? ` • ${a.txn}` : ''} <span className="muted">({a.at})</span></p>))}{transparency.length === 0 && <p className="muted">{t.transNone}</p>}</div>
+          </div>
+        )}
+
+        {page === 'request' && (
+          <div className="card" style={{ maxWidth: 620, margin: '14px auto' }}>
+            <h2>{t.joinTitle}</h2>
+            <p className="muted">{t.joinNote}</p>
+            <label>{t.restName}</label><input value={reqForm.name} onChange={(e) => setReqForm({ ...reqForm, name: e.target.value })} />
+            <label>{t.restArea}</label><input value={reqForm.area} onChange={(e) => setReqForm({ ...reqForm, area: e.target.value })} />
+            <label>{t.restMeal}</label><input value={reqForm.meal} onChange={(e) => setReqForm({ ...reqForm, meal: e.target.value })} />
+            <label>{t.restTimings}</label><input value={reqForm.timings} onChange={(e) => setReqForm({ ...reqForm, timings: e.target.value })} />
+            <label>{t.contactLabel}</label><input value={reqForm.contact_name} onChange={(e) => setReqForm({ ...reqForm, contact_name: e.target.value })} /><input value={reqForm.contact_phone} onChange={(e) => setReqForm({ ...reqForm, contact_phone: e.target.value })} />
+            <button className="btn tomato" onClick={async () => { try { await api('/restaurants/request', { method: 'POST', body: JSON.stringify(reqForm) }); setMsg(t.joinSent); } catch (e) { setMsg(e.message); } }}>{t.sendBtn}</button>
+          </div>
+        )}
+
+        {page === 'auth' && (
+          <div className="card" style={{ maxWidth: 520, margin: '14px auto' }}>
+            <h2>{t.authTitle}</h2>
+            <p className="muted">{t.authNote}</p>
+            {isRegister && (<><label>{t.authName}</label><input value={authForm.name} onChange={(e) => setAuthForm({ ...authForm, name: e.target.value })} /></>)}
+            <label>{t.authEmail}</label><input value={authForm.email} onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })} />
+            <label>{t.authPass}</label><input type="password" value={authForm.password} onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })} />
+            <button className="btn tomato" onClick={doAuth}>{isRegister ? t.createAccount : t.loginBtn}</button>{' '}
+            <button className="btn ghost" onClick={() => setIsRegister(!isRegister)}>{isRegister ? t.toLogin : t.toRegister}</button>
+            <p className="muted">{t.seedNote}</p>
+            <p className="muted">{t.ownerSeedNote}</p>
+          </div>
+        )}
+      </main>
+
+      <footer>
+        <div className="wrap">
+          <div><h3>Pay It Forward Meal</h3><p>{t.footerTag}</p></div>
+          <div><h3>{t.footerExplore}</h3><p><button className="btn ghost" style={{ color: '#ffe9a8' }} onClick={() => go('finder')}>{t.finder}</button><br /><button className="btn ghost" style={{ color: '#ffe9a8' }} onClick={() => go('donate')}>{t.donate}</button><br /><button className="btn ghost" style={{ color: '#ffe9a8' }} onClick={() => go('request')}>{t.request}</button></p></div>
+          <div><h3>{t.footerLang}</h3><p>EN • اردو • سنڌي</p><p>{t.schoolLine}</p></div>
+        </div>
+        <div className="foot-bottom"><p>{t.footerCopy}</p></div>
+      </footer>
+    </div>
+  );
+}
