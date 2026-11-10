@@ -13,8 +13,10 @@ h1, h2, h3 { font-family: 'Fredoka', 'Nunito', system-ui, sans-serif; font-weigh
 header { background: #0d2456; border-bottom: 3px solid #172428; padding: 14px 20px; }
 header h1 { margin: 0; font-size: 24px; color: #F4C35E; }
 header p { margin: 4px 0 0; color: #BCC9DB; font-size: 14px; }
-.logo { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(145deg, #41A577, #116A4D); color: #fff; font-size: 22px; border: 3px solid #172428; box-shadow: 3px 3px 0 #172428; }
+/* Header logo mark: inline SVG heart + plate (see LogoMark in App.jsx). */
+.logo-svg { width: 52px; height: 52px; flex-shrink: 0; filter: drop-shadow(3px 3px 0 #172428); }
 .brand { display: flex; align-items: center; gap: 10px; }
+.brand-sub { color: #BCC9DB; font-size: 14px; font-weight: 700; margin: 0; }
 
 .wrap { max-width: 1080px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
 .wrap.navwrap { justify-content: center; }
@@ -68,11 +70,16 @@ main { max-width: 1080px; margin: 0 auto; padding: 20px; }
 .chip-right { bottom: 10px; right: -6px; }
 @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
 
-/* Scrolling turmeric ticker strip under the hero */
-.ticker { background: #F4C35E; border: 3px solid #172428; border-radius: 999px; overflow: hidden; margin: 16px 0 4px; box-shadow: 4px 4px 0 #172428; }
-.ticker-track { display: inline-flex; white-space: nowrap; padding: 10px 0; font-weight: 900; color: #172428; letter-spacing: .04em; animation: tick 28s linear infinite; }
-.ticker-track span { padding: 0 10px; }
-@keyframes tick { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* Admin graph dashboard (admin only): summary tiles + bar charts */
+.chart-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 12px 0; }
+.chart-tile { background: #fff; border: 3px solid #172428; border-radius: 16px; padding: 12px; text-align: center; box-shadow: 3px 3px 0 #172428; }
+.chart-tile b { font-size: 30px; display: block; color: #0A1E4A; line-height: 1.1; }
+.chart-tile span { color: #6b7280; font-size: 13px; font-weight: 700; }
+.chart-bar-row { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+.chart-bar-row .lbl { width: 180px; font-weight: 700; flex-shrink: 0; }
+.chart-bar-track { flex: 1; background: #e5e7eb; border: 2px solid #172428; border-radius: 999px; height: 18px; overflow: hidden; }
+.chart-bar-fill { height: 100%; background: #2E9E6B; }
 
 /* Cards: warm cream, thick ink border, hard offset shadow */
 .dashcard { margin-top: 14px; position: relative; z-index: 2; }
@@ -82,9 +89,6 @@ main { max-width: 1080px; margin: 0 auto; padding: 20px; }
 .card.dark-panel h2, .card.dark-panel h3 { color: #F4EFE0; }
 .card.dark-panel .muted { color: #BCC9DB; }
 .trustbar { background: #dcf5ec; border: 3px solid #172428; border-radius: 16px; padding: 16px 18px; font-weight: 700; color: #14532d; }
-.trust-chips { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
-.trust-chips span { background: #dcf5ec; color: #14532d; border: 3px solid #172428; border-radius: 999px; padding: 8px 14px; font-weight: 800; font-size: 14px; box-shadow: 3px 3px 0 #172428; }
-
 .dash { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 12px 0; }
 .dash > div { background: #fff; border: 3px solid #172428; border-radius: 18px; padding: 14px; text-align: center; box-shadow: 3px 3px 0 #172428; }
 .dash b { font-size: 42px; color: #0A1E4A; display: block; }
@@ -150,7 +154,7 @@ footer a, footer button { color: #ffe9a8; }
   header .wrap { gap: 8px; }
   .brand { flex: 1 1 auto; min-width: 0; }
   .brand h1 { font-size: 20px; }
-  .logo { width: 36px; height: 36px; font-size: 18px; flex-shrink: 0; }
+  .logo-svg { width: 42px; height: 42px; }
   .brand-sub { display: none; }
   .menu-btn { display: inline-flex; flex-shrink: 0; }
   .lang { flex-wrap: wrap; }
@@ -185,6 +189,8 @@ footer a, footer button { color: #ffe9a8; }
   .qty button { min-width: 44px; height: 44px; }
   .hero p .btn { width: 100%; margin-bottom: 8px; }
   p > .btn { width: 100%; }
+  .chart-tiles { grid-template-columns: repeat(2, 1fr); }
+  .chart-bar-row .lbl { width: 110px; font-size: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }

@@ -95,6 +95,7 @@ const T = {
     loadReport: 'Load weekly report', downloadCsv: 'Download CSV',
     weeklyRow: '{n} — {d} donated, {s} served (last 7 days) • {a} available now • {t} served total',
     weeklyTotal: 'Total: {d} donated, {s} served (last 7 days) • {a} available now',
+    gTitle: 'Graphs — meals at a glance', gNote: 'Admin only. Counts only — no recipient data.', gDaily: 'Last 7 days — donated vs served', gAvail: 'Available meals per restaurant', gDonated: 'Donated', gServed: 'Served', gServedPct: 'Served %', gRestaurants: 'Restaurants',
     pricesTitle: 'Restaurant prices (per restaurant)', pricePerMeal: 'Rs {n}/meal', unverified: '(unverified)',
     chooseRest: 'Choose restaurant…', newPrice: 'New meal price (Rs 50–2000)', savePrice: 'Save price', priceSaved: 'Meal price updated.',
     createStaffTitle: 'Create staff / admin account', roleRestLabel: 'Role + linked restaurant (staff must have one)',
@@ -199,6 +200,7 @@ const T = {
     loadReport: 'ہفتہ وار رپورٹ لوڈ کریں', downloadCsv: 'CSV ڈاؤن لوڈ کریں',
     weeklyRow: '{n} — {d} عطیہ، {s} پیش شدہ (پچھلے 7 دن) • {a} ابھی دستیاب • {t} کل پیش شدہ',
     weeklyTotal: 'کل: {d} عطیہ، {s} پیش شدہ (پچھلے 7 دن) • {a} ابھی دستیاب',
+    gTitle: 'گراف — کھانوں کا جائزہ', gNote: 'صرف ایڈمن کے لیے۔ صرف تعداد — وصول کنندہ کا کوئی ڈیٹا نہیں۔', gDaily: 'آخری 7 دن — عطیہ بمقابلہ پیش کردہ', gAvail: 'ہر ریسٹورنٹ میں دستیاب کھانے', gDonated: 'عطیہ', gServed: 'پیش کردہ', gServedPct: 'پیش کردہ ٪', gRestaurants: 'ریسٹورنٹس',
     pricesTitle: 'ریسٹورنٹ کی قیمتیں (فی ریسٹورنٹ)', pricePerMeal: 'فی کھانا {n} روپے', unverified: '(غیر تصدیق شدہ)',
     chooseRest: 'ریسٹورنٹ منتخب کریں…', newPrice: 'کھانے کی نئی قیمت (50–2000 روپے)', savePrice: 'قیمت محفوظ کریں', priceSaved: 'کھانے کی قیمت اپ ڈیٹ ہو گئی۔',
     createStaffTitle: 'اسٹاف / ایڈمن اکاؤنٹ بنائیں', roleRestLabel: 'کردار + منسلک ریسٹورنٹ (اسٹاف کے لیے ضروری)',
@@ -303,6 +305,7 @@ const T = {
     loadReport: 'هفتيوار رپورٽ لوڊ ڪريو', downloadCsv: 'CSV ڊائون لوڊ ڪريو',
     weeklyRow: '{n} — {d} عطيا، {s} پيش ٿيل (پوئين 7 ڏينهن) • {a} هاڻي دستياب • {t} ڪل پيش ٿيل',
     weeklyTotal: 'ڪل: {d} عطيا، {s} پيش ٿيل (پوئين 7 ڏينهن) • {a} هاڻي دستياب',
+    gTitle: 'گراف — کاڌن جو جائزو', gNote: 'صرف ايڊمن لاءِ. صرف تعداد — وصول ڪندڙ جو ڪو ڊيٽا ناهي.', gDaily: 'پوئين 7 ڏينهن — عطيو بمقابلو پيش ٿيل', gAvail: 'هر ريسٽورنٽ ۾ دستياب کاڌا', gDonated: 'عطيو', gServed: 'پيش ٿيل', gServedPct: 'پيش ٿيل ٪', gRestaurants: 'ريسٽورنٽ',
     pricesTitle: 'ريسٽورنٽ جون قيمتون (في ريسٽورنٽ)', pricePerMeal: 'في کاڌو {n} رپيا', unverified: '(غير تصديق ٿيل)',
     chooseRest: 'ريسٽورنٽ چونڊيو…', newPrice: 'کاڌي جي نئين قيمت (50–2000 رپيا)', savePrice: 'قيمت محفوظ ڪريو', priceSaved: 'کاڌي جي قيمت اپڊيٽ ٿي وئي.',
     createStaffTitle: 'اسٽاف / ايڊمن اڪائونٽ ٺاهيو', roleRestLabel: 'ڪردار + ڳنڍيل ريسٽورنٽ (اسٽاف لاءِ ضروري)',
@@ -334,6 +337,45 @@ const T = {
 // fmt: replace {n}/{q}/{s}/{a}/{d}/{p}/{g}/{m}/{u}/{e}/{r}/{t} placeholders.
 const fmt = (s, v = {}) => String(s).replace(/\{(\w)\}/g, (_, k) => (v[k] !== undefined ? v[k] : `{${k}}`));
 const badgeFor = (t, served) => (served >= 10 ? t.badgeHero : served >= 5 ? t.badgeHeart : served >= 1 ? t.badgeNew : t.badgeNone);
+
+// ---------- Logo ----------
+// Inline SVG logo mark: a gold heart over a serving plate, in a green ring.
+// Crisp at any size, no external file. The header shows this mark + the
+// school line — the big text title is gone on purpose (simple, like the PDF).
+const LogoMark = () => (
+  <svg className="logo-svg" viewBox="0 0 64 64" role="img" aria-label="Pay It Forward Meal">
+    <circle cx="32" cy="32" r="29" fill="#116A4D" stroke="#172428" strokeWidth="3" />
+    <circle cx="32" cy="32" r="23" fill="none" stroke="#F4C35E" strokeWidth="2" />
+    <path d="M32 40 C25 35 21 30.5 21 25.5 A6 6 0 0 1 32 21.5 A6 6 0 0 1 43 25.5 C43 30.5 39 35 32 40 Z" fill="#F4C35E" stroke="#172428" strokeWidth="2" />
+    <ellipse cx="32" cy="47" rx="13" ry="3.5" fill="#FDF6EB" stroke="#172428" strokeWidth="2" />
+  </svg>
+);
+
+// ---------- Admin graphs (pure SVG, no new dependencies) ----------
+// Grouped bars: donated (gold) vs served (green) per day, last 7 days.
+const DailyBars = ({ daily }) => {
+  const max = Math.max(1, ...daily.flatMap((d) => [d.donated, d.served]));
+  const W = 560, H = 200, base = 170, bw = 26, gap = 14;
+  const x0 = 20;
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto' }} role="img">
+      <line x1="10" y1={base} x2={W - 10} y2={base} stroke="#172428" strokeWidth="2" />
+      {daily.map((d, i) => {
+        const x = x0 + i * (bw * 2 + gap + 22);
+        const hD = Math.round((d.donated / max) * 130);
+        const hS = Math.round((d.served / max) * 130);
+        return (
+          <g key={d.day}>
+            <rect x={x} y={base - hD} width={bw} height={hD} fill="#F4C35E" stroke="#172428" strokeWidth="2" rx="4" />
+            <rect x={x + bw + 4} y={base - hS} width={bw} height={hS} fill="#2E9E6B" stroke="#172428" strokeWidth="2" rx="4" />
+            <text x={x + bw} y={base + 16} textAnchor="middle" fontSize="12" fontWeight="700" fill="#172428">{d.label}</text>
+            <text x={x + bw} y={base - Math.max(hD, hS) - 6} textAnchor="middle" fontSize="11" fontWeight="800" fill="#172428">{d.donated}/{d.served}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
 
 export default function App() {
   const [page, setPage] = useState('home');
@@ -401,6 +443,8 @@ export default function App() {
         users: await api('/admin/users'),
         requests: await api('/admin/requests'),
       });
+      // Graphs load with the page (admin only) — no extra button needed.
+      setReport(await api('/admin/report').catch(() => null));
     } catch (e) { setMsg(e.message); }
   };
   useEffect(() => { if (page === 'admin' && user?.role === 'admin') loadAdmin(); }, [page, user]);
@@ -477,13 +521,12 @@ export default function App() {
   const myServed = mine.reduce((s, d) => s + (d.served_qty || 0), 0);
   const dailyOk = stats ? stats.donated - stats.served === stats.available : false;
   const selRest = restaurants.find((r) => String(r.id) === String(donRest));
-  const tickerItems = [t.tickerDonate, t.tickerHunger, t.tickerPoverty, t.tickerVerified, t.tickerPrivate, t.tickerLang];
 
   return (
     <div dir={lang === 'en' ? 'ltr' : 'rtl'}>
       <header>
         <div className="wrap">
-        <div className="brand"><span className="logo">💚</span><div><h1>Pay It Forward Meal</h1><p className="brand-sub">{t.schoolLine}</p></div></div>
+        <div className="brand"><LogoMark /><div><p className="brand-sub">{t.schoolLine}</p></div></div>
         <div className="lang">
           {['en', 'ur', 'sd'].map((l) => (<button key={l} className={lang === l ? 'active' : ''} onClick={() => setLang(l)}>{l === 'en' ? 'EN' : l === 'ur' ? 'اردو' : 'سنڌي'}</button>))}
           {' '}
@@ -524,7 +567,6 @@ export default function App() {
                 <div className="glass-chip amber chip-right"><b>{stats ? stats.available : 0}</b>{fmt(t.availChip, { n: stats ? stats.available : 0 })}</div>
               </div>
             </div>
-            <div className="ticker" aria-hidden="true"><div className="ticker-track">{[...tickerItems, ...tickerItems].map((x, i) => (<span key={i}>{x} ✦ </span>))}</div></div>
             <div className="card dashcard">
               <h3>{t.liveDash}</h3>
               <p className="muted">{t.liveNote}</p>
@@ -540,7 +582,7 @@ export default function App() {
               <div className="card tilt"><div className="step-num">2</div><h3>{t.step2t}</h3><p>{t.step2d}</p></div>
               <div className="card tilt"><div className="step-num">3</div><h3>{t.step3t}</h3><p>{t.step3d}</p></div>
             </div>
-            <div className="trust-chips"><span>{t.trust1}</span><span>{t.trust2}</span><span>{t.trust3}</span></div>
+            <p className="muted" style={{ marginTop: 18 }}>{t.trust1} • {t.trust2} • {t.trust3}</p>
             {restaurants.some((r) => r.available <= 1) && (<div className="notice">⚠️ {t.urgent} {restaurants.filter((r) => r.available <= 1).map((r) => `${r.name} — ${fmt(t.mealsLeft, { n: r.available })}`).join(' • ')}</div>)}
             <p><button className="btn tomato" onClick={() => { if (mostNeeded) { setDonRest(String(mostNeeded.id)); } go('donate'); }}>{mostNeeded ? fmt(t.giveMostName, { n: mostNeeded.name }) : t.giveMost}</button></p>
             <div className="partner-banner"><div><h3>{t.partnerTitle}</h3><p>{t.partnerText}</p></div><button className="btn turmeric" onClick={() => go('request')}>{t.partnerBtn}</button></div>
@@ -687,6 +729,28 @@ export default function App() {
                 <div className="card"><h3>{t.verifyTitle}</h3>{adminData.all.filter((r) => !r.verified).map((r) => (<p key={r.id}>{r.name} — {r.area} <button className="btn small tomato" onClick={async () => { await api('/admin/verify', { method: 'POST', body: JSON.stringify({ restaurantId: r.id }) }); loadAdmin(); load(); }}>{t.verifyBtn}</button></p>))}{adminData.all.filter((r) => !r.verified).length === 0 && <p className="muted">{fmt(t.noUnverified, { n: adminData.all.length })}</p>}</div>
                 <div className="card"><h3>{t.reqTitle}</h3>{adminData.requests.map((q) => (<p key={q.id}>{q.name} — {q.area} ({q.status}) {q.status === 'pending' && (<><button onClick={async () => { await api(`/admin/requests/${q.id}/approve`, { method: 'POST' }); loadAdmin(); load(); }}>{t.approveBtn}</button>{' '}<button onClick={async () => { await api(`/admin/requests/${q.id}/reject`, { method: 'POST' }); loadAdmin(); }}>{t.rejectBtn}</button></>)}</p>))}{adminData.requests.length === 0 && <p className="muted">{t.noReq}</p>}</div>
               </div>
+              {report && report.daily && (
+                <div className="card"><h3>{t.gTitle}</h3>
+                  <p className="muted">{t.gNote}</p>
+                  <div className="chart-tiles">
+                    <div className="chart-tile"><b>{stats.donated}</b><span>{t.donated}</span></div>
+                    <div className="chart-tile"><b>{stats.served}</b><span>{t.served}</span></div>
+                    <div className="chart-tile"><b>{stats.available}</b><span>{t.available}</span></div>
+                    <div className="chart-tile"><b>{stats.donated ? Math.round((stats.served / stats.donated) * 100) : 0}%</b><span>{t.gServedPct}</span></div>
+                  </div>
+                  <h3 style={{ marginTop: 18 }}>{t.gDaily}</h3>
+                  <p className="muted"><span style={{ color: '#b97f1e' }}>■</span> {t.gDonated} &nbsp; <span style={{ color: '#2E9E6B' }}>■</span> {t.gServed}</p>
+                  <DailyBars daily={report.daily} />
+                  <h3 style={{ marginTop: 18 }}>{t.gAvail}</h3>
+                  {report.rows.map((r) => (
+                    <div className="chart-bar-row" key={r.id}>
+                      <span className="lbl">{r.name}</span>
+                      <div className="chart-bar-track"><div className="chart-bar-fill" style={{ width: Math.min(100, (r.available / Math.max(1, ...report.rows.map((x) => x.available))) * 100) + '%' }} /></div>
+                      <b>{r.available}</b>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="card"><h3>{t.weeklyTitle}</h3>
                 <p className="muted">{t.weeklyNote}</p>
                 <button className="btn tomato" onClick={async () => { try { setReport(await api('/admin/report')); } catch (e) { setMsg(e.message); } }}>{t.loadReport}</button>{' '}

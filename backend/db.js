@@ -73,12 +73,14 @@ function seed() {
   if (count > 0) return;
   const ins = db.prepare('INSERT INTO restaurants (name, area, meal, timings, verified, contact_person) VALUES (?,?,?,?,?,?)');
   ins.run('Sindh Biryani House', 'Bhittaibad', 'Chicken Biryani + Raita', '12:00 PM - 10:00 PM', 1, 'Restaurant owner');
-  db.prepare('UPDATE restaurants SET meal_price_pkr=300 WHERE name=?').run('Sindh Biryani House');
-  db.prepare('UPDATE restaurants SET meal_price_pkr=280 WHERE name=?').run('Al-Madina Foods');
-  db.prepare('UPDATE restaurants SET meal_price_pkr=200 WHERE name=?').run('New Taste Point');
   ins.run('Mehran Restaurant', 'Sukkur', 'Daal + Roti + Salad', '11:00 AM - 9:00 PM', 1, 'Restaurant owner');
   ins.run('Al-Madina Foods', 'Karachi', 'Vegetable Curry + Rice', '1:00 PM - 11:00 PM', 1, 'Restaurant owner');
   ins.run('New Taste Point', 'Bhittaibad', 'Chicken Karahi + Naan', '12:00 PM - 10:00 PM', 0, 'Restaurant owner');
+  // Prices AFTER the inserts (an UPDATE before its INSERT silently does nothing —
+  // that is why Al-Madina used to seed at Rs 250 instead of Rs 280).
+  db.prepare('UPDATE restaurants SET meal_price_pkr=300 WHERE name=?').run('Sindh Biryani House');
+  db.prepare('UPDATE restaurants SET meal_price_pkr=280 WHERE name=?').run('Al-Madina Foods');
+  db.prepare('UPDATE restaurants SET meal_price_pkr=200 WHERE name=?').run('New Taste Point');
   // School admin. Change this password before any real use.
   const hash = bcrypt.hashSync('Admin123!', 10);
   db.prepare("INSERT INTO users (name, email, password_hash, role) VALUES (?,?,?, 'admin')")
@@ -92,6 +94,85 @@ function seed() {
   console.log('Seeded demo owner: owner@payitforward.school / Owner123! (Sindh Biryani House)');
 }
 seed();
+
+// Migration for sandbox payments (2026-10-31): older databases created before
+// this step have no txn_ref / amount_pkr columns on donations. Add them if missing.
+// This runs BEFORE seed() — the demo seed below inserts txn_ref values.
+for (const col of ['txn_ref TEXT', 'amount_pkr INTEGER DEFAULT 0']) {
+  const name = col.split(' ')[0];
+  const has = db.prepare("SELECT COUNT(*) c FROM pragma_table_info('donations') WHERE name=?").get(name).c;
+  if (!has) db.exec(`ALTER TABLE donations ADD COLUMN ${col}`);
+}
+
+// Demo data (2026-11-10): the contest demo needs realistic numbers, not 0/0/0.
+// Target from the teacher's design PDF: 42 donated, 31 served, 11 available.
+// Split: Sindh Biryani House 25/18/7, Mehran Restaurant 12/9/3, Al-Madina
+// Foods 5/4/1. Demo donors are plain demo names; the school name, Bhittaibad
+// and SDG 1 + SDG 2 stay REAL — no fake school, area or SDG data is seeded.
+// Runs ONLY when the DB has zero donations AND zero serves, so live data is
+// never overwritten. Reset: delete backend/data/payitforward.db and restart.
+function seedDemoData() {
+  try {
+    if (db.prepare('SELECT COUNT(*) c FROM donations').get().c > 0) return;
+    if (db.prepare('SELECT COUNT(*) c FROM served_meals').get().c > 0) return;
+    const daysAgo = (n) => new Date(Date.now() - n * 86400000).toISOString();
+    const demoPass = bcrypt.hashSync('Demo123!', 10);
+    const donorIds = {};
+    for (const [name, email, show] of [
+      ['Ahmed Raza', 'ahmed.raza@demo.school', 1],
+      ['Sana Khan', 'sana.khan@demo.school', 1],
+      ['Fatima Memon', 'fatima.memon@demo.school', 1],
+      ['Bilal Ahmed', 'bilal.ahmed@demo.school', 1],
+      ['A kind neighbour', 'kind.neighbour@demo.school', 0],
+    ]) {
+      const info = db.prepare('INSERT INTO users (name, email, password_hash, role, show_name) VALUES (?,?,?,\'donor\',?)')
+        .run(name, email, demoPass, show);
+      donorIds[email] = info.lastInsertRowid;
+    }
+    // [donor, restaurantId, qty, servedQty, method, daysAgo, txnRef, amountPkr]
+    const donations = [
+      ['ahmed.raza@demo.school', 1, 8, 6, 'JazzCash', 6, 'PIFM-DEMO-0001', 2400],
+      ['sana.khan@demo.school', 1, 7, 5, 'Easypaisa', 4, 'PIFM-DEMO-0002', 2100],
+      ['fatima.memon@demo.school', 1, 6, 4, 'JazzCash', 2, 'PIFM-DEMO-0003', 1800],
+      ['bilal.ahmed@demo.school', 1, 4, 3, 'Card', 1, 'PIFM-DEMO-0004', 1200],
+      ['ahmed.raza@demo.school', 2, 6, 5, 'JazzCash', 5, 'PIFM-DEMO-0005', 1500],
+      ['sana.khan@demo.school', 2, 4, 3, 'Easypaisa', 3, 'PIFM-DEMO-0006', 1000],
+      ['kind.neighbour@demo.school', 2, 2, 1, 'JazzCash', 0, 'PIFM-DEMO-0007', 500],
+      ['fatima.memon@demo.school', 3, 3, 2, 'JazzCash', 2, 'PIFM-DEMO-0008', 840],
+      ['bilal.ahmed@demo.school', 3, 2, 2, 'Card', 1, 'PIFM-DEMO-0009', 560],
+    ];
+    for (const [email, rid, qty, servedQty, method, days, txn, amount] of donations) {
+      db.prepare(`INSERT INTO donations (donor_id, restaurant_id, quantity, served_qty, method, payment_status, txn_ref, amount_pkr, created_at)
+        VALUES (?,?,?,?,?,'sandbox_paid',?,?,?)`)
+        .run(donorIds[email], rid, qty, servedQty, method, txn, amount, daysAgo(days));
+    }
+    // Served meals, spread over the last 7 days so the Admin graphs have a series.
+    // Per restaurant, index = days ago: Sindh 18, Mehran 9, Al-Madina 4 (total 31).
+    const adminId = db.prepare("SELECT id FROM users WHERE role='admin' LIMIT 1").get()?.id || null;
+    const servedPlan = { 1: [4, 3, 3, 2, 2, 2, 2], 2: [2, 2, 1, 1, 1, 1, 1], 3: [1, 1, 1, 0, 1, 0, 0] };
+    for (const [rid, plan] of Object.entries(servedPlan)) {
+      plan.forEach((count, days) => {
+        for (let i = 0; i < count; i++) {
+          db.prepare('INSERT INTO served_meals (restaurant_id, served_by, served_at) VALUES (?,?,?)')
+            .run(Number(rid), adminId, daysAgo(days));
+        }
+      });
+    }
+    // Restaurant counters must match the rows above (donated = served + available).
+    db.prepare('UPDATE restaurants SET available=7, served=18 WHERE id=1').run();
+    db.prepare('UPDATE restaurants SET available=3, served=9 WHERE id=2').run();
+    db.prepare('UPDATE restaurants SET available=1, served=4 WHERE id=3').run();
+    // Two "Your meal was served" messages so My Donations has demo content.
+    db.prepare('INSERT INTO notifications (donor_id, restaurant_id, message, created_at) VALUES (?,?,?,?)')
+      .run(donorIds['ahmed.raza@demo.school'], 1, 'Good news - your Pay It Forward meal at Sindh Biryani House has been served to someone in need. Thank you!', daysAgo(0));
+    db.prepare('INSERT INTO notifications (donor_id, restaurant_id, message, created_at) VALUES (?,?,?,?)')
+      .run(donorIds['sana.khan@demo.school'], 2, 'Good news - your Pay It Forward meal at Mehran Restaurant has been served to someone in need. Thank you!', daysAgo(1));
+    console.log('Seeded demo data: 42 donated, 31 served, 11 available (demo donors: Demo123!)');
+  } catch (e) { console.log('Demo data seed skipped -', e.message); }
+}
+// Existing DBs that are still empty (no donations, no serves) get the demo
+// numbers too — a DB with any real donation or serve is never touched.
+seedDemoData();
 
 // Migration for restaurant owners (2026-11-10): older DBs have no owner account
 // and no staff_role column. Two steps, existing data untouched:

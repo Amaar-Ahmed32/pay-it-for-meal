@@ -65,3 +65,32 @@ Say "next" when you are ready for the next step. Do not skip ahead — each file
   tested locally; staff/donor get 403 on owner routes; cross-restaurant delete
   returns 404 and the staff member stays; full flow register → sandbox donate 2
   → admin serve → stats consistent.
+
+## Simple like the PDF + dummy data + Admin graphs + logo (2026-11-10, done)
+- Hero KEPT exactly as the chunky dark-blue rebuild (cartoon server handing a
+  plate, floating chips). The scrolling ticker strip is REMOVED (decoration) and
+  the three trust chips are now one plain line — simple, like the teacher's PDF.
+- LOGO: header now shows an inline SVG logo mark (gold heart over a serving
+  plate in a green ring, file: LogoMark in frontend/src/App.jsx) + the school
+  line underneath. The big "Pay It Forward Meal" text title is gone from the
+  header (it stays in the footer and on receipts).
+- DUMMY DATA (backend/db.js, seedDemoData): fresh/empty DBs seed 42 donated,
+  31 served, 11 available — Sindh Biryani House 25/18/7 (Rs 300), Mehran
+  Restaurant 12/9/3 (Rs 250), Al-Madina Foods 5/4/1 (Rs 280, price bug fixed —
+  its price UPDATE used to run before its INSERT). Demo donors (password
+  Demo123!): Ahmed Raza, Sana Khan, Fatima Memon, Bilal Ahmed, plus
+  "A kind neighbour" (anonymous). 9 demo donations (txn refs PIFM-DEMO-0001…
+  0009), 31 served_meals spread over the last 7 days, 2 "Your meal was served"
+  notifications. School name, Bhittaibad and SDG 1 + SDG 2 stay REAL — no fake
+  school/area/SDG data. Seed runs ONLY when the DB has zero donations AND zero
+  serves, so live data is never overwritten. Reset: stop backend, delete
+  backend/data/payitforward.db, restart — it re-seeds 42/31/11.
+- ADMIN GRAPH DASHBOARD (Admin page only, never public): summary tiles
+  (donated / served / available / served %), SVG bar chart of donated vs
+  served per day for the last 7 days, and available-meals bars per restaurant.
+  Pure SVG/CSS, no new dependencies. Backend GET /api/admin/report now also
+  returns a `daily` series. The report loads automatically with the Admin page.
+- SANDBOX verified 2026-11-10 (fresh DB): register donor → initiate 2 JazzCash
+  (pending, available stays 11) → confirm → sandbox_paid, 44/31/13 → admin
+  serve 1 → 44/32/12 → oldest donor (Ahmed Raza) got the "Your meal was
+  served" notification. Restart does NOT re-seed.

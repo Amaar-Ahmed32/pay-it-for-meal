@@ -253,7 +253,15 @@ app.get('/api/admin/report', auth, requireRole('admin'), (req, res) => {
     COALESCE((SELECT COUNT(*) FROM served_meals WHERE restaurant_id=r.id AND served_at >= datetime('now','-7 days')),0) served7
     FROM restaurants r ORDER BY r.id`).all();
   const totals = rows.reduce((a, r) => ({ donated7: a.donated7 + r.donated7, served7: a.served7 + r.served7, available: a.available + r.available, servedTotal: a.servedTotal + r.servedTotal }), { donated7: 0, served7: 0, available: 0, servedTotal: 0 });
-  res.json({ rows, totals });
+  // Daily series for the Admin graph dashboard: donated vs served per day, last 7 days.
+  const daily = [];
+  for (let i = 6; i >= 0; i--) {
+    const day = db.prepare("SELECT date('now', ?) day").get(`-${i} days`).day;
+    const donated = db.prepare("SELECT COALESCE(SUM(quantity),0) s FROM donations WHERE payment_status IN ('test_paid','sandbox_paid') AND date(created_at)=?").get(day).s;
+    const served = db.prepare('SELECT COUNT(*) c FROM served_meals WHERE date(served_at)=?').get(day).c;
+    daily.push({ day, label: day.slice(5), donated, served });
+  }
+  res.json({ rows, totals, daily });
 });
 app.get('/api/admin/users', auth, requireRole('admin'), (req, res) => {
   res.json(db.prepare('SELECT u.id, u.name, u.email, u.role, u.restaurant_id, r.name restaurantName FROM users u LEFT JOIN restaurants r ON r.id=u.restaurant_id ORDER BY u.id').all());
