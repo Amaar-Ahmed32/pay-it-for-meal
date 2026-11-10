@@ -11,7 +11,7 @@
 import React, { useEffect, useState } from 'react';
 
 const API = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) || 'http://localhost:5001/api';
-const PILOT_DONATION_GOAL = 30; // pilot target from the teacher plan — change this one number if the target changes
+const PILOT_DONATION_GOAL = 50; // pilot target from the teacher plan — change this one number if the target changes
 
 // ---------- FULL TRANSLATION DICTIONARIES ----------
 // {n} is replaced at render time with a number. Restaurant names, "Pay It
@@ -41,7 +41,7 @@ const T = {
     trust1: '✓ Verified restaurants only', trust2: '✓ No recipient data stored', trust3: '✓ Money released only after serving',
     urgent: 'Urgent:', mealsLeft: '{n} meal(s) left', giveMost: '💛 Give where most needed', giveMostName: '💛 Give where most needed — {n}',
     partnerTitle: 'Run a restaurant?', partnerText: 'Join as a partner and serve free meals paid for by your own customers.', partnerBtn: 'Become a partner',
-    activityTitle: 'Recent activity (recipients never named)', activityServed: '🍽️ A meal was served', activityDonated: '💛 {n} donated {q}', activityAt: 'at {n}', activityNone: 'No activity yet — be the first donor.',
+    activityTitle: 'Recent activity (recipients never named)', activityServed: '🍲 A meal was served', activityDonated: '💛 {n} donated {q}', activityAt: 'at {n}', activityNone: 'No activity yet — be the first donor.',
     finderTitle: 'Free meals today', finderNote: 'Free meals available here today. Just ask staff for a Pay It Forward meal.',
     finderArea: 'Area / city', finderOnly: 'Only show restaurants with meals available',
     finderUrgent: '⚠️ {n} left — urgent', finderMeals: '{n} meals', finderPerMeal: 'Rs {n} per meal', finderServed: '{n} served so far',
@@ -106,7 +106,7 @@ const T = {
     boardDonated: '{d} donated, {s} served',
     transTitle: 'Transparency — every paid meal, in public',
     transNote: 'Paid donations and serves only. No recipient is ever named, photographed, or described. Donors appear by name only if they chose to — otherwise ‘Anonymous donor’.',
-    transServed: '🍽️ Served', transDonated: '💛 {n} donated {q}', transAt: 'at {n}', transNone: 'No paid donations or serves yet.',
+    transServed: '🍲 Served', transDonated: '💛 {n} donated {q}', transAt: 'at {n}', transNone: 'No paid donations or serves yet.',
     anon: 'Anonymous donor',
     joinTitle: 'Join as a restaurant', joinNote: 'Your request starts UNVERIFIED and hidden from the public Finder until admin approves it. Checklist: name, area, meal and timings, and you agree to serve without questions.',
     contactLabel: 'Contact name / phone', sendBtn: 'Send request', joinSent: 'Request sent! Admin will review it. It will NOT show publicly until approved.',
@@ -146,7 +146,7 @@ const T = {
     trust1: '✓ صرف تصدیق شدہ ریسٹورنٹ', trust2: '✓ وصول کنندہ کا کوئی ڈیٹا محفوظ نہیں', trust3: '✓ رقم صرف پیش کرنے کے بعد ملتی ہے',
     urgent: 'فوری:', mealsLeft: '{n} کھانے باقی', giveMost: '💛 جہاں سب سے زیادہ ضرورت ہے وہاں دیں', giveMostName: '💛 جہاں سب سے زیادہ ضرورت ہے — {n}',
     partnerTitle: 'ریسٹورنٹ چلاتے ہیں؟', partnerText: 'پارٹنر بنیں اور اپنے صارفین کے پیسوں سے مفت کھانے پیش کریں۔', partnerBtn: 'پارٹنر بنیں',
-    activityTitle: 'تازہ سرگرمی (وصول کنندہ کا نام کبھی نہیں)', activityServed: '🍽️ ایک کھانا پیش کیا گیا', activityDonated: '💛 {n} نے {q} عطیہ کیے', activityAt: '{n} میں', activityNone: 'ابھی کوئی سرگرمی نہیں — پہلے عطیہ دہندہ بنیں۔',
+    activityTitle: 'تازہ سرگرمی (وصول کنندہ کا نام کبھی نہیں)', activityServed: '🍲 ایک کھانا پیش کیا گیا', activityDonated: '💛 {n} نے {q} عطیہ کیے', activityAt: '{n} میں', activityNone: 'ابھی کوئی سرگرمی نہیں — پہلے عطیہ دہندہ بنیں۔',
     finderTitle: 'آج کے مفت کھانے', finderNote: 'آج یہاں مفت کھانے دستیاب ہیں۔ بس عملے سے Pay It Forward کھانا مانگیں۔',
     finderArea: 'علاقہ / شہر', finderOnly: 'صرف وہ ریسٹورنٹ دکھائیں جن میں کھانا دستیاب ہے',
     finderUrgent: '⚠️ {n} باقی — فوری', finderMeals: '{n} کھانے', finderPerMeal: 'فی کھانا {n} روپے', finderServed: 'اب تک {n} پیش ہوئے',
@@ -211,7 +211,7 @@ const T = {
     boardDonated: '{d} عطیہ، {s} پیش شدہ',
     transTitle: 'شفافیت — ہر ادا شدہ کھانا، سب کے سامنے',
     transNote: 'صرف ادا شدہ عطیات اور پیش شدہ کھانے۔ وصول کنندہ کا نام، تصویر یا تفصیل کبھی نہیں۔ عطیہ دہندہ کا نام صرف اس صورت میں ظاہر ہوتا ہے جب اس نے چاہا ہو — ورنہ ‘Anonymous donor’۔',
-    transServed: '🍽️ پیش کیا گیا', transDonated: '💛 {n} نے {q} عطیہ کیے', transAt: '{n} میں', transNone: 'ابھی کوئی ادا شدہ عطیہ یا پیش شدہ کھانا نہیں۔',
+    transServed: '🍲 پیش کیا گیا', transDonated: '💛 {n} نے {q} عطیہ کیے', transAt: '{n} میں', transNone: 'ابھی کوئی ادا شدہ عطیہ یا پیش شدہ کھانا نہیں۔',
     anon: 'Anonymous donor',
     joinTitle: 'ریسٹورنٹ بنیں', joinNote: 'آپ کی درخواست غیر تصدیق شدہ شروع ہوتی ہے اور ایڈمن کی منظوری تک عوامی Finder میں چھپی رہتی ہے۔ چیک لسٹ: نام، علاقہ، کھانا اور اوقات، اور آپ بغیر سوال پوچھے پیش کرنے پر راضی ہیں۔',
     contactLabel: 'رابطہ نام / فون', sendBtn: 'درخواست بھیجیں', joinSent: 'درخواست بھیج دی گئی! ایڈمن جائزہ لے گا۔ منظوری تک یہ عوامی طور پر نہیں دکھائی دے گی۔',
@@ -251,7 +251,7 @@ const T = {
     trust1: '✓ صرف تصديق ٿيل ريسٽورنٽ', trust2: '✓ وصول ڪندڙ جو ڪو ڊيٽا محفوظ ناهي', trust3: '✓ رقم صرف پيش ڪرڻ کان پوءِ ملي ٿي',
     urgent: 'تڪڙ:', mealsLeft: '{n} کاڌا باقي', giveMost: '💛 جتي سڀ کان وڌيڪ ضرورت آهي اتي ڏيو', giveMostName: '💛 جتي سڀ کان وڌيڪ ضرورت آهي — {n}',
     partnerTitle: 'ريسٽورنٽ هلايو ٿا؟', partnerText: 'پارٽنر ٿيو ۽ پنهنجن گراهڪن جي پئسن سان مفت کاڌا پيش ڪريو.', partnerBtn: 'پارٽنر ٿيو',
-    activityTitle: 'تازي سرگرمي (وصول ڪندڙ جو نالو ڪڏهن ناهي)', activityServed: '🍽️ هڪ کاڌو پيش ڪيو ويو', activityDonated: '💛 {n} {q} عطيا ڪيا', activityAt: '{n} ۾', activityNone: 'هينئر تائين ڪا سرگرمي ناهي — پهريون عطيو ڏيندڙ ٿيو.',
+    activityTitle: 'تازي سرگرمي (وصول ڪندڙ جو نالو ڪڏهن ناهي)', activityServed: '🍲 هڪ کاڌو پيش ڪيو ويو', activityDonated: '💛 {n} {q} عطيا ڪيا', activityAt: '{n} ۾', activityNone: 'هينئر تائين ڪا سرگرمي ناهي — پهريون عطيو ڏيندڙ ٿيو.',
     finderTitle: 'اڄ جا مفت کاڌا', finderNote: 'اڄ هتي مفت کاڌا دستياب آهن. بس اسٽاف کان Pay It Forward کاڌو گهرو.',
     finderArea: 'علائقو / شهر', finderOnly: 'صرف اهي ريسٽورنٽ ڏيکاريو جن ۾ کاڌو دستياب آهي',
     finderUrgent: '⚠️ {n} باقي — تڪڙ', finderMeals: '{n} کاڌا', finderPerMeal: 'في کاڌو {n} رپيا', finderServed: 'هينئر تائين {n} پيش ٿيا',
@@ -316,7 +316,7 @@ const T = {
     boardDonated: '{d} عطيا، {s} پيش ٿيل',
     transTitle: 'شفافيت — هر ادا ٿيل کاڌو، سڀني جي سامهون',
     transNote: 'صرف ادا ٿيل عطيا ۽ پيش ٿيل کاڌا. وصول ڪندڙ جو نالو، تصوير يا تفصيل ڪڏهن ناهي. عطيو ڏيندڙ جو نالو صرف ان صورت ۾ ظاهر ٿئي ٿو جڏهن هن چاهيو هجي — ورنه ‘Anonymous donor’.',
-    transServed: '🍽️ پيش ڪيو ويو', transDonated: '💛 {n} {q} عطيا ڪيا', transAt: '{n} ۾', transNone: 'هينئر تائين ڪو ادا ٿيل عطيو يا پيش ٿيل کاڌو ناهي.',
+    transServed: '🍲 پيش ڪيو ويو', transDonated: '💛 {n} {q} عطيا ڪيا', transAt: '{n} ۾', transNone: 'هينئر تائين ڪو ادا ٿيل عطيو يا پيش ٿيل کاڌو ناهي.',
     anon: 'Anonymous donor',
     joinTitle: 'ريسٽورنٽ ٿيو', joinNote: 'توهان جي درخواست غير تصديق ٿيل شروع ٿئي ٿي ۽ ايڊمن جي منظوري تائين عوامي Finder ۾ لڪيل رهي ٿي. چيڪ لسٽ: نالو، علائقو، کاڌو ۽ وقت، ۽ توهان بغير سوال پڇڻ جي پيش ڪرڻ تي راضي آهيو.',
     contactLabel: 'رابطو نالو / فون', sendBtn: 'درخواست موڪليو', joinSent: 'درخواست موڪلي وئي! ايڊمن جائزو وٺندو. منظوري تائين هي عوامي طور تي نه ڏيکاري ويندي.',
@@ -336,6 +336,9 @@ const T = {
 
 // fmt: replace {n}/{q}/{s}/{a}/{d}/{p}/{g}/{m}/{u}/{e}/{r}/{t} placeholders.
 const fmt = (s, v = {}) => String(s).replace(/\{(\w)\}/g, (_, k) => (v[k] !== undefined ? v[k] : `{${k}}`));
+
+// Readable date/time in Asia/Karachi, e.g. "10 Nov 2026, 3:45 PM" — never show raw ISO timestamps.
+const fmtDate = (iso) => { try { return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Karachi' }).format(new Date(iso)); } catch { return iso || ''; } };
 const badgeFor = (t, served) => (served >= 10 ? t.badgeHero : served >= 5 ? t.badgeHeart : served >= 1 ? t.badgeNew : t.badgeNone);
 
 // ---------- Logo ----------
@@ -355,21 +358,24 @@ const LogoMark = () => (
 // Grouped bars: donated (gold) vs served (green) per day, last 7 days.
 const DailyBars = ({ daily }) => {
   const max = Math.max(1, ...daily.flatMap((d) => [d.donated, d.served]));
-  const W = 560, H = 200, base = 170, bw = 26, gap = 14;
-  const x0 = 20;
+  const W = 560, H = 200, base = 170, pad = 10;
+  const n = Math.max(1, daily.length);
+  const gw = (W - 2 * pad) / n; // group width per day — every day fits inside the viewBox
+  const bw = Math.min(24, Math.floor((gw - 12) / 2));
+  const x0 = pad;
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto' }} role="img">
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block', maxWidth: '100%' }} role="img">
       <line x1="10" y1={base} x2={W - 10} y2={base} stroke="#172428" strokeWidth="2" />
       {daily.map((d, i) => {
-        const x = x0 + i * (bw * 2 + gap + 22);
+        const x = x0 + i * gw + (gw - (2 * bw + 4)) / 2;
         const hD = Math.round((d.donated / max) * 130);
         const hS = Math.round((d.served / max) * 130);
         return (
           <g key={d.day}>
             <rect x={x} y={base - hD} width={bw} height={hD} fill="#F4C35E" stroke="#172428" strokeWidth="2" rx="4" />
             <rect x={x + bw + 4} y={base - hS} width={bw} height={hS} fill="#2E9E6B" stroke="#172428" strokeWidth="2" rx="4" />
-            <text x={x + bw} y={base + 16} textAnchor="middle" fontSize="12" fontWeight="700" fill="#172428">{d.label}</text>
-            <text x={x + bw} y={base - Math.max(hD, hS) - 6} textAnchor="middle" fontSize="11" fontWeight="800" fill="#172428">{d.donated}/{d.served}</text>
+            <text x={x + bw + 2} y={base + 16} textAnchor="middle" fontSize="12" fontWeight="700" fill="#172428">{d.label}</text>
+            <text x={x + bw + 2} y={base - Math.max(hD, hS) - 6} textAnchor="middle" fontSize="11" fontWeight="800" fill="#172428">{d.donated}/{d.served}</text>
           </g>
         );
       })}
@@ -472,7 +478,7 @@ export default function App() {
     const donorName = user?.show_name === 0 ? t.anon : (user?.name || 'Donor');
     const w = window.open('', '_blank', 'width=600,height=700');
     if (!w) { setMsg(t.popups); return; }
-    w.document.write(`<html><head><title>${t.receiptTitle}</title></head><body style="font-family: sans-serif; max-width: 520px; margin: 30px auto; color: #111;"><h2>${t.receiptTitle}</h2><p>${t.schoolLine}</p><hr /><p><b>${t.receiptDonor}</b> ${donorName}</p><p><b>${t.receiptRest}</b> ${d.restaurantName}</p><p><b>${t.receiptMeals}</b> ${d.quantity}</p><p><b>${t.receiptServed}</b> ${d.served_qty}/${d.quantity}</p><p><b>${t.receiptAmount}</b> Rs ${amount}</p><p><b>${t.receiptMethod}</b> ${d.method} • <b>${t.receiptStatus}</b> ${d.payment_status}</p>${d.txn_ref ? `<p><b>${t.receiptTxn}</b> ${d.txn_ref}</p>` : ''}<p><b>${t.receiptDate}</b> ${d.created_at || ''}</p><hr /><p><small>${t.receiptNote}</small></p></body></html>`);
+    w.document.write(`<html><head><title>${t.receiptTitle}</title></head><body style="font-family: sans-serif; max-width: 520px; margin: 30px auto; color: #111;"><h2>${t.receiptTitle}</h2><p>${t.schoolLine}</p><hr /><p><b>${t.receiptDonor}</b> ${donorName}</p><p><b>${t.receiptRest}</b> ${d.restaurantName}</p><p><b>${t.receiptMeals}</b> ${d.quantity}</p><p><b>${t.receiptServed}</b> ${d.served_qty}/${d.quantity}</p><p><b>${t.receiptAmount}</b> Rs ${amount}</p><p><b>${t.receiptMethod}</b> ${d.method} • <b>${t.receiptStatus}</b> ${d.payment_status}</p>${d.txn_ref ? `<p><b>${t.receiptTxn}</b> ${d.txn_ref}</p>` : ''}<p><b>${t.receiptDate}</b> ${fmtDate(d.created_at)}</p><hr /><p><small>${t.receiptNote}</small></p></body></html>`);
     w.document.close(); w.focus(); w.print();
   };
   const logout = () => { localStorage.removeItem('pifm_token'); setToken(''); setUser(null); setTeam(null); go('home'); };
@@ -559,7 +565,7 @@ export default function App() {
                 <p className="muted">{t.oldLine}</p>
                 <p><button className="btn tomato" onClick={() => go('donate')}>{t.donateBtn}</button>{' '}<button className="btn turmeric" onClick={() => go('finder')}>{t.findBtn}</button></p>
                 <p className="muted">{t.needLine}</p>
-                {stats && (<p>{stats.available > 0 ? (<><b>🍽️ {fmt(t.availLine, { n: stats.available })}</b></>) : (<><b>{t.noAvailLine}</b></>)}</p>)}
+                {stats && (<p>{stats.available > 0 ? (<><b>🍲 {fmt(t.availLine, { n: stats.available })}</b></>) : (<><b>{t.noAvailLine}</b></>)}</p>)}
               </div>
               <div className="hero-art">
                 <img src="/hero-cartoon.webp" alt={t.heroHead1 + ' ' + t.heroHead2} />
@@ -656,7 +662,7 @@ export default function App() {
             {!user && <p className="notice">{t.mineLogin}</p>}
             {user && (<>
               <div className="stats"><div className="stat"><b>{myDonated}</b>{t.mineDonated}</div><div className="stat orange"><b>{myServed}</b>{t.mineServed}</div><div className="stat"><b>{myDonated - myServed}</b>{t.mineAvail}</div></div>
-              <p><b>{t.yourBadge}</b> {badgeFor(t, myServed)}</p>
+              <p><b>{t.yourBadge}</b> {myServed >= 1 ? (<span className="badge">{badgeFor(t, myServed)}</span>) : badgeFor(t, myServed)}</p>
               <p><label><input type="checkbox" style={{ width: 'auto' }} checked={user.show_name !== 0} onChange={async (e) => { const data = await api('/me/privacy', { method: 'POST', body: JSON.stringify({ showName: e.target.checked }) }); setUser(data.user); load(); }} /> {t.privacy}</label></p>
               <div className="card"><h3>{t.donationsTitle}</h3>{mine.map((d) => (<p key={d.id}>{fmt(t.mealsAt, { q: d.quantity, n: d.restaurantName })} • {fmt(t.servedOf, { s: d.served_qty, q: d.quantity })} • {d.method} • {d.payment_status}{d.txn_ref ? ` • ${d.txn_ref}` : ''} <button className="btn small outline" onClick={() => printReceipt(d)}>{t.printReceipt}</button></p>))}{mine.length === 0 && <p className="muted">{t.noDonations}</p>}</div>
               <div className="card"><h3>{t.messagesTitle}</h3>{notifs.map((n) => (<div className="notif" key={n.id}>{n.message} <button className="btn small outline" onClick={async () => { await api(`/notifications/${n.id}/read`, { method: 'POST' }); setNotifs(await api('/notifications/mine')); }}>{t.markRead}</button> {n.is_read ? t.readMark : ''}</div>))}{notifs.length === 0 && <p className="muted">{t.noMessages}</p>}</div>
@@ -788,7 +794,7 @@ export default function App() {
 
         {page === 'board' && (
           <div className="grid">
-            <div className="card"><h3>{t.boardDonors}</h3>{board?.donors.map((d, i) => (<p key={i}>{i + 1}. {d.name} — {fmt(t.boardDonated, { d: d.donated, s: d.served })} • {badgeFor(t, d.served)}</p>))}{!board?.donors.length && <p className="muted">{t.noDonors}</p>}</div>
+            <div className="card"><h3>{t.boardDonors}</h3>{board?.donors.map((d, i) => (<p key={i}>{i + 1}. {d.name} — {fmt(t.boardDonated, { d: d.donated, s: d.served })} • {d.served >= 1 ? (<span className="badge">{badgeFor(t, d.served)}</span>) : badgeFor(t, d.served)}</p>))}{!board?.donors.length && <p className="muted">{t.noDonors}</p>}</div>
             <div className="card"><h3>{t.boardRest}</h3>{board?.restaurants.map((r, i) => (<p key={r.id}>{i + 1}. {r.name} — {r.area} • {r.served} {t.served}, {r.available} {t.available}</p>))}</div>
           </div>
         )}
@@ -797,7 +803,7 @@ export default function App() {
           <div>
             <h2>{t.transTitle}</h2>
             <p className="muted">{t.transNote}</p>
-            <div className="card">{transparency.map((a, i) => (<p key={i}>{a.kind === 'served' ? t.transServed : fmt(t.transDonated, { n: a.donor, q: a.qty })} {fmt(t.transAt, { n: a.restaurant })}{a.amount ? ` — Rs ${a.amount}` : ''}{a.txn ? ` • ${a.txn}` : ''} <span className="muted">({a.at})</span></p>))}{transparency.length === 0 && <p className="muted">{t.transNone}</p>}</div>
+            <div className="card">{transparency.map((a, i) => (<p key={i}>{a.kind === 'served' ? t.transServed : fmt(t.transDonated, { n: a.donor, q: a.qty })} {fmt(t.transAt, { n: a.restaurant })}{a.amount ? ` — Rs ${a.amount}` : ''}{a.txn ? ` • ${a.txn}` : ''} <span className="muted">({fmtDate(a.at)})</span></p>))}{transparency.length === 0 && <p className="muted">{t.transNone}</p>}</div>
           </div>
         )}
 
@@ -832,7 +838,7 @@ export default function App() {
       <footer>
         <div className="wrap">
           <div><h3>Pay It Forward Meal</h3><p>{t.footerTag}</p></div>
-          <div><h3>{t.footerExplore}</h3><p><button className="btn ghost" style={{ color: '#ffe9a8' }} onClick={() => go('finder')}>{t.finder}</button><br /><button className="btn ghost" style={{ color: '#ffe9a8' }} onClick={() => go('donate')}>{t.donate}</button><br /><button className="btn ghost" style={{ color: '#ffe9a8' }} onClick={() => go('request')}>{t.request}</button></p></div>
+          <div><h3>{t.footerExplore}</h3><p><button className="btn ghost" onClick={() => go('finder')}>{t.finder}</button><br /><button className="btn ghost" onClick={() => go('donate')}>{t.donate}</button><br /><button className="btn ghost" onClick={() => go('request')}>{t.request}</button></p></div>
           <div><h3>{t.footerLang}</h3><p>EN • اردو • سنڌي</p><p>{t.schoolLine}</p></div>
         </div>
         <div className="foot-bottom"><p>{t.footerCopy}</p></div>
