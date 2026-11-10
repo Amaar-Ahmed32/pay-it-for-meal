@@ -90,7 +90,7 @@ const T = {
     overviewLine: '{u} users • {d} donations • {p} pending requests',
     verifyTitle: 'Verify restaurants', noUnverified: 'No unverified restaurants. All {n} are verified.', verifyBtn: 'Verify',
     reqTitle: 'Restaurant requests', noReq: 'No requests yet.', approveBtn: 'Approve', rejectBtn: 'Reject',
-    weeklyTitle: 'Weekly report (last 7 days)', weeklyNote: 'Paid donations and serves in the last 7 days, per restaurant. No recipient data — counts only.',
+    weeklyTitle: 'Weekly report (last 7 days)', weeklyChart: 'Donated vs served per restaurant (last 7 days)', weeklyNote: 'Paid donations and serves in the last 7 days, per restaurant. No recipient data — counts only.',
     loadReport: 'Load weekly report', downloadCsv: 'Download CSV',
     weeklyRow: '{n} — {d} donated, {s} served (last 7 days) • {a} available now • {t} served total',
     weeklyTotal: 'Total: {d} donated, {s} served (last 7 days) • {a} available now',
@@ -203,7 +203,7 @@ const T = {
     overviewLine: '{u} صارفین • {d} عطیات • {p} زیر التواء درخواستیں',
     verifyTitle: 'ریسٹورنٹ کی تصدیق کریں', noUnverified: 'کوئی غیر تصدیق شدہ ریسٹورنٹ نہیں۔ تمام {n} تصدیق شدہ ہیں۔', verifyBtn: 'تصدیق کریں',
     reqTitle: 'ریسٹورنٹ کی درخواستیں', noReq: 'ابھی کوئی درخواست نہیں۔', approveBtn: 'منظور کریں', rejectBtn: 'مسترد کریں',
-    weeklyTitle: 'ہفتہ وار رپورٹ (پچھلے 7 دن)', weeklyNote: 'پچھلے 7 دنوں میں ادا شدہ عطیات اور پیش شدہ کھانے، فی ریسٹورنٹ۔ وصول کنندہ کا کوئی ڈیٹا نہیں — صرف تعداد۔',
+    weeklyTitle: 'ہفتہ وار رپورٹ (پچھلے 7 دن)', weeklyChart: 'فی ریسٹورنٹ عطیہ بمقابلہ پیش شدہ (پچھلے 7 دن)', weeklyNote: 'پچھلے 7 دنوں میں ادا شدہ عطیات اور پیش شدہ کھانے، فی ریسٹورنٹ۔ وصول کنندہ کا کوئی ڈیٹا نہیں — صرف تعداد۔',
     loadReport: 'ہفتہ وار رپورٹ لوڈ کریں', downloadCsv: 'CSV ڈاؤن لوڈ کریں',
     weeklyRow: '{n} — {d} عطیہ، {s} پیش شدہ (پچھلے 7 دن) • {a} ابھی دستیاب • {t} کل پیش شدہ',
     weeklyTotal: 'کل: {d} عطیہ، {s} پیش شدہ (پچھلے 7 دن) • {a} ابھی دستیاب',
@@ -316,7 +316,7 @@ const T = {
     overviewLine: '{u} استعمال ڪندڙ • {d} عطيا • {p} التوا واريون درخواستون',
     verifyTitle: 'ريسٽورنٽ جي تصديق ڪريو', noUnverified: 'ڪو غير تصديق ٿيل ريسٽورنٽ ناهي. سڀ {n} تصديق ٿيل آهن.', verifyBtn: 'تصديق ڪريو',
     reqTitle: 'ريسٽورنٽ جون درخواستون', noReq: 'هينئر تائين ڪا درخواست ناهي.', approveBtn: 'منظور ڪريو', rejectBtn: 'رد ڪريو',
-    weeklyTitle: 'هفتيوار رپورٽ (پوئين 7 ڏينهن)', weeklyNote: 'پوئين 7 ڏينهن ۾ ادا ٿيل عطيا ۽ پيش ٿيل کاڌا، في ريسٽورنٽ. وصول ڪندڙ جو ڪو ڊيٽا ناهي — صرف تعداد.',
+    weeklyTitle: 'هفتيوار رپورٽ (پوئين 7 ڏينهن)', weeklyChart: 'في ريسٽورنٽ عطيو بمقابلو پيش ٿيل (پوئين 7 ڏينهن)', weeklyNote: 'پوئين 7 ڏينهن ۾ ادا ٿيل عطيا ۽ پيش ٿيل کاڌا، في ريسٽورنٽ. وصول ڪندڙ جو ڪو ڊيٽا ناهي — صرف تعداد.',
     loadReport: 'هفتيوار رپورٽ لوڊ ڪريو', downloadCsv: 'CSV ڊائون لوڊ ڪريو',
     weeklyRow: '{n} — {d} عطيا، {s} پيش ٿيل (پوئين 7 ڏينهن) • {a} هاڻي دستياب • {t} ڪل پيش ٿيل',
     weeklyTotal: 'ڪل: {d} عطيا، {s} پيش ٿيل (پوئين 7 ڏينهن) • {a} هاڻي دستياب',
@@ -400,6 +400,38 @@ const DailyBars = ({ daily }) => {
             <rect x={x + bw + 4} y={base - hS} width={bw} height={hS} fill="#2e9e6b" rx="4" />
             <text x={x + bw + 2} y={base + 16} textAnchor="middle" fontSize="12" fontWeight="700" fill="#172428">{d.label}</text>
             <text x={x + bw + 2} y={base - Math.max(hD, hS) - 6} textAnchor="middle" fontSize="11" fontWeight="800" fill="#172428">{d.donated}/{d.served}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
+
+// Weekly bars (Admin weekly report): donated (gold) vs served (green) per
+// restaurant, last 7 days — same flat style as DailyBars, colours match the
+// legend. Labels are the restaurant name, shortened to fit under the bars.
+const WeeklyBars = ({ rows }) => {
+  const max = Math.max(1, ...rows.flatMap((r) => [r.donated7, r.served7]));
+  const W = 560, H = 200, base = 170, pad = 10;
+  const n = Math.max(1, rows.length);
+  const gw = (W - 2 * pad) / n;
+  const bw = Math.min(30, Math.floor((gw - 14) / 2));
+  const x0 = pad;
+  const label = (name) => (name.length > 12 ? name.slice(0, 12) + '…' : name);
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block', maxWidth: '100%' }} role="img">
+      <line x1="10" y1={base} x2={W - 10} y2={base} stroke="#172428" strokeWidth="2" />
+      {rows.map((r, i) => {
+        const x = x0 + i * gw + (gw - (2 * bw + 4)) / 2;
+        const hD = Math.round((r.donated7 / max) * 130);
+        const hS = Math.round((r.served7 / max) * 130);
+        return (
+          <g key={r.id}>
+            <rect x={x} y={base - hD} width={bw} height={hD} fill="#f4c35e" rx="4" />
+            <rect x={x + bw + 4} y={base - hS} width={bw} height={hS} fill="#2e9e6b" rx="4" />
+            <text x={x + bw + 2} y={base + 16} textAnchor="middle" fontSize="12" fontWeight="700" fill="#172428">{label(r.name)}</text>
+            <text x={x + bw + 2} y={base - Math.max(hD, hS) - 6} textAnchor="middle" fontSize="11" fontWeight="800" fill="#172428">{r.donated7}/{r.served7}</text>
           </g>
         );
       })}
@@ -840,6 +872,11 @@ export default function App() {
                 <p className="muted">{t.weeklyNote}</p>
                 <button className="btn tomato" onClick={async () => { try { setReport(await api('/admin/report')); } catch (e) { setMsg(e.message); } }}>{t.loadReport}</button>{' '}
                 {report && (<button className="btn outline" onClick={() => { const rows = [['Restaurant', 'Area', 'Donated (last 7 days)', 'Served (last 7 days)', 'Available now', 'Served total']]; report.rows.forEach((r) => rows.push([r.name, r.area, r.donated7, r.served7, r.available, r.servedTotal])); rows.push(['TOTAL', '', report.totals.donated7, report.totals.served7, report.totals.available, report.totals.servedTotal]); const csv = rows.map((r) => r.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n'); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' })); a.download = 'pay-it-forward-weekly-report.csv'; a.click(); }}>{t.downloadCsv}</button>)}
+                {report && (<div style={{ marginTop: 12 }}>
+                  <h3 style={{ marginTop: 4 }}>{t.weeklyChart}</h3>
+                  <p className="legend"><span className="dot dot-gold"></span> {t.gDonated} <span className="dot dot-green"></span> {t.gServed}</p>
+                  <WeeklyBars rows={report.rows} />
+                </div>)}
                 {report && (<div style={{ marginTop: 12 }}>{report.rows.map((r) => (<p key={r.id}>{fmt(t.weeklyRow, { n: r.name, d: r.donated7, s: r.served7, a: r.available, t: r.servedTotal })}</p>))}<p><b>{fmt(t.weeklyTotal, { d: report.totals.donated7, s: report.totals.served7, a: report.totals.available })}</b></p></div>)}
               </div>
               <div className="card"><h3>{t.pricesTitle}</h3>
