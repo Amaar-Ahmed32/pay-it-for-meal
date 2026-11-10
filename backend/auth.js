@@ -52,7 +52,7 @@ function requireRole(...roles) {
 
 // Never send the password hash to the frontend.
 function pubUser(u) {
-  return u ? { id: u.id, name: u.name, email: u.email, role: u.role, restaurant_id: u.restaurant_id, language: u.language, show_name: u.show_name === undefined || u.show_name === null ? 1 : u.show_name } : null;
+  return u ? { id: u.id, name: u.name, email: u.email, role: u.role, restaurant_id: u.restaurant_id, photo: u.photo || null, language: u.language, show_name: u.show_name === undefined || u.show_name === null ? 1 : u.show_name } : null;
 }
 
 module.exports = { hashPassword, checkPassword, sign, auth, requireRole, pubUser };

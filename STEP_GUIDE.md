@@ -94,3 +94,26 @@ Say "next" when you are ready for the next step. Do not skip ahead — each file
   (pending, available stays 11) → confirm → sandbox_paid, 44/31/13 → admin
   serve 1 → 44/32/12 → oldest donor (Ahmed Raza) got the "Your meal was
   served" notification. Restart does NOT re-seed.
+
+## Design audit + redesign (2026-11-10, done — full audit of every colour/button/text)
+Audit found and fixed in frontend/src/styles.css + App.jsx:
+- 5 greens -> ONE teal #17765f (+ dark #0f5a46, deep text #14532d, served green #2e9e6b); 3 light-green surfaces -> ONE #dcf5ec; legend swatch now matches its bar colour (#f4c35e gold / #2e9e6b green).
+- 2 muted greys -> ONE muted #4b5563; one border #e5e7eb (+ #d1d5db for inputs/buttons); one card radius 20px (24px hero/banner, 12px inputs, 999px pills).
+- One button system: same height/padding/radius everywhere, one disabled opacity (.6), dark text on orange/yellow, white text only on dark teal/green; inputs now have a focus ring too.
+- One heading scale (page h2 28px, card h2 24px, card h3 20px). Dead code removed: .btn.green, .trustbar, .card.dark-panel, header h1 rules, 13 unused translation keys (ticker x6, donatedChip, gRestaurants, transServed/transDonated/transAt/transNone, usersOnFile).
+- Inline styles that duplicated CSS moved into classes: .callout, .sandbox-card, .goal-track/.goal-fill, .badge-right, .legend/.dot, .served-number, .staff-row, .avatar.
+- Design tokens live in :root in styles.css. Translation parity re-checked: 111 keys in en/ur/sd, no gaps.
+- Nothing else changed: dummy data, sandbox, Admin graphs, logo, staff manager, hamburger all kept. Ticker strip still NOT re-added.
+
+## Transparency monthly graph (2026-11-10, done — replaces the anonymous donation feed)
+- Transparency page now shows a graph dashboard instead of the "Anonymous donor donated X meals" feed: a bar chart of meals donated vs served per month (last 6 months, grouped bars, value axis, legend below — like the example image), plus per-restaurant available-meals bars and totals. Donor names stay on the Leaderboard only.
+- Backend: GET /api/transparency/monthly (public) returns [{month:'2026-06', donated, served}, ...] for the last 6 months. Frontend draws it with pure SVG (MonthlyBars in App.jsx, no new dependencies).
+- Demo seed dates spread over Jun-Nov 2026 so the chart has 6 real months: donated Jun 8, Jul 7, Aug 6, Sep 9, Oct 4, Nov 8 = 42; served Jun 6, Jul 5, Aug 4, Sep 6, Oct 2, Nov 8 = 31. A cluster stays in the last 7 days (8 donated, 8 served) so the Admin 7-day chart still has recent data. Totals still exactly 42/31/11. Served rows are counts only — no recipient is ever named.
+
+## Staff photo — compulsory (2026-11-10, done)
+- Both staff forms (Admin "Create staff/admin account" AND Restaurant "Add a staff member") REQUIRE a photo of the staff member: image file input (JPG/PNG, max 500KB) with a preview before submitting. The form does not submit without a photo (checked in the browser AND on the server — missing photo = 400, oversized = 400).
+- Backend: users.photo TEXT holds the photo as a data URL (migration adds the column to old DBs; the owner-rebuild keeps it). POST /api/restaurant/staff and POST /api/admin/users (staff/owner roles) reject without a valid photo. GET /api/restaurant/staff and GET /api/admin/users return the photo; pubUser includes it.
+- Team/staff lists show the photo as a round avatar; staff without a photo (old seeded rows) fall back to teal initials.
+- Note: express.json limit raised to 1mb so a ~500KB photo (base64 text) is accepted.
+- Demo accounts (all in this file's earlier sections still apply): admin admin@payitforward.school / Admin123!, owner owner@payitforward.school / Owner123! (Sindh Biryani House), demo donors ahmed.raza@demo.school, sana.khan@demo.school, fatima.memon@demo.school, bilal.ahmed@demo.school, kind.neighbour@demo.school — all Demo123!.
+- Testing lesson (2026-11-10): NEVER run two backend servers at once on the same port/DB. A stale server from an earlier test kept port 5005 and its DB file; deleting the DB file while it was open caused "disk I/O error" mid-seed (partial demo data) and EADDRINUSE for the new server. Always kill old servers by PID first (never `pkill -f` with the command text — it SIGTERMs your own shell), delete the DB + -journal files, then start ONE server.

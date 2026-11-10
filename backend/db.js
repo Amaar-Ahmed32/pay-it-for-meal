@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL,
   role TEXT NOT NULL CHECK(role IN ('donor','staff','admin','owner')),
-  restaurant_id INTEGER, staff_role TEXT, language TEXT DEFAULT 'en', show_name INTEGER DEFAULT 1,
+  restaurant_id INTEGER, staff_role TEXT, photo TEXT, language TEXT DEFAULT 'en', show_name INTEGER DEFAULT 1,
   created_at TEXT DEFAULT (datetime('now'))
 );
 CREATE TABLE IF NOT EXISTS restaurants (
@@ -129,34 +129,51 @@ function seedDemoData() {
         .run(name, email, demoPass, show);
       donorIds[email] = info.lastInsertRowid;
     }
-    // [donor, restaurantId, qty, servedQty, method, daysAgo, txnRef, amountPkr]
+    // [donor, restaurantId, qty, servedQty, method, ISO date, txnRef, amountPkr]
+    // Dates spread over Jun-Nov 2026 so the Transparency monthly chart has
+    // 6 real months (Jun 8, Jul 7, Aug 6, Sep 9, Oct 4, Nov 8 = 42 donated),
+    // with a cluster in the last 7 days (Nov 4 + 9 + 10 = 8) so the Admin
+    // 7-day chart still has recent data. Same rows, same totals as before.
     const donations = [
-      ['ahmed.raza@demo.school', 1, 8, 6, 'JazzCash', 6, 'PIFM-DEMO-0001', 2400],
-      ['sana.khan@demo.school', 1, 7, 5, 'Easypaisa', 4, 'PIFM-DEMO-0002', 2100],
-      ['fatima.memon@demo.school', 1, 6, 4, 'JazzCash', 2, 'PIFM-DEMO-0003', 1800],
-      ['bilal.ahmed@demo.school', 1, 4, 3, 'Card', 1, 'PIFM-DEMO-0004', 1200],
-      ['ahmed.raza@demo.school', 2, 6, 5, 'JazzCash', 5, 'PIFM-DEMO-0005', 1500],
-      ['sana.khan@demo.school', 2, 4, 3, 'Easypaisa', 3, 'PIFM-DEMO-0006', 1000],
-      ['kind.neighbour@demo.school', 2, 2, 1, 'JazzCash', 0, 'PIFM-DEMO-0007', 500],
-      ['fatima.memon@demo.school', 3, 3, 2, 'JazzCash', 2, 'PIFM-DEMO-0008', 840],
-      ['bilal.ahmed@demo.school', 3, 2, 2, 'Card', 1, 'PIFM-DEMO-0009', 560],
+      ['ahmed.raza@demo.school', 1, 8, 6, 'JazzCash', '2026-06-14T12:00:00.000Z', 'PIFM-DEMO-0001', 2400],
+      ['sana.khan@demo.school', 1, 7, 5, 'Easypaisa', '2026-07-10T12:00:00.000Z', 'PIFM-DEMO-0002', 2100],
+      ['fatima.memon@demo.school', 1, 6, 4, 'JazzCash', '2026-09-08T12:00:00.000Z', 'PIFM-DEMO-0003', 1800],
+      ['bilal.ahmed@demo.school', 1, 4, 3, 'Card', '2026-11-09T12:00:00.000Z', 'PIFM-DEMO-0004', 1200],
+      ['ahmed.raza@demo.school', 2, 6, 5, 'JazzCash', '2026-08-12T12:00:00.000Z', 'PIFM-DEMO-0005', 1500],
+      ['sana.khan@demo.school', 2, 4, 3, 'Easypaisa', '2026-10-06T12:00:00.000Z', 'PIFM-DEMO-0006', 1000],
+      ['kind.neighbour@demo.school', 2, 2, 1, 'JazzCash', '2026-11-10T12:00:00.000Z', 'PIFM-DEMO-0007', 500],
+      ['fatima.memon@demo.school', 3, 3, 2, 'JazzCash', '2026-09-21T12:00:00.000Z', 'PIFM-DEMO-0008', 840],
+      ['bilal.ahmed@demo.school', 3, 2, 2, 'Card', '2026-11-04T12:00:00.000Z', 'PIFM-DEMO-0009', 560],
     ];
-    for (const [email, rid, qty, servedQty, method, days, txn, amount] of donations) {
+    for (const [email, rid, qty, servedQty, method, iso, txn, amount] of donations) {
       db.prepare(`INSERT INTO donations (donor_id, restaurant_id, quantity, served_qty, method, payment_status, txn_ref, amount_pkr, created_at)
         VALUES (?,?,?,?,?,'sandbox_paid',?,?,?)`)
-        .run(donorIds[email], rid, qty, servedQty, method, txn, amount, daysAgo(days));
+        .run(donorIds[email], rid, qty, servedQty, method, txn, amount, iso);
     }
-    // Served meals, spread over the last 7 days so the Admin graphs have a series.
-    // Per restaurant, index = days ago: Sindh 18, Mehran 9, Al-Madina 4 (total 31).
+    // Served meals, spread over Jun-Nov 2026 so the Transparency monthly
+    // chart has 6 real months (Jun 6, Jul 5, Aug 4, Sep 6, Oct 2, Nov 8 = 31),
+    // with 8 serves in the last 7 days so the Admin 7-day chart still has
+    // recent data. Per restaurant: Sindh 18, Mehran 9, Al-Madina 4.
+    // Counts only — no recipient is ever recorded.
     const adminId = db.prepare("SELECT id FROM users WHERE role='admin' LIMIT 1").get()?.id || null;
-    const servedPlan = { 1: [4, 3, 3, 2, 2, 2, 2], 2: [2, 2, 1, 1, 1, 1, 1], 3: [1, 1, 1, 0, 1, 0, 0] };
-    for (const [rid, plan] of Object.entries(servedPlan)) {
-      plan.forEach((count, days) => {
-        for (let i = 0; i < count; i++) {
-          db.prepare('INSERT INTO served_meals (restaurant_id, served_by, served_at) VALUES (?,?,?)')
-            .run(Number(rid), adminId, daysAgo(days));
-        }
-      });
+    const servedRows = [
+      // [restaurantId, date] — Sindh Biryani House (18)
+      [1, '2026-06-14'], [1, '2026-06-15'], [1, '2026-06-16'], [1, '2026-06-17'],
+      [1, '2026-07-10'], [1, '2026-07-11'], [1, '2026-07-12'],
+      [1, '2026-08-12'], [1, '2026-08-13'],
+      [1, '2026-09-08'], [1, '2026-09-09'], [1, '2026-09-21'],
+      [1, '2026-10-06'],
+      [1, '2026-11-04'], [1, '2026-11-06'], [1, '2026-11-08'], [1, '2026-11-09'], [1, '2026-11-10'],
+      // Mehran Restaurant (9)
+      [2, '2026-06-15'], [2, '2026-07-11'], [2, '2026-08-13'],
+      [2, '2026-09-09'], [2, '2026-09-22'], [2, '2026-10-07'],
+      [2, '2026-11-05'], [2, '2026-11-09'], [2, '2026-11-10'],
+      // Al-Madina Foods (4)
+      [3, '2026-06-16'], [3, '2026-07-12'], [3, '2026-08-14'], [3, '2026-09-22'],
+    ];
+    for (const [rid, d] of servedRows) {
+      db.prepare('INSERT INTO served_meals (restaurant_id, served_by, served_at) VALUES (?,?,?)')
+        .run(rid, adminId, d + 'T12:00:00.000Z');
     }
     // Restaurant counters must match the rows above (donated = served + available).
     db.prepare('UPDATE restaurants SET available=7, served=18 WHERE id=1').run();
@@ -192,11 +209,11 @@ try {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL,
         role TEXT NOT NULL CHECK(role IN ('donor','staff','admin','owner')),
-        restaurant_id INTEGER, staff_role TEXT, language TEXT DEFAULT 'en', show_name INTEGER DEFAULT 1,
+        restaurant_id INTEGER, staff_role TEXT, photo TEXT, language TEXT DEFAULT 'en', show_name INTEGER DEFAULT 1,
         created_at TEXT DEFAULT (datetime('now'))
       );
-      INSERT INTO users_new (id, name, email, password_hash, role, restaurant_id, staff_role, language, show_name, created_at)
-        SELECT id, name, email, password_hash, role, restaurant_id, NULL, language, show_name, created_at FROM users;
+      INSERT INTO users_new (id, name, email, password_hash, role, restaurant_id, staff_role, photo, language, show_name, created_at)
+        SELECT id, name, email, password_hash, role, restaurant_id, NULL, NULL, language, show_name, created_at FROM users;
       DROP TABLE users;
       ALTER TABLE users_new RENAME TO users;
     `);
@@ -229,6 +246,15 @@ for (const col of ['txn_ref TEXT', 'amount_pkr INTEGER DEFAULT 0']) {
   const has = db.prepare("SELECT COUNT(*) c FROM pragma_table_info('donations') WHERE name=?").get(name).c;
   if (!has) db.exec(`ALTER TABLE donations ADD COLUMN ${col}`);
 }
+
+// Migration for staff photos (2026-11-10): users.photo TEXT holds the staff
+// member's photo as a data URL (JPG/PNG, max ~500KB). Old rows keep NULL
+// photo and show initials instead. Runs after the owner rebuild above so
+// the column is not lost when an old users table is rebuilt.
+try {
+  const has = db.prepare("SELECT COUNT(*) c FROM pragma_table_info('users') WHERE name='photo'").get().c;
+  if (!has) db.exec('ALTER TABLE users ADD COLUMN photo TEXT');
+} catch (e) { console.log('photo migration skipped -', e.message); }
 
 // Migration for Top-3 features (2026-10-31): per-restaurant price + donor privacy.
 // Older DBs have no meal_price_pkr / show_name columns — add them, keep existing data.

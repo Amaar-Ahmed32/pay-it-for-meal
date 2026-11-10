@@ -29,8 +29,8 @@ const T = {
     needLine: 'Need a meal? No login, no questions, no form — just ask staff at a listed restaurant.',
     availLine: '{n} meal(s) available right now — find one near you, or donate to keep the shelf full.',
     noAvailLine: 'No meals available right now — be the first donor today.',
-    servedChip: 'Your meal was served!', availChip: '{n} meals available today', donatedChip: 'Donated',
-    tickerDonate: 'DONATE A MEAL', tickerHunger: 'ZERO HUNGER', tickerPoverty: 'NO POVERTY', tickerVerified: 'VERIFIED PARTNER RESTAURANTS', tickerPrivate: 'THE PERSON WHO RECEIVES STAYS PRIVATE', tickerLang: 'ENGLISH · اردو · سنڌي',
+    servedChip: 'Your meal was served!', availChip: '{n} meals available today', 
+    
     liveDash: 'Live dashboard', liveNote: 'Numbers come live from the database. Nothing is typed in by hand.',
     donated: 'Donated', served: 'Served', available: 'Available now', byRest: 'By restaurant', noRest: 'No partner restaurants with meals right now. Be the first donor!',
     goal: 'Pilot goal: {n} of {g} meals donated', goalPct: '{p}% of pilot goal', goalServed: '{n} served so far', goalReached: '🎉 Pilot goal reached!',
@@ -95,18 +95,28 @@ const T = {
     loadReport: 'Load weekly report', downloadCsv: 'Download CSV',
     weeklyRow: '{n} — {d} donated, {s} served (last 7 days) • {a} available now • {t} served total',
     weeklyTotal: 'Total: {d} donated, {s} served (last 7 days) • {a} available now',
-    gTitle: 'Graphs — meals at a glance', gNote: 'Admin only. Counts only — no recipient data.', gDaily: 'Last 7 days — donated vs served', gAvail: 'Available meals per restaurant', gDonated: 'Donated', gServed: 'Served', gServedPct: 'Served %', gRestaurants: 'Restaurants',
+    gTitle: 'Graphs — meals at a glance', gNote: 'Admin only. Counts only — no recipient data.', gDaily: 'Last 7 days — donated vs served', gAvail: 'Available meals per restaurant', gDonated: 'Donated', gServed: 'Served', gServedPct: 'Served %', 
     pricesTitle: 'Restaurant prices (per restaurant)', pricePerMeal: 'Rs {n}/meal', unverified: '(unverified)',
     chooseRest: 'Choose restaurant…', newPrice: 'New meal price (Rs 50–2000)', savePrice: 'Save price', priceSaved: 'Meal price updated.',
     createStaffTitle: 'Create staff / admin account', roleRestLabel: 'Role + linked restaurant (staff must have one)',
-    createStaffBtn: 'Create staff account', staffCreated: 'Staff account created.', usersOnFile: 'Users on file: {n}',
+    createStaffBtn: 'Create staff account', staffCreated: 'Staff account created.', 
     addRestTitle: 'Add a restaurant', restName: 'Name', restArea: 'Area', restMeal: 'Meal', restTimings: 'Timings', mealPrice: 'Meal price (Rs)',
     addRestBtn: 'Add restaurant (unverified)', restAdded: 'Restaurant added (unverified until you Verify it).',
     boardDonors: 'Top donors (by meals served)', boardRest: 'Top restaurants', noDonors: 'No donors yet.',
     boardDonated: '{d} donated, {s} served',
     transTitle: 'Transparency — every paid meal, in public',
-    transNote: 'Paid donations and serves only. No recipient is ever named, photographed, or described. Donors appear by name only if they chose to — otherwise ‘Anonymous donor’.',
-    transServed: '🍲 Served', transDonated: '💛 {n} donated {q}', transAt: 'at {n}', transNone: 'No paid donations or serves yet.',
+    transNote: 'Graphs from real donation and serve records. No recipient is ever named, photographed, or described. Donors appear by name on the Leaderboard only if they chose to — otherwise ‘Anonymous donor’.',
+    transGraphTitle: 'Meals by month — donated vs served',
+    transGraphNote: 'Last 6 months, from real donation and serve records. Counts only — no recipient is ever named.',
+    transAvailTitle: 'Available meals per restaurant',
+    transTotals: '{d} donated • {s} served • {a} available now',
+    photoLabel: 'Photo of staff member (required)',
+    photoHint: 'JPG or PNG, max 500KB. The photo shows in the team list.',
+    photoRequired: 'A photo of the staff member is required.',
+    photoTooLarge: 'Photo is too large — max 500KB.',
+    photoType: 'Photo must be a JPG or PNG image.',
+    photoChoose: 'Choose photo',
+    
     anon: 'Anonymous donor',
     joinTitle: 'Join as a restaurant', joinNote: 'Your request starts UNVERIFIED and hidden from the public Finder until admin approves it. Checklist: name, area, meal and timings, and you agree to serve without questions.',
     contactLabel: 'Contact name / phone', sendBtn: 'Send request', joinSent: 'Request sent! Admin will review it. It will NOT show publicly until approved.',
@@ -134,8 +144,8 @@ const T = {
     needLine: 'کھانا چاہیے؟ کوئی لاگ ان نہیں، کوئی سوال نہیں، کوئی فارم نہیں — بس درج ریسٹورنٹ کے عملے سے پوچھیں۔',
     availLine: 'ابھی {n} کھانے دستیاب ہیں — اپنے قریب تلاش کریں، یا عطیہ دے کر شیلف بھرا رکھیں۔',
     noAvailLine: 'ابھی کوئی کھانا دستیاب نہیں — آج پہلے عطیہ دہندہ بنیں۔',
-    servedChip: 'آپ کا کھانا پیش کر دیا گیا!', availChip: 'آج {n} کھانے دستیاب ہیں', donatedChip: 'عطیہ شدہ',
-    tickerDonate: 'کھانا عطیہ کریں', tickerHunger: 'بھوک ختم کریں', tickerPoverty: 'غربت ختم کریں', tickerVerified: 'تصدیق شدہ پارٹنر ریسٹورنٹ', tickerPrivate: 'وصول کنندہ کی شناخت ہمیشہ نجی رہتی ہے', tickerLang: 'ENGLISH · اردو · سنڌي',
+    servedChip: 'آپ کا کھانا پیش کر دیا گیا!', availChip: 'آج {n} کھانے دستیاب ہیں', 
+    
     liveDash: 'لائیو ڈیش بورڈ', liveNote: 'اعداد ڈیٹا بیس سے براہ راست آتے ہیں۔ کچھ بھی ہاتھ سے نہیں لکھا جاتا۔',
     donated: 'عطیہ شدہ', served: 'پیش شدہ', available: 'ابھی دستیاب', byRest: 'ریسٹورنٹ کے حساب سے', noRest: 'ابھی کسی پارٹنر ریسٹورنٹ میں کھانا نہیں ہے۔ پہلے عطیہ دہندہ بنیں!',
     goal: 'پائلٹ ہدف: {g} میں سے {n} کھانے عطیہ ہوئے', goalPct: 'ہدف کا {p}٪', goalServed: 'اب تک {n} پیش ہوئے', goalReached: '🎉 پائلٹ ہدف مکمل!',
@@ -200,18 +210,28 @@ const T = {
     loadReport: 'ہفتہ وار رپورٹ لوڈ کریں', downloadCsv: 'CSV ڈاؤن لوڈ کریں',
     weeklyRow: '{n} — {d} عطیہ، {s} پیش شدہ (پچھلے 7 دن) • {a} ابھی دستیاب • {t} کل پیش شدہ',
     weeklyTotal: 'کل: {d} عطیہ، {s} پیش شدہ (پچھلے 7 دن) • {a} ابھی دستیاب',
-    gTitle: 'گراف — کھانوں کا جائزہ', gNote: 'صرف ایڈمن کے لیے۔ صرف تعداد — وصول کنندہ کا کوئی ڈیٹا نہیں۔', gDaily: 'آخری 7 دن — عطیہ بمقابلہ پیش کردہ', gAvail: 'ہر ریسٹورنٹ میں دستیاب کھانے', gDonated: 'عطیہ', gServed: 'پیش کردہ', gServedPct: 'پیش کردہ ٪', gRestaurants: 'ریسٹورنٹس',
+    gTitle: 'گراف — کھانوں کا جائزہ', gNote: 'صرف ایڈمن کے لیے۔ صرف تعداد — وصول کنندہ کا کوئی ڈیٹا نہیں۔', gDaily: 'آخری 7 دن — عطیہ بمقابلہ پیش کردہ', gAvail: 'ہر ریسٹورنٹ میں دستیاب کھانے', gDonated: 'عطیہ', gServed: 'پیش کردہ', gServedPct: 'پیش کردہ ٪', 
     pricesTitle: 'ریسٹورنٹ کی قیمتیں (فی ریسٹورنٹ)', pricePerMeal: 'فی کھانا {n} روپے', unverified: '(غیر تصدیق شدہ)',
     chooseRest: 'ریسٹورنٹ منتخب کریں…', newPrice: 'کھانے کی نئی قیمت (50–2000 روپے)', savePrice: 'قیمت محفوظ کریں', priceSaved: 'کھانے کی قیمت اپ ڈیٹ ہو گئی۔',
     createStaffTitle: 'اسٹاف / ایڈمن اکاؤنٹ بنائیں', roleRestLabel: 'کردار + منسلک ریسٹورنٹ (اسٹاف کے لیے ضروری)',
-    createStaffBtn: 'اسٹاف اکاؤنٹ بنائیں', staffCreated: 'اسٹاف اکاؤنٹ بن گیا۔', usersOnFile: 'رجسٹرڈ صارفین: {n}',
+    createStaffBtn: 'اسٹاف اکاؤنٹ بنائیں', staffCreated: 'اسٹاف اکاؤنٹ بن گیا۔', 
     addRestTitle: 'ریسٹورنٹ شامل کریں', restName: 'نام', restArea: 'علاقہ', restMeal: 'کھانا', restTimings: 'اوقات', mealPrice: 'کھانے کی قیمت (روپے)',
     addRestBtn: 'ریسٹورنٹ شامل کریں (غیر تصدیق شدہ)', restAdded: 'ریسٹورنٹ شامل کر دیا گیا (تصدیق تک غیر تصدیق شدہ)۔',
     boardDonors: 'سب سے زیادہ عطیہ دہندگان (پیش شدہ کھانوں کے حساب سے)', boardRest: 'سب سے زیادہ ریسٹورنٹ', noDonors: 'ابھی کوئی عطیہ دہندہ نہیں۔',
     boardDonated: '{d} عطیہ، {s} پیش شدہ',
     transTitle: 'شفافیت — ہر ادا شدہ کھانا، سب کے سامنے',
-    transNote: 'صرف ادا شدہ عطیات اور پیش شدہ کھانے۔ وصول کنندہ کا نام، تصویر یا تفصیل کبھی نہیں۔ عطیہ دہندہ کا نام صرف اس صورت میں ظاہر ہوتا ہے جب اس نے چاہا ہو — ورنہ ‘Anonymous donor’۔',
-    transServed: '🍲 پیش کیا گیا', transDonated: '💛 {n} نے {q} عطیہ کیے', transAt: '{n} میں', transNone: 'ابھی کوئی ادا شدہ عطیہ یا پیش شدہ کھانا نہیں۔',
+    transNote: 'اصلی عطیہ اور پیش کردہ ریکارڈ سے گراف۔ وصول کنندہ کا نام، تصویر یا تفصیل کبھی نہیں۔ عطیہ دہندہ کا نام صرف لیڈر بورڈ پر ظاہر ہوتا ہے جب اس نے چاہا ہو — ورنہ ‘Anonymous donor’۔',
+    transGraphTitle: 'ماہ کے حساب سے کھانے — عطیہ بمقابلہ پیش کردہ',
+    transGraphNote: 'پچھلے 6 ماہ، اصلی عطیہ اور پیش کردہ ریکارڈ سے۔ صرف تعداد — وصول کنندہ کا نام کبھی نہیں۔',
+    transAvailTitle: 'ہر ریسٹورنٹ میں دستیاب کھانے',
+    transTotals: '{d} عطیہ • {s} پیش شدہ • {a} ابھی دستیاب',
+    photoLabel: 'اسٹاف ممبر کی تصویر (ضروری)',
+    photoHint: 'JPG یا PNG، زیادہ سے زیادہ 500KB۔ تصویر ٹیم کی فہرست میں دکھائی دے گی۔',
+    photoRequired: 'اسٹاف ممبر کی تصویر ضروری ہے۔',
+    photoTooLarge: 'تصویر بہت بڑی ہے — زیادہ سے زیادہ 500KB۔',
+    photoType: 'تصویر JPG یا PNG ہونی چاہیے۔',
+    photoChoose: 'تصویر منتخب کریں',
+    
     anon: 'Anonymous donor',
     joinTitle: 'ریسٹورنٹ بنیں', joinNote: 'آپ کی درخواست غیر تصدیق شدہ شروع ہوتی ہے اور ایڈمن کی منظوری تک عوامی Finder میں چھپی رہتی ہے۔ چیک لسٹ: نام، علاقہ، کھانا اور اوقات، اور آپ بغیر سوال پوچھے پیش کرنے پر راضی ہیں۔',
     contactLabel: 'رابطہ نام / فون', sendBtn: 'درخواست بھیجیں', joinSent: 'درخواست بھیج دی گئی! ایڈمن جائزہ لے گا۔ منظوری تک یہ عوامی طور پر نہیں دکھائی دے گی۔',
@@ -239,8 +259,8 @@ const T = {
     needLine: 'کاڌو گهرجي؟ ڪو لاگ ان ناهي، ڪو سوال ناهي، ڪو فارم ناهي — بس درج ٿيل ريسٽورنٽ جي اسٽاف کان پڇو.',
     availLine: 'هاڻي {n} کاڌا دستياب آهن — پنهنجي ويجهو ڳوليو، يا عطيو ڏئي شيلف ڀريو رکو.',
     noAvailLine: 'هاڻي ڪو کاڌو دستياب ناهي — اڄ پهريون عطيو ڏيندڙ ٿيو.',
-    servedChip: 'توهان جو کاڌو پيش ڪيو ويو!', availChip: 'اڄ {n} کاڌا دستياب آهن', donatedChip: 'عطيو ٿيل',
-    tickerDonate: 'کاڌو عطيو ڪريو', tickerHunger: 'بک ختم ڪريو', tickerPoverty: 'غربت ختم ڪريو', tickerVerified: 'تصديق ٿيل پارٽنر ريسٽورنٽ', tickerPrivate: 'وصول ڪندڙ جي سڃاڻپ هميشه خانگي رهي ٿي', tickerLang: 'ENGLISH · اردو · سنڌي',
+    servedChip: 'توهان جو کاڌو پيش ڪيو ويو!', availChip: 'اڄ {n} کاڌا دستياب آهن', 
+    
     liveDash: 'لائيو ڊيش بورڊ', liveNote: 'انگ ڊيٽابيس مان سڌو اچن ٿا. ڪجهه به هٿ سان ناهي لکيو ويندو.',
     donated: 'عطيو ٿيل', served: 'پيش ٿيل', available: 'هاڻي دستياب', byRest: 'ريسٽورنٽ موجب', noRest: 'هاڻي ڪنهن پارٽنر ريسٽورنٽ ۾ کاڌو ناهي. پهريون عطيو ڏيندڙ ٿيو!',
     goal: 'پائلٽ هدف: {g} مان {n} کاڌا عطيا ٿيا', goalPct: 'هدف جو {p}٪', goalServed: 'هينئر تائين {n} پيش ٿيا', goalReached: '🎉 پائلٽ هدف پورو!',
@@ -305,18 +325,28 @@ const T = {
     loadReport: 'هفتيوار رپورٽ لوڊ ڪريو', downloadCsv: 'CSV ڊائون لوڊ ڪريو',
     weeklyRow: '{n} — {d} عطيا، {s} پيش ٿيل (پوئين 7 ڏينهن) • {a} هاڻي دستياب • {t} ڪل پيش ٿيل',
     weeklyTotal: 'ڪل: {d} عطيا، {s} پيش ٿيل (پوئين 7 ڏينهن) • {a} هاڻي دستياب',
-    gTitle: 'گراف — کاڌن جو جائزو', gNote: 'صرف ايڊمن لاءِ. صرف تعداد — وصول ڪندڙ جو ڪو ڊيٽا ناهي.', gDaily: 'پوئين 7 ڏينهن — عطيو بمقابلو پيش ٿيل', gAvail: 'هر ريسٽورنٽ ۾ دستياب کاڌا', gDonated: 'عطيو', gServed: 'پيش ٿيل', gServedPct: 'پيش ٿيل ٪', gRestaurants: 'ريسٽورنٽ',
+    gTitle: 'گراف — کاڌن جو جائزو', gNote: 'صرف ايڊمن لاءِ. صرف تعداد — وصول ڪندڙ جو ڪو ڊيٽا ناهي.', gDaily: 'پوئين 7 ڏينهن — عطيو بمقابلو پيش ٿيل', gAvail: 'هر ريسٽورنٽ ۾ دستياب کاڌا', gDonated: 'عطيو', gServed: 'پيش ٿيل', gServedPct: 'پيش ٿيل ٪', 
     pricesTitle: 'ريسٽورنٽ جون قيمتون (في ريسٽورنٽ)', pricePerMeal: 'في کاڌو {n} رپيا', unverified: '(غير تصديق ٿيل)',
     chooseRest: 'ريسٽورنٽ چونڊيو…', newPrice: 'کاڌي جي نئين قيمت (50–2000 رپيا)', savePrice: 'قيمت محفوظ ڪريو', priceSaved: 'کاڌي جي قيمت اپڊيٽ ٿي وئي.',
     createStaffTitle: 'اسٽاف / ايڊمن اڪائونٽ ٺاهيو', roleRestLabel: 'ڪردار + ڳنڍيل ريسٽورنٽ (اسٽاف لاءِ ضروري)',
-    createStaffBtn: 'اسٽاف اڪائونٽ ٺاهيو', staffCreated: 'اسٽاف اڪائونٽ ٺهي ويو.', usersOnFile: 'رجسٽرڊ استعمال ڪندڙ: {n}',
+    createStaffBtn: 'اسٽاف اڪائونٽ ٺاهيو', staffCreated: 'اسٽاف اڪائونٽ ٺهي ويو.', 
     addRestTitle: 'ريسٽورنٽ شامل ڪريو', restName: 'نالو', restArea: 'علائقو', restMeal: 'کاڌو', restTimings: 'وقت', mealPrice: 'کاڌي جي قيمت (رپيا)',
     addRestBtn: 'ريسٽورنٽ شامل ڪريو (غير تصديق ٿيل)', restAdded: 'ريسٽورنٽ شامل ڪيو ويو (تصديق تائين غير تصديق ٿيل).',
     boardDonors: 'سڀ کان وڌيڪ عطيو ڏيندڙ (پيش ٿيل کاڌن موجب)', boardRest: 'سڀ کان وڌيڪ ريسٽورنٽ', noDonors: 'هينئر تائين ڪو عطيو ڏيندڙ ناهي.',
     boardDonated: '{d} عطيا، {s} پيش ٿيل',
     transTitle: 'شفافيت — هر ادا ٿيل کاڌو، سڀني جي سامهون',
-    transNote: 'صرف ادا ٿيل عطيا ۽ پيش ٿيل کاڌا. وصول ڪندڙ جو نالو، تصوير يا تفصيل ڪڏهن ناهي. عطيو ڏيندڙ جو نالو صرف ان صورت ۾ ظاهر ٿئي ٿو جڏهن هن چاهيو هجي — ورنه ‘Anonymous donor’.',
-    transServed: '🍲 پيش ڪيو ويو', transDonated: '💛 {n} {q} عطيا ڪيا', transAt: '{n} ۾', transNone: 'هينئر تائين ڪو ادا ٿيل عطيو يا پيش ٿيل کاڌو ناهي.',
+    transNote: 'حقيقي عطيي ۽ پيش ٿيل رڪارڊ مان گراف. وصول ڪندڙ جو نالو، تصوير يا تفصيل ڪڏهن ناهي. عطيو ڏيندڙ جو نالو صرف ليڊر بورڊ تي ظاهر ٿئي ٿو جڏهن هن چاهيو هجي — ورنه ‘Anonymous donor’.',
+    transGraphTitle: 'مهيني موجب کاڌا — عطيو بمقابلو پيش ٿيل',
+    transGraphNote: 'پوئين 6 مهينا، حقيقي عطيي ۽ پيش ٿيل رڪارڊ مان. صرف تعداد — وصول ڪندڙ جو نالو ڪڏهن ناهي.',
+    transAvailTitle: 'هر ريسٽورنٽ ۾ دستياب کاڌا',
+    transTotals: '{d} عطيا • {s} پيش ٿيل • {a} هاڻي دستياب',
+    photoLabel: 'اسٽاف ميمبر جي تصوير (لازمي)',
+    photoHint: 'JPG يا PNG، وڌ ۾ وڌ 500KB. تصوير ٽيم جي فهرست ۾ ڏيکاري ويندي.',
+    photoRequired: 'اسٽاف ميمبر جي تصوير لازمي آهي.',
+    photoTooLarge: 'تصوير تمام وڏي آهي — وڌ ۾ وڌ 500KB.',
+    photoType: 'تصوير JPG يا PNG هجڻ گهرجي.',
+    photoChoose: 'تصوير چونڊيو',
+    
     anon: 'Anonymous donor',
     joinTitle: 'ريسٽورنٽ ٿيو', joinNote: 'توهان جي درخواست غير تصديق ٿيل شروع ٿئي ٿي ۽ ايڊمن جي منظوري تائين عوامي Finder ۾ لڪيل رهي ٿي. چيڪ لسٽ: نالو، علائقو، کاڌو ۽ وقت، ۽ توهان بغير سوال پڇڻ جي پيش ڪرڻ تي راضي آهيو.',
     contactLabel: 'رابطو نالو / فون', sendBtn: 'درخواست موڪليو', joinSent: 'درخواست موڪلي وئي! ايڊمن جائزو وٺندو. منظوري تائين هي عوامي طور تي نه ڏيکاري ويندي.',
@@ -347,7 +377,7 @@ const badgeFor = (t, served) => (served >= 10 ? t.badgeHero : served >= 5 ? t.ba
 // school line — the big text title is gone on purpose (simple, like the PDF).
 const LogoMark = () => (
   <svg className="logo-svg" viewBox="0 0 64 64" role="img" aria-label="Pay It Forward Meal">
-    <circle cx="32" cy="32" r="29" fill="#116A4D" stroke="#172428" strokeWidth="3" />
+    <circle cx="32" cy="32" r="29" fill="#17765f" stroke="#172428" strokeWidth="3" />
     <circle cx="32" cy="32" r="23" fill="none" stroke="#F4C35E" strokeWidth="2" />
     <path d="M32 40 C25 35 21 30.5 21 25.5 A6 6 0 0 1 32 21.5 A6 6 0 0 1 43 25.5 C43 30.5 39 35 32 40 Z" fill="#F4C35E" stroke="#172428" strokeWidth="2" />
     <ellipse cx="32" cy="47" rx="13" ry="3.5" fill="#FDF6EB" stroke="#172428" strokeWidth="2" />
@@ -372,8 +402,8 @@ const DailyBars = ({ daily }) => {
         const hS = Math.round((d.served / max) * 130);
         return (
           <g key={d.day}>
-            <rect x={x} y={base - hD} width={bw} height={hD} fill="#F4C35E" stroke="#172428" strokeWidth="2" rx="4" />
-            <rect x={x + bw + 4} y={base - hS} width={bw} height={hS} fill="#2E9E6B" stroke="#172428" strokeWidth="2" rx="4" />
+            <rect x={x} y={base - hD} width={bw} height={hD} fill="#f4c35e" rx="4" />
+            <rect x={x + bw + 4} y={base - hS} width={bw} height={hS} fill="#2e9e6b" rx="4" />
             <text x={x + bw + 2} y={base + 16} textAnchor="middle" fontSize="12" fontWeight="700" fill="#172428">{d.label}</text>
             <text x={x + bw + 2} y={base - Math.max(hD, hS) - 6} textAnchor="middle" fontSize="11" fontWeight="800" fill="#172428">{d.donated}/{d.served}</text>
           </g>
@@ -382,6 +412,46 @@ const DailyBars = ({ daily }) => {
     </svg>
   );
 };
+
+
+// Monthly bars (Transparency page): donated (gold) vs served (green) per
+// month, last 6 months, with a value axis and gridlines — same flat style
+// as the Admin DailyBars, colours match the legend below the chart.
+const MonthlyBars = ({ monthly }) => {
+  const max = Math.max(1, ...monthly.flatMap((m) => [m.donated, m.served]));
+  const gridMax = Math.max(5, Math.ceil(max / 5) * 5);
+  const W = 640, H = 230, base = 190, padL = 36, padR = 10;
+  const n = Math.max(1, monthly.length);
+  const gw = (W - padL - padR) / n;
+  const bw = Math.min(30, Math.floor((gw - 14) / 2));
+  const y = (v) => base - Math.round((v / gridMax) * 140);
+  const ticks = [0, 1, 2, 3, 4].map((i) => Math.round((gridMax * i) / 4));
+  const label = (m) => { try { return new Date(m.month + '-01T00:00:00').toLocaleDateString('en-GB', { month: 'short', year: 'numeric' }); } catch { return m.month; } };
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block', maxWidth: '100%' }} role="img">
+      {ticks.map((tv) => (<g key={tv}><line x1={padL} y1={y(tv)} x2={W - padR} y2={y(tv)} stroke="#e5e7eb" strokeWidth="1" /><text x={padL - 6} y={y(tv) + 4} textAnchor="end" fontSize="11" fontWeight="700" fill="#4b5563">{tv}</text></g>))}
+      <line x1={padL} y1={base} x2={W - padR} y2={base} stroke="#172428" strokeWidth="2" />
+      {monthly.map((m, i) => {
+        const x = padL + i * gw + (gw - (2 * bw + 4)) / 2;
+        const hD = Math.round((m.donated / gridMax) * 140);
+        const hS = Math.round((m.served / gridMax) * 140);
+        return (
+          <g key={m.month}>
+            <rect x={x} y={base - hD} width={bw} height={hD} fill="#f4c35e" rx="4" />
+            <rect x={x + bw + 4} y={base - hS} width={bw} height={hS} fill="#2e9e6b" rx="4" />
+            <text x={x + bw + 2} y={base + 16} textAnchor="middle" fontSize="11" fontWeight="700" fill="#172428">{label(m)}</text>
+            <text x={x + bw + 2} y={base - Math.max(hD, hS) - 6} textAnchor="middle" fontSize="11" fontWeight="800" fill="#172428">{m.donated}/{m.served}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
+// Staff photo avatar: the uploaded photo, or teal initials when there is no photo yet.
+const Avatar = ({ photo, name, size = 48 }) => (photo
+  ? <img src={photo} alt={name || ''} className="avatar" style={{ width: size, height: size }} />
+  : <span className="avatar avatar-initials" style={{ width: size, height: size }}>{(name || '?').split(' ').map((w) => w[0]).join('').slice(0, 2).toUpperCase()}</span>);
 
 export default function App() {
   const [page, setPage] = useState('home');
@@ -392,7 +462,7 @@ export default function App() {
   const [board, setBoard] = useState(null);
   const [activity, setActivity] = useState([]);
   const [mostNeeded, setMostNeeded] = useState(null);
-  const [transparency, setTransparency] = useState([]);
+  const [monthly, setMonthly] = useState(null);
   const [filter, setFilter] = useState('All areas');
   const [onlyAvailable, setOnlyAvailable] = useState(false);
   const [msg, setMsg] = useState('');
@@ -409,13 +479,13 @@ export default function App() {
   const [notifs, setNotifs] = useState([]);
   const [adminData, setAdminData] = useState(null);
   const [report, setReport] = useState(null);
-  const [staffForm, setStaffForm] = useState({ name: '', email: '', password: '', restaurant_id: '' });
+  const [staffForm, setStaffForm] = useState({ name: '', email: '', password: '', restaurant_id: '', photo: '' });
   const [newRest, setNewRest] = useState({ name: '', area: '', meal: '', timings: '', meal_price_pkr: '' });
   const [priceEdit, setPriceEdit] = useState({ id: '', price: '' });
   const [reqForm, setReqForm] = useState({ name: '', area: '', meal: '', timings: '', contact_name: '', contact_phone: '' });
   // Restaurant owner team
   const [team, setTeam] = useState(null);
-  const [ownerForm, setOwnerForm] = useState({ name: '', email: '', password: '', staffRole: 'Counter' });
+  const [ownerForm, setOwnerForm] = useState({ name: '', email: '', password: '', staffRole: 'Counter', photo: '' });
   const t = T[lang];
 
   const api = async (path, opts = {}) => {
@@ -454,7 +524,7 @@ export default function App() {
     } catch (e) { setMsg(e.message); }
   };
   useEffect(() => { if (page === 'admin' && user?.role === 'admin') loadAdmin(); }, [page, user]);
-  useEffect(() => { if (page === 'transparency') api('/transparency').then(setTransparency).catch(() => {}); }, [page]);
+  useEffect(() => { if (page === 'transparency') { api('/transparency/monthly').then(setMonthly).catch(() => {}); } }, [page]);
 
   const loadTeam = async () => {
     try { setTeam(await api('/restaurant/staff')); } catch (e) { setMsg(e.message); }
@@ -509,10 +579,22 @@ export default function App() {
       setMsg(fmt(t.servedMsg, { a: r.restaurant.available, s: r.restaurant.served }));
     } catch (e) { setMsg(e.message); }
   };
+  // Staff photo: compulsory. Reads the chosen image (JPG/PNG, max 500KB)
+  // into a data URL and stores it in the form; the server re-checks it.
+  const onPhotoFile = (e, setForm, form) => {
+    const f = e.target.files && e.target.files[0];
+    if (!f) return;
+    if (!f.type.startsWith('image/')) { setMsg(t.photoType); e.target.value = ''; return; }
+    if (f.size > 500 * 1024) { setMsg(t.photoTooLarge); e.target.value = ''; return; }
+    const reader = new FileReader();
+    reader.onload = () => setForm({ ...form, photo: reader.result });
+    reader.readAsDataURL(f);
+  };
   const doAddStaff = async () => {
+    if (!ownerForm.photo) { setMsg(t.photoRequired); return; }
     try {
       await api('/restaurant/staff', { method: 'POST', body: JSON.stringify(ownerForm) });
-      setOwnerForm({ name: '', email: '', password: '', staffRole: 'Counter' });
+      setOwnerForm({ name: '', email: '', password: '', staffRole: 'Counter', photo: '' });
       setMsg(t.staffAdded); loadTeam();
     } catch (e) { setMsg(e.message || t.staffAddFail); }
   };
@@ -577,9 +659,9 @@ export default function App() {
               <h3>{t.liveDash}</h3>
               <p className="muted">{t.liveNote}</p>
               {stats && (<div className="dash"><div><b>{stats.donated}</b><span>{t.donated}</span></div><div><b>{stats.served}</b><span>{t.served}</span></div><div><b>{stats.available}</b><span>{t.available}</span></div></div>)}
-              {stats && (<div style={{ marginTop: 12 }}><p style={{ margin: '0 0 6px' }}><b>{fmt(t.goal, { n: stats.donated, g: PILOT_DONATION_GOAL })}</b></p><div style={{ background: '#e5e7eb', borderRadius: 999, height: 14, overflow: 'hidden' }}><div style={{ width: Math.min(100, Math.round((stats.donated / PILOT_DONATION_GOAL) * 100)) + '%', background: '#f4c35e', height: '100%' }} /></div><p className="muted" style={{ margin: '6px 0 0' }}>{fmt(t.goalPct, { p: Math.min(100, Math.round((stats.donated / PILOT_DONATION_GOAL) * 100)) })} • {fmt(t.goalServed, { n: stats.served })}{stats.donated >= PILOT_DONATION_GOAL ? ' • ' + t.goalReached : ''}</p></div>)}
+              {stats && (<div style={{ marginTop: 12 }}><p style={{ margin: '0 0 6px' }}><b>{fmt(t.goal, { n: stats.donated, g: PILOT_DONATION_GOAL })}</b></p><div className="goal-track"><div className="goal-fill" style={{ width: Math.min(100, Math.round((stats.donated / PILOT_DONATION_GOAL) * 100)) + '%' }} /></div><p className="muted" style={{ margin: '6px 0 0' }}>{fmt(t.goalPct, { p: Math.min(100, Math.round((stats.donated / PILOT_DONATION_GOAL) * 100)) })} • {fmt(t.goalServed, { n: stats.served })}{stats.donated >= PILOT_DONATION_GOAL ? ' • ' + t.goalReached : ''}</p></div>)}
               <h3 style={{ marginTop: 18 }}>{t.byRest}</h3>
-              {restaurants.filter((r) => r.available > 0).map((r) => (<p key={r.id}>{r.name} <span className="badge" style={{ float: 'right' }}>{r.available} {t.available}</span></p>))}
+              {restaurants.filter((r) => r.available > 0).map((r) => (<p key={r.id}>{r.name} <span className="badge badge-right">{r.available} {t.available}</span></p>))}
               {restaurants.filter((r) => r.available > 0).length === 0 && <p className="muted">{t.noRest}</p>}
             </div>
             <h3>{t.howTitle}</h3>
@@ -602,14 +684,14 @@ export default function App() {
         {page === 'finder' && (
           <div>
             <h2>{t.finderTitle}</h2>
-            <div className="card" style={{ background: '#dcf5ec' }}><b>{t.finderNote}</b></div>
+            <div className="card callout"><b>{t.finderNote}</b></div>
             <label>{t.finderArea}</label>
             <select value={filter} onChange={(e) => setFilter(e.target.value)}>{areas.map((a) => (<option key={a}>{a}</option>))}</select>
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px', cursor: 'pointer' }}><input type="checkbox" checked={onlyAvailable} onChange={(e) => setOnlyAvailable(e.target.checked)} /> {t.finderOnly}</label>
             <div className="grid3">
               {shown.map((r) => (
                 <div className="card" key={r.id}>
-                  <h3>{r.name} <span className={r.available <= 1 ? 'badge warn' : 'badge'} style={{ float: 'right' }}>{r.available <= 1 ? fmt(t.finderUrgent, { n: r.available }) : fmt(t.finderMeals, { n: r.available })}</span></h3>
+                  <h3>{r.name} <span className={(r.available <= 1 ? 'badge warn' : 'badge') + ' badge-right'}>{r.available <= 1 ? fmt(t.finderUrgent, { n: r.available }) : fmt(t.finderMeals, { n: r.available })}</span></h3>
                   <p>{r.area} • {r.meal}<br />{r.timings} • {fmt(t.finderPerMeal, { n: r.meal_price_pkr || 250 })}</p>
                   <p className="muted">{fmt(t.finderServed, { n: r.served })}</p>
                 </div>
@@ -634,14 +716,14 @@ export default function App() {
               <label>{t.donateMethod}</label>
               <div className="method">{[{ name: 'JazzCash', icon: '📱', sub: t.methodWallet }, { name: 'Easypaisa', icon: '💚', sub: t.methodWallet }, { name: 'Card', icon: '💳', sub: t.methodCard }].map((m) => (<button key={m.name} className={donMethod === m.name ? 'active' : ''} onClick={() => setDonMethod(m.name)}><span>{m.icon} {m.name}{donMethod === m.name ? ' ✓' : ''}</span><small>{m.sub}</small></button>))}</div>
             </div>
-            <div className="card dark-panel">
+            <div className="card">
               <h3>{t.summary}</h3>
               {donRest && selRest ? (<p>{t.summaryMeals} <b>{donQty}</b> • {t.summaryMethod} <b>{donMethod}</b> • {t.summaryPrice} <b>Rs {donQty * (selRest.meal_price_pkr || 250)}</b> (Rs {selRest.meal_price_pkr || 250} {fmt(t.summaryPerMeal, { n: selRest.name })})</p>) : (<p className="muted">{t.summaryChoose}</p>)}
               <p className="notice">{t.testMode}</p>
               <button className="btn tomato" disabled={!user || !donRest} onClick={doDonate}>{t.continueBtn}</button>
               <p className="muted">{t.statusNote}</p>
               {checkout && (
-                <div className="card" style={{ background: '#fef3c7' }}>
+                <div className="card sandbox-card">
                   <h3>{fmt(t.sandboxTitle, { n: checkout.gateway })}</h3>
                   <p>{fmt(t.sandboxPay, { n: checkout.amountPkr, q: donQty })} • {t.sandboxTxn} <b>{checkout.txnRef}</b></p>
                   <p className="muted">{t.sandboxNote}</p>
@@ -680,7 +762,7 @@ export default function App() {
               <div className="big-number">{myRest ? myRest.available : (restaurants[0]?.available ?? 0)}</div>
               <button className="btn teal-lg" onClick={doServe}>{t.serveBtn}</button>
               <div className="grid" style={{ marginTop: 14 }}>
-                <div className="card"><span className="muted">{t.servedTotal}</span><div><b style={{ fontSize: 30, color: '#2e9e6b' }}>{myRest ? myRest.served : (restaurants[0]?.served ?? 0)}</b></div></div>
+                <div className="card"><span className="muted">{t.servedTotal}</span><div><b className="served-number">{myRest ? myRest.served : (restaurants[0]?.served ?? 0)}</b></div></div>
                 <div className="card"><span className="muted">{t.restLabel}</span><div><b>{myRest ? myRest.name : restaurants[0]?.name}</b></div></div>
               </div>
               <p className="muted">{t.serveNote}</p>
@@ -697,7 +779,7 @@ export default function App() {
               <div className="grid">
                 <div className="card"><h3>{t.teamTitle} {team ? `• ${fmt(t.teamMembers, { n: team.staff.length })}` : ''}</h3>
                   <p className="muted">{team?.restaurant ? `${team.restaurant.name} — ${team.restaurant.area}` : ''}</p>
-                  {team?.staff.map((s) => (<p key={s.id}><b>{s.name}</b> — {s.email} <span className="badge">{s.staff_role || t.roleCounter}</span> <span className="badge">● {t.active}</span> <button className="btn small danger" onClick={() => doRemoveStaff(s.id)}>{t.removeBtn}</button></p>))}
+                  {team?.staff.map((s) => (<div className="staff-row" key={s.id}><Avatar photo={s.photo} name={s.name} size={48} /><span className="who"><b>{s.name}</b> — {s.email}</span> <span className="badge">{s.staff_role || t.roleCounter}</span> <span className="badge">● {t.active}</span> <button className="btn small danger" onClick={() => doRemoveStaff(s.id)}>{t.removeBtn}</button></div>))}
                   {team && team.staff.length === 0 && <p className="muted">{t.teamNone}</p>}
                   {!team && <p className="muted">{t.adminLoading}</p>}
                 </div>
@@ -706,6 +788,10 @@ export default function App() {
                   <label>{t.fullName}</label><input value={ownerForm.name} onChange={(e) => setOwnerForm({ ...ownerForm, name: e.target.value })} placeholder="e.g. Fatima Noor" />
                   <label>{t.phoneEmail}</label><input value={ownerForm.email} onChange={(e) => setOwnerForm({ ...ownerForm, email: e.target.value })} placeholder="name@example.com" />
                   <label>{t.password}</label><input type="password" value={ownerForm.password} onChange={(e) => setOwnerForm({ ...ownerForm, password: e.target.value })} />
+                  <label>{t.photoLabel}</label>
+                  <input type="file" accept="image/*" onChange={(e) => onPhotoFile(e, setOwnerForm, ownerForm)} />
+                  {ownerForm.photo && <img src={ownerForm.photo} alt="" className="avatar-preview" />}
+                  <p className="muted">{t.photoHint}</p>
                   <label>{t.roleLabel}</label>
                   <select value={ownerForm.staffRole} onChange={(e) => setOwnerForm({ ...ownerForm, staffRole: e.target.value })}>
                     <option value="Counter">{t.roleCounter}</option><option value="Kitchen">{t.roleKitchen}</option><option value="Manager">{t.roleManager}</option>
@@ -745,7 +831,7 @@ export default function App() {
                     <div className="chart-tile"><b>{stats.donated ? Math.round((stats.served / stats.donated) * 100) : 0}%</b><span>{t.gServedPct}</span></div>
                   </div>
                   <h3 style={{ marginTop: 18 }}>{t.gDaily}</h3>
-                  <p className="muted"><span style={{ color: '#b97f1e' }}>■</span> {t.gDonated} &nbsp; <span style={{ color: '#2E9E6B' }}>■</span> {t.gServed}</p>
+                  <p className="legend"><span className="dot dot-gold"></span> {t.gDonated} <span className="dot dot-green"></span> {t.gServed}</p>
                   <DailyBars daily={report.daily} />
                   <h3 style={{ marginTop: 18 }}>{t.gAvail}</h3>
                   {report.rows.map((r) => (
@@ -774,10 +860,14 @@ export default function App() {
                   <label>{t.fullName}</label><input value={staffForm.name} onChange={(e) => setStaffForm({ ...staffForm, name: e.target.value })} />
                   <label>{t.phoneEmail}</label><input value={staffForm.email} onChange={(e) => setStaffForm({ ...staffForm, email: e.target.value })} />
                   <label>{t.password}</label><input type="password" value={staffForm.password} onChange={(e) => setStaffForm({ ...staffForm, password: e.target.value })} />
+                  <label>{t.photoLabel}</label>
+                  <input type="file" accept="image/*" onChange={(e) => onPhotoFile(e, setStaffForm, staffForm)} />
+                  {staffForm.photo && <img src={staffForm.photo} alt="" className="avatar-preview" />}
+                  <p className="muted">{t.photoHint}</p>
                   <label>{t.roleRestLabel}</label>
                   <select value={staffForm.restaurant_id} onChange={(e) => setStaffForm({ ...staffForm, restaurant_id: e.target.value })}><option value="">{t.chooseRest}</option>{adminData.all.map((r) => (<option key={r.id} value={r.id}>{r.name}</option>))}</select>
-                  <button className="btn tomato" onClick={async () => { try { await api('/admin/users', { method: 'POST', body: JSON.stringify({ ...staffForm, role: 'staff' }) }); setMsg(t.staffCreated); loadAdmin(); } catch (e) { setMsg(e.message); } }}>{t.createStaffBtn}</button>
-                  <p className="muted">{fmt(t.usersOnFile, { n: adminData.users.map((u) => `${u.name} (${u.role})`).join(', ') })}</p>
+                  <button className="btn tomato" onClick={async () => { if (!staffForm.photo) { setMsg(t.photoRequired); return; } try { await api('/admin/users', { method: 'POST', body: JSON.stringify({ ...staffForm, role: 'staff' }) }); setMsg(t.staffCreated); setStaffForm({ name: '', email: '', password: '', restaurant_id: '', photo: '' }); loadAdmin(); } catch (e) { setMsg(e.message); } }}>{t.createStaffBtn}</button>
+                  <div style={{ marginTop: 12 }}>{adminData.users.map((u) => (<div className="staff-row" key={u.id}><Avatar photo={u.photo} name={u.name} size={40} /><span className="who">{u.name} ({u.role}){u.restaurantName ? ` — ${u.restaurantName}` : ''}</span></div>))}</div>
                 </div>
                 <div className="card"><h3>{t.addRestTitle}</h3>
                   <label>{t.restName}</label><input value={newRest.name} onChange={(e) => setNewRest({ ...newRest, name: e.target.value })} />
@@ -803,7 +893,23 @@ export default function App() {
           <div>
             <h2>{t.transTitle}</h2>
             <p className="muted">{t.transNote}</p>
-            <div className="card">{transparency.map((a, i) => (<p key={i}>{a.kind === 'served' ? t.transServed : fmt(t.transDonated, { n: a.donor, q: a.qty })} {fmt(t.transAt, { n: a.restaurant })}{a.amount ? ` — Rs ${a.amount}` : ''}{a.txn ? ` • ${a.txn}` : ''} <span className="muted">({fmtDate(a.at)})</span></p>))}{transparency.length === 0 && <p className="muted">{t.transNone}</p>}</div>
+            <div className="card"><h3>{t.transGraphTitle}</h3>
+              <p className="muted">{t.transGraphNote}</p>
+              {monthly && (<>
+                <p><b>{fmt(t.transTotals, { d: monthly.reduce((s, m) => s + m.donated, 0), s: monthly.reduce((s, m) => s + m.served, 0), a: stats ? stats.available : 0 })}</b></p>
+                <MonthlyBars monthly={monthly} />
+                <p className="legend"><span className="dot dot-gold"></span> {t.gDonated} <span className="dot dot-green"></span> {t.gServed}</p>
+              </>)}
+              {!monthly && <p className="muted">{t.adminLoading}</p>}
+              <h3 style={{ marginTop: 18 }}>{t.transAvailTitle}</h3>
+              {restaurants.map((r) => (
+                <div className="chart-bar-row" key={r.id}>
+                  <span className="lbl">{r.name}</span>
+                  <div className="chart-bar-track"><div className="chart-bar-fill" style={{ width: Math.min(100, (r.available / Math.max(1, ...restaurants.map((x) => x.available))) * 100) + '%' }} /></div>
+                  <b>{r.available}</b>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

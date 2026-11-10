@@ -15,7 +15,7 @@ const { MEAL_PRICE_PKR, createTxnRef, jazzcashCheckoutFields, hasJazzcashSandbox
 // the Top-3 columns may still be missing and leaderboard/activity/transparency would
 // fail with "no such column". Add them here too, so the server fixes its own DB
 // on startup instead of returning 500 for those pages. Existing data is untouched.
-for (const [table, col] of [['restaurants', 'meal_price_pkr INTEGER DEFAULT 250'], ['users', 'show_name INTEGER DEFAULT 1']]) {
+for (const [table, col] of [['restaurants', 'meal_price_pkr INTEGER DEFAULT 250'], ['users', 'show_name INTEGER DEFAULT 1'], ['users', 'photo TEXT']]) {
   try {
     const name = col.split(' ')[0];
     const has = db.prepare(`SELECT COUNT(*) c FROM pragma_table_info('${table}') WHERE name=?`).get(name).c;
@@ -25,7 +25,7 @@ for (const [table, col] of [['restaurants', 'meal_price_pkr INTEGER DEFAULT 250'
 
 const app = express();
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
 const PORT = process.env.PORT || 5001;
 const PAYMENT_MODE = process.env.PAYMENT_MODE || 'test';
 
@@ -63,6 +63,19 @@ app.get('/api/transparency', (req, res) => {
   const don = db.prepare(`SELECT 'donated' kind, d.created_at at, CASE WHEN COALESCE(u.show_name,1)=0 THEN 'Anonymous donor' ELSE u.name END donor, r.name restaurant, d.quantity qty, COALESCE(d.amount_pkr, d.quantity*250) amount, d.txn_ref txn FROM donations d JOIN users u ON u.id=d.donor_id JOIN restaurants r ON r.id=d.restaurant_id WHERE d.payment_status IN ('test_paid','sandbox_paid') ORDER BY d.id DESC LIMIT 50`).all();
   const ser = db.prepare(`SELECT 'served' kind, s.served_at at, NULL donor, r.name restaurant, 1 qty, NULL amount, NULL txn FROM served_meals s JOIN restaurants r ON r.id=s.restaurant_id ORDER BY s.id DESC LIMIT 50`).all();
   res.json([...don, ...ser].sort((a, b) => String(b.at).localeCompare(String(a.at))).slice(0, 50));
+});
+app.get('/api/transparency/monthly', (req, res) => {
+  // Public graph data: meals donated vs served per month, last 6 months.
+  // Counts only — donations are grouped by month, served meals by month;
+  // no donor or recipient is ever named here.
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const m = db.prepare("SELECT strftime('%Y-%m', 'now', ?) mk").get(`-${i} months`).mk;
+    const donated = db.prepare("SELECT COALESCE(SUM(quantity),0) s FROM donations WHERE payment_status IN ('test_paid','sandbox_paid') AND strftime('%Y-%m', created_at)=?").get(m).s;
+    const served = db.prepare("SELECT COUNT(*) c FROM served_meals WHERE strftime('%Y-%m', served_at)=?").get(m).c;
+    months.push({ month: m, donated, served });
+  }
+  res.json(months);
 });
 app.get('/api/leaderboard', (req, res) => {
   const donors = db.prepare(`SELECT CASE WHEN COALESCE(u.show_name,1)=0 THEN 'Anonymous donor' ELSE u.name END name, COALESCE(SUM(d.quantity),0) donated, COALESCE(SUM(d.served_qty),0) served FROM donations d JOIN users u ON u.id=d.donor_id GROUP BY u.id ORDER BY served DESC, donated DESC LIMIT 10`).all();
@@ -200,6 +213,15 @@ app.post('/api/serve', auth, requireRole('staff', 'admin'), (req, res) => {
   res.json({ restaurant: db.prepare('SELECT * FROM restaurants WHERE id=?').get(r.id), stats: stats() });
 });
 
+// Staff photo: compulsory when a staff/owner account is created (admin form
+// and owner form alike). Stored as a data URL on users.photo, max ~500KB.
+// Returns an error string, or null when the photo is acceptable.
+function validPhoto(p) {
+  if (!p || typeof p !== 'string' || !p.startsWith('data:image/')) return 'A photo of the staff member is required';
+  if (p.length > 700000) return 'Photo is too large — max 500KB';
+  return null;
+}
+
 // ---------- Restaurant owner: manage THEIR OWN staff ----------
 // An owner is linked to ONE restaurant (restaurant_id on their account).
 // Every route below enforces that on the server: an owner can only see,
@@ -207,21 +229,23 @@ app.post('/api/serve', auth, requireRole('staff', 'admin'), (req, res) => {
 // full power via /api/admin/users (any restaurant, any role).
 app.get('/api/restaurant/staff', auth, requireRole('owner'), (req, res) => {
   if (!req.user.restaurant_id) return res.status(400).json({ error: 'Your owner account is not linked to a restaurant yet. Ask admin to link it.' });
-  const staff = db.prepare("SELECT id, name, email, role, staff_role, restaurant_id FROM users WHERE role='staff' AND restaurant_id=? ORDER BY id").all(req.user.restaurant_id);
+  const staff = db.prepare("SELECT id, name, email, role, staff_role, photo, restaurant_id FROM users WHERE role='staff' AND restaurant_id=? ORDER BY id").all(req.user.restaurant_id);
   const rest = db.prepare('SELECT * FROM restaurants WHERE id=?').get(req.user.restaurant_id);
   res.json({ restaurant: rest || null, staff });
 });
 app.post('/api/restaurant/staff', auth, requireRole('owner'), (req, res) => {
   if (!req.user.restaurant_id) return res.status(400).json({ error: 'Your owner account is not linked to a restaurant yet. Ask admin to link it.' });
-  const { name, email, password, staffRole } = req.body || {};
+  const { name, email, password, staffRole, photo } = req.body || {};
   if (!name || !email || !password || password.length < 6) {
     return res.status(400).json({ error: 'Name, email and a password of at least 6 characters are required' });
   }
+  const photoErr = validPhoto(photo);
+  if (photoErr) return res.status(400).json({ error: photoErr });
   const role = ['Counter', 'Kitchen', 'Manager'].includes(staffRole) ? staffRole : 'Counter';
   try {
-    const info = db.prepare("INSERT INTO users (name, email, password_hash, role, restaurant_id, staff_role) VALUES (?,?,?, 'staff', ?, ?)")
-      .run(name, email.toLowerCase(), hashPassword(password), req.user.restaurant_id, role);
-    res.json({ staff: db.prepare('SELECT id, name, email, role, staff_role, restaurant_id FROM users WHERE id=?').get(info.lastInsertRowid) });
+    const info = db.prepare("INSERT INTO users (name, email, password_hash, role, restaurant_id, staff_role, photo) VALUES (?,?,?, 'staff', ?, ?, ?)")
+      .run(name, email.toLowerCase(), hashPassword(password), req.user.restaurant_id, role, photo);
+    res.json({ staff: db.prepare('SELECT id, name, email, role, staff_role, photo, restaurant_id FROM users WHERE id=?').get(info.lastInsertRowid) });
   } catch {
     return res.status(400).json({ error: 'That email is already registered' });
   }
@@ -264,17 +288,21 @@ app.get('/api/admin/report', auth, requireRole('admin'), (req, res) => {
   res.json({ rows, totals, daily });
 });
 app.get('/api/admin/users', auth, requireRole('admin'), (req, res) => {
-  res.json(db.prepare('SELECT u.id, u.name, u.email, u.role, u.restaurant_id, r.name restaurantName FROM users u LEFT JOIN restaurants r ON r.id=u.restaurant_id ORDER BY u.id').all());
+  res.json(db.prepare('SELECT u.id, u.name, u.email, u.role, u.restaurant_id, u.photo, r.name restaurantName FROM users u LEFT JOIN restaurants r ON r.id=u.restaurant_id ORDER BY u.id').all());
 });
 app.post('/api/admin/users', auth, requireRole('admin'), (req, res) => {
-  const { name, email, password, role, restaurant_id } = req.body || {};
+  const { name, email, password, role, restaurant_id, photo } = req.body || {};
   if (!name || !email || !password || !['staff', 'admin', 'donor', 'owner'].includes(role)) {
     return res.status(400).json({ error: 'Name, email, password and a valid role are required' });
   }
   if ((role === 'staff' || role === 'owner') && !restaurant_id) return res.status(400).json({ error: 'A staff/owner account must be linked to a restaurant' });
+  if (role === 'staff' || role === 'owner') {
+    const photoErr = validPhoto(photo);
+    if (photoErr) return res.status(400).json({ error: photoErr });
+  }
   try {
-    const info = db.prepare('INSERT INTO users (name, email, password_hash, role, restaurant_id) VALUES (?,?,?,?,?)')
-      .run(name, email.toLowerCase(), hashPassword(password), role, restaurant_id || null);
+    const info = db.prepare('INSERT INTO users (name, email, password_hash, role, restaurant_id, photo) VALUES (?,?,?,?,?,?)')
+      .run(name, email.toLowerCase(), hashPassword(password), role, restaurant_id || null, photo || null);
     res.json({ user: pubUser(db.prepare('SELECT * FROM users WHERE id=?').get(info.lastInsertRowid)) });
   } catch {
     return res.status(400).json({ error: 'That email is already registered' });
