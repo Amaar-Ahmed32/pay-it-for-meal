@@ -1,7 +1,7 @@
 // App.jsx — Chunky 3D dark-blue rebuild (2026-11-10).
 // Approved look from the visuals board: deep navy page, cream cards,
 // 3px ink borders, hard offset shadows, press-down pill buttons.
-// Hero: "One meal forward, one plate filled today." + cartoon illustration.
+// Hero: "One meal forward, one plate filled today." + real serving photo.
 // FULL translation: every UI string lives in T below (en / ur / sd) —
 // no hard-coded English UI text outside these dictionaries (proper nouns
 // and numbers excepted). Restaurant owners manage their own staff.
@@ -642,7 +642,7 @@ export default function App() {
               <div>
                 <p><span className="eyebrow">{t.eyebrow}</span></p>
                 <p className="muted" style={{ margin: '0 0 4px', fontSize: 13, fontWeight: 700 }}>{t.schoolLine}</p>
-                <h2>{t.heroHead1} <span className="hl">{t.heroHead2}</span></h2>
+                <h2>{t.heroHead1} {t.heroHead2}</h2>
                 <p className="lead">{t.heroLead}</p>
                 <p className="muted">{t.oldLine}</p>
                 <p><button className="btn tomato" onClick={() => go('donate')}>{t.donateBtn}</button>{' '}<button className="btn turmeric" onClick={() => go('finder')}>{t.findBtn}</button></p>
@@ -650,7 +650,7 @@ export default function App() {
                 {stats && (<p>{stats.available > 0 ? (<><b>🍲 {fmt(t.availLine, { n: stats.available })}</b></>) : (<><b>{t.noAvailLine}</b></>)}</p>)}
               </div>
               <div className="hero-art">
-                <img src="/hero-cartoon.webp" alt={t.heroHead1 + ' ' + t.heroHead2} />
+                <img src="/hero-photo.webp" alt={t.heroHead1 + ' ' + t.heroHead2} />
                 <div className="glass-chip chip-left"><b>✅</b>{t.servedChip}</div>
                 <div className="glass-chip amber chip-right"><b>{stats ? stats.available : 0}</b>{fmt(t.availChip, { n: stats ? stats.available : 0 })}</div>
               </div>

@@ -1,20 +1,22 @@
-/* Pay It Forward Meal — simple light skin like the design PDF (2026-11-10).
+/* Pay It Forward Meal — simple light skin like the design PDF (2026-11-10),
+   premium polish (2026-11-10): Fraunces serif headings + Inter body.
    Design tokens (ONE of each — see the 2026-11-10 design audit):
-   teal #17765f (primary), teal-dark #0f5a46, deep green text #14532d,
-   served green #2e9e6b, orange #f59e0b (accent), gold #f4c35e (highlights),
+   teal #146b56 (primary, deep enough for white text), teal-dark #0e4f3e,
+   deep green text #14532d, served green #2e9e6b, orange #f59e0b (accent,
+   dark text only), gold #f4c35e (small highlights, no text on it),
    ink #172428, muted #4b5563, border #e5e7eb, border-strong #d1d5db,
    page #fdf6ec, card #ffffff, light-green surface #dcf5ec, light-gold #fef3c7.
-   Fonts: Nunito throughout, with system fallbacks so the site still looks
-   right offline. Plain CSS only. */
+   Fonts: Fraunces headings / Inter body, with system fallbacks (Georgia /
+   system sans) so the site still looks right offline; Urdu/Sindhi script
+   falls back to system fonts automatically. Plain CSS only. */
 
 :root {
-  --teal: #17765f;
-  --teal-dark: #0f5a46;
+  --teal: #146b56;
+  --teal-dark: #0e4f3e;
   --teal-deep: #14532d;
   --served-green: #2e9e6b;
   --orange: #f59e0b;
   --gold: #f4c35e;
-  --gold-deep: #b45309;
   --ink: #172428;
   --muted: #4b5563;
   --border: #e5e7eb;
@@ -33,8 +35,8 @@
 }
 
 * { box-sizing: border-box; }
-body { margin: 0; font-family: 'Nunito', system-ui, Arial, sans-serif; background: var(--bg); color: var(--ink); }
-h1, h2, h3 { font-family: 'Nunito', system-ui, sans-serif; font-weight: 800; color: var(--ink); }
+body { margin: 0; font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif; background: var(--bg); color: var(--ink); }
+h1, h2, h3 { font-family: 'Fraunces', Georgia, 'Times New Roman', serif; font-weight: 700; color: var(--ink); }
 /* One heading scale for every page */
 main h2 { font-size: 28px; margin: 8px 0 12px; }
 .card h2 { font-size: 24px; margin: 0 0 10px; }
@@ -71,8 +73,8 @@ nav button.active { background: var(--teal); color: #fff; border-color: var(--te
 .btn.outline { background: var(--card); color: var(--teal); border: 1px solid var(--teal); }
 .btn.ghost { background: transparent; color: var(--teal); box-shadow: none; border-color: transparent; text-decoration: underline; padding: 8px 10px; min-height: 0; }
 .btn.small { padding: 7px 14px; min-height: 36px; font-size: 14px; border-radius: var(--radius-pill); }
-.btn.teal-lg { background: var(--teal); color: #fff; border: 1px solid var(--teal); border-radius: 16px; padding: 18px; min-height: 64px; font-size: 22px; font-weight: 800; width: 100%; box-shadow: 0 4px 12px rgba(23,118,95,.25); }
-.btn.teal-lg:hover { box-shadow: 0 6px 16px rgba(23,118,95,.30); }
+.btn.teal-lg { background: var(--teal); color: #fff; border: 1px solid var(--teal); border-radius: 16px; padding: 18px; min-height: 64px; font-size: 22px; font-weight: 800; width: 100%; box-shadow: 0 4px 12px rgba(20,107,86,.25); }
+.btn.teal-lg:hover { box-shadow: 0 6px 16px rgba(20,107,86,.30); }
 
 .lang { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .lang button { border: 1px solid var(--border-strong); background: var(--card); color: var(--ink); padding: 10px 14px; border-radius: var(--radius-pill); font-weight: 700; font-size: 15px; line-height: 1.2; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.06); }
@@ -81,19 +83,18 @@ nav button.active { background: var(--teal); color: #fff; border-color: var(--te
 
 main { max-width: 1080px; margin: 0 auto; padding: 20px; }
 
-/* Hero: white card with the cartoon illustration on the right */
+/* Hero: white card with the real serving photo on the right */
 .hero { display: grid; grid-template-columns: 1.15fr 1fr; gap: 20px; align-items: center; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 28px 24px; margin-top: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.06); }
 .hero h2 { font-size: 52px; line-height: 1.05; margin: 10px 0; color: var(--ink); }
-.hero h2 .hl { background: var(--gold-border); color: var(--ink); padding: 0 10px; border-radius: 12px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .hero p.lead { font-size: 18px; color: var(--muted); line-height: 1.5; }
 .eyebrow { display: inline-block; background: var(--green-soft); border: 1px solid var(--green-soft-border); border-radius: var(--radius-pill); padding: 6px 14px; font-size: 13px; font-weight: 800; color: var(--teal-deep); }
 
-/* Hero art: cartoon illustration with floating chips */
+/* Hero art: real serving photo with floating chips */
 .hero-art { position: relative; }
 .hero-art img { width: 100%; height: auto; display: block; border: 1px solid var(--border); border-radius: 22px; box-shadow: 0 6px 20px rgba(0,0,0,.08); }
 .glass-chip { position: absolute; background: rgba(255,255,255,.97); border: 1px solid var(--border); border-radius: 16px; padding: 8px 14px; font-weight: 800; color: var(--ink); box-shadow: 0 6px 16px rgba(0,0,0,.10); animation: floaty 3s ease-in-out infinite; max-width: 70%; }
 .glass-chip b { font-size: 22px; color: var(--teal); display: block; line-height: 1; }
-.glass-chip.amber b { color: var(--gold-deep); }
+.glass-chip.amber b { color: #92400e; }
 .chip-left { top: 12px; left: -6px; }
 .chip-right { bottom: 10px; right: -6px; }
 @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
@@ -131,7 +132,7 @@ main { max-width: 1080px; margin: 0 auto; padding: 20px; }
 .dash span { color: var(--muted); }
 
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-.stat { background: var(--teal); color: #fff; border-radius: 16px; padding: 18px; text-align: center; box-shadow: 0 4px 12px rgba(23,118,95,.25); }
+.stat { background: var(--teal); color: #fff; border-radius: 16px; padding: 18px; text-align: center; box-shadow: 0 4px 12px rgba(20,107,86,.25); }
 .stat b { font-size: 34px; display: block; }
 .stat.orange { background: var(--orange); color: var(--ink); }
 
@@ -142,7 +143,7 @@ main { max-width: 1080px; margin: 0 auto; padding: 20px; }
 .tilt { transition: transform .2s ease-out, box-shadow .2s ease-out; }
 .tilt:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,.08); }
 
-.partner-banner { background: var(--teal); color: #fff; border-radius: var(--radius-lg); padding: 26px; margin: 18px 0; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; box-shadow: 0 6px 18px rgba(23,118,95,.25); }
+.partner-banner { background: var(--teal); color: #fff; border-radius: var(--radius-lg); padding: 26px; margin: 18px 0; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; box-shadow: 0 6px 18px rgba(20,107,86,.25); }
 .partner-banner h3 { color: #fff; margin: 0 0 6px; font-size: 26px; }
 .partner-banner p { color: #d1fae5; margin: 0; }
 
