@@ -20,7 +20,6 @@ const T = {
   en: {
     home: 'Home', finder: 'Find a free meal', donate: 'Donate', mine: 'My donations', staff: 'Staff', restaurant: 'Restaurant', admin: 'Admin', board: 'Leaderboard', transparency: 'Transparency', request: 'Join as restaurant', auth: 'Login / Sign Up',
     dashboard: 'Dashboard', login: 'Log in', logout: 'Logout', menu: 'Menu',
-    schoolLine: 'Jeejal Aman Public School, Bhittaibad • Sindh STREAM 2026–27 • SDG 1 + SDG 2',
     eyebrow: '● Live in Pakistan · Test pilot',
     heroHead1: 'One meal forward,', heroHead2: 'one plate filled today.',
     heroLead: 'A diner pays for their own meal — and one extra. That extra meal waits at a verified partner restaurant for anyone who needs it. No explanation, no payment, no shame.',
@@ -126,8 +125,7 @@ const T = {
     seedNote: 'School admin (seeded, change before real use): admin@payitforward.school / Admin123!',
     ownerSeedNote: 'Demo restaurant owner: owner@payitforward.school / Owner123! (Sindh Biryani House)',
     welcome: 'Welcome, {n} ({r}).', backendErr: 'Backend not running? Start it: cd backend && npm start  •  {e}',
-    footerTag: 'A normal dinner becomes someone else’s dinner. Pay for one extra meal and a verified restaurant serves it to a person in need.',
-    footerExplore: 'Explore', footerLang: 'Languages', footerCopy: '© 2026 Pay It Forward Meal • Supports SDG 1 (No Poverty) and SDG 2 (Zero Hunger). No recipient data is ever stored. Payment: test mode in the pilot — no real money moves.',
+    footerExplore: 'Explore', footerLang: 'Languages', footerCopy: '© 2026 Pay It Forward Meal • Supports SDG 1 (No Poverty) and SDG 2 (Zero Hunger). No recipient data is ever stored.',
     badgeHero: '🏆 Meal Hero (10+ served)', badgeHeart: '💛 Kind Heart (5+ served)', badgeNew: '🌱 New Giver (1+ served)', badgeNone: '— no badge yet, donate first',
     receiptTitle: '💛 Pay It Forward Meal — Donation receipt', receiptDonor: 'Donor:', receiptRest: 'Restaurant:', receiptMeals: 'Meals donated:', receiptServed: 'Served so far from this donation:', receiptAmount: 'Amount:', receiptMethod: 'Method:', receiptStatus: 'Status:', receiptTxn: 'Txn ref:', receiptDate: 'Date:',
     receiptNote: 'Thank you — your meal will be served with no questions asked, and no recipient data is ever stored. Payment: test/sandbox mode in the pilot — no real money moves.',
@@ -135,7 +133,6 @@ const T = {
   ur: {
     home: 'ہوم', finder: 'مفت کھانا تلاش کریں', donate: 'عطیہ دیں', mine: 'میرے عطیات', staff: 'اسٹاف', restaurant: 'ریسٹورنٹ', admin: 'ایڈمن', board: 'لیڈر بورڈ', transparency: 'شفافیت', request: 'ریسٹورنٹ بنیں', auth: 'لاگ ان / سائن اپ',
     dashboard: 'ڈیش بورڈ', login: 'لاگ ان', logout: 'لاگ آؤٹ', menu: 'مینیو',
-    schoolLine: 'جیجل امن پبلک اسکول، بھٹائی آباد • سندھ اسٹریم 2026–27 • SDG 1 + SDG 2',
     eyebrow: '● پاکستان میں لائیو · آزمائشی منصوبہ',
     heroHead1: 'ایک کھانا آگے،', heroHead2: 'آج ایک پلیٹ بھر گئی۔',
     heroLead: 'کھانے والا اپنے کھانے کے ساتھ ایک اضافی کھانا ادا کرتا ہے۔ وہ اضافی کھانا کسی ضرورت مند کے لیے تصدیق شدہ پارٹنر ریسٹورنٹ میں انتظار کرتا ہے۔ کوئی وضاحت نہیں، کوئی ادائیگی نہیں، کوئی شرم نہیں۔',
@@ -241,8 +238,7 @@ const T = {
     seedNote: 'اسکول ایڈمن (سیڈ، اصلی استعمال سے پہلے پاس ورڈ بدل لیں): admin@payitforward.school / Admin123!',
     ownerSeedNote: 'ڈیمو ریسٹورنٹ مالک: owner@payitforward.school / Owner123! (سندھ بریانی ہاؤس)',
     welcome: 'خوش آمدید، {n} ({r})۔', backendErr: 'بیک اینڈ نہیں چل رہا؟ شروع کریں: cd backend && npm start  •  {e}',
-    footerTag: 'ایک عام رات کا کھانا کسی اور کا رات کا کھانا بن جاتا ہے۔ ایک اضافی کھانے کی ادائیگی کریں اور تصدیق شدہ ریسٹورنٹ اسے ضرورت مند کو پیش کرے۔',
-    footerExplore: 'دریافت کریں', footerLang: 'زبانیں', footerCopy: '© 2026 Pay It Forward Meal • SDG 1 (غربت ختم کریں) اور SDG 2 (بھوک ختم کریں) کی حمایت کرتا ہے۔ وصول کنندہ کا کوئی ڈیٹا کبھی محفوظ نہیں ہوتا۔ ادائیگی: پائلٹ میں ٹیسٹ موڈ — کوئی اصلی رقم نہیں چلتی۔',
+    footerExplore: 'دریافت کریں', footerLang: 'زبانیں', footerCopy: '© 2026 Pay It Forward Meal • SDG 1 (غربت ختم کریں) اور SDG 2 (بھوک ختم کریں) کی حمایت کرتا ہے۔ وصول کنندہ کا کوئی ڈیٹا کبھی محفوظ نہیں ہوتا۔',
     badgeHero: '🏆 Meal Hero (10+ پیش شدہ)', badgeHeart: '💛 Kind Heart (5+ پیش شدہ)', badgeNew: '🌱 New Giver (1+ پیش شدہ)', badgeNone: '— ابھی کوئی بیج نہیں، پہلے عطیہ دیں',
     receiptTitle: '💛 Pay It Forward Meal — عطیہ کی رسید', receiptDonor: 'عطیہ دہندہ:', receiptRest: 'ریسٹورنٹ:', receiptMeals: 'عطیہ شدہ کھانے:', receiptServed: 'اس عطیے سے اب تک پیش شدہ:', receiptAmount: 'رقم:', receiptMethod: 'طریقہ:', receiptStatus: 'حالت:', receiptTxn: 'لین دین نمبر:', receiptDate: 'تاریخ:',
     receiptNote: 'شکریہ — آپ کا کھانا بغیر سوال پوچھے پیش کیا جائے گا، اور وصول کنندہ کا کوئی ڈیٹا کبھی محفوظ نہیں ہوتا۔ ادائیگی: پائلٹ میں ٹیسٹ/سینڈ باکس موڈ — کوئی اصلی رقم نہیں چلتی۔',
@@ -250,7 +246,6 @@ const T = {
   sd: {
     home: 'گھر', finder: 'مفت کاڌو ڳوليو', donate: 'عطيو ڏيو', mine: 'منهنجا عطيا', staff: 'اسٽاف', restaurant: 'ريسٽورنٽ', admin: 'ايڊمن', board: 'ليڊر بورڊ', transparency: 'شفافيت', request: 'ريسٽورنٽ ٿيو', auth: 'لاگ ان / سائن اپ',
     dashboard: 'ڊيش بورڊ', login: 'لاگ ان', logout: 'لاگ آئوٽ', menu: 'مينيو',
-    schoolLine: 'جيجل امن پبلڪ اسڪول، ڀٽائي آباد • سنڌ اسٽريم 2026–27 • SDG 1 + SDG 2',
     eyebrow: '● پاڪستان ۾ لائيو · آزمائشي منصوبو',
     heroHead1: 'هڪ کاڌو اڳتي،', heroHead2: 'اڄ هڪ پليٽ ڀرجي وئي۔',
     heroLead: 'کاڌو کائڻ وارو پنهنجي کاڌي سان گڏ هڪ اضافي کاڌو ادا ڪري ٿو. اهو اضافي کاڌو ڪنهن ضرورت مند لاءِ تصديق ٿيل پارٽنر ريسٽورنٽ ۾ انتظار ڪري ٿو. ڪا وضاحت ناهي، ڪا ادائيگي ناهي، ڪا شرم ناهي.',
@@ -356,8 +351,7 @@ const T = {
     seedNote: 'اسڪول ايڊمن (سيڊ، حقيقي استعمال کان اڳ پاس ورڊ تبديل ڪريو): admin@payitforward.school / Admin123!',
     ownerSeedNote: 'ڊيمو ريسٽورنٽ مالڪ: owner@payitforward.school / Owner123! (سنڌ برياني هائوس)',
     welcome: 'ڀليڪار، {n} ({r}).', backendErr: 'بيڪ اينڊ نٿو هلي؟ شروع ڪريو: cd backend && npm start  •  {e}',
-    footerTag: 'هڪ عام رات جو کاڌو ڪنهن ٻئي جو رات جو کاڌو بڻجي وڃي ٿو. هڪ اضافي کاڌي جي ادائيگي ڪريو ۽ تصديق ٿيل ريسٽورنٽ ان کي ضرورت مند کي پيش ڪري.',
-    footerExplore: 'دريافت ڪريو', footerLang: 'ٻوليون', footerCopy: '© 2026 Pay It Forward Meal • SDG 1 (غربت ختم ڪريو) ۽ SDG 2 (بک ختم ڪريو) جي حمايت ڪري ٿو. وصول ڪندڙ جو ڪو ڊيٽا ڪڏهن محفوظ نٿو ٿئي. ادائيگي: پائلٽ ۾ ٽيسٽ موڊ — ڪا حقيقي رقم نٿي هلي.',
+    footerExplore: 'دريافت ڪريو', footerLang: 'ٻوليون', footerCopy: '© 2026 Pay It Forward Meal • SDG 1 (غربت ختم ڪريو) ۽ SDG 2 (بک ختم ڪريو) جي حمايت ڪري ٿو. وصول ڪندڙ جو ڪو ڊيٽا ڪڏهن محفوظ نٿو ٿئي.',
     badgeHero: '🏆 Meal Hero (10+ پيش ٿيل)', badgeHeart: '💛 Kind Heart (5+ پيش ٿيل)', badgeNew: '🌱 New Giver (1+ پيش ٿيل)', badgeNone: '— هينئر تائين ڪو بيج ناهي، پهرين عطيو ڏيو',
     receiptTitle: '💛 Pay It Forward Meal — عطيي جي رسيد', receiptDonor: 'عطيو ڏيندڙ:', receiptRest: 'ريسٽورنٽ:', receiptMeals: 'عطيو ٿيل کاڌا:', receiptServed: 'هن عطيي مان هينئر تائين پيش ٿيل:', receiptAmount: 'رقم:', receiptMethod: 'طريقو:', receiptStatus: 'حالت:', receiptTxn: 'لين دين نمبر:', receiptDate: 'تاريخ:',
     receiptNote: 'مهرباني — توهان جو کاڌو بغير سوال پڇڻ جي پيش ڪيو ويندو، ۽ وصول ڪندڙ جو ڪو ڊيٽا ڪڏهن محفوظ نٿو ٿئي. ادائيگي: پائلٽ ۾ ٽيسٽ/سينڊ باڪس موڊ — ڪا حقيقي رقم نٿي هلي.',
@@ -374,7 +368,7 @@ const badgeFor = (t, served) => (served >= 10 ? t.badgeHero : served >= 5 ? t.ba
 // ---------- Logo ----------
 // Inline SVG logo mark: a gold heart over a serving plate, in a green ring.
 // Crisp at any size, no external file. The header shows this mark + the
-// school line — the big text title is gone on purpose (simple, like the PDF).
+// The header shows this mark only — no text title, no school line.
 const LogoMark = () => (
   <svg className="logo-svg" viewBox="0 0 64 64" role="img" aria-label="Pay It Forward Meal">
     <circle cx="32" cy="32" r="29" fill="#17765f" stroke="#172428" strokeWidth="3" />
@@ -548,7 +542,7 @@ export default function App() {
     const donorName = user?.show_name === 0 ? t.anon : (user?.name || 'Donor');
     const w = window.open('', '_blank', 'width=600,height=700');
     if (!w) { setMsg(t.popups); return; }
-    w.document.write(`<html><head><title>${t.receiptTitle}</title></head><body style="font-family: sans-serif; max-width: 520px; margin: 30px auto; color: #111;"><h2>${t.receiptTitle}</h2><p>${t.schoolLine}</p><hr /><p><b>${t.receiptDonor}</b> ${donorName}</p><p><b>${t.receiptRest}</b> ${d.restaurantName}</p><p><b>${t.receiptMeals}</b> ${d.quantity}</p><p><b>${t.receiptServed}</b> ${d.served_qty}/${d.quantity}</p><p><b>${t.receiptAmount}</b> Rs ${amount}</p><p><b>${t.receiptMethod}</b> ${d.method} • <b>${t.receiptStatus}</b> ${d.payment_status}</p>${d.txn_ref ? `<p><b>${t.receiptTxn}</b> ${d.txn_ref}</p>` : ''}<p><b>${t.receiptDate}</b> ${fmtDate(d.created_at)}</p><hr /><p><small>${t.receiptNote}</small></p></body></html>`);
+    w.document.write(`<html><head><title>${t.receiptTitle}</title></head><body style="font-family: sans-serif; max-width: 520px; margin: 30px auto; color: #111;"><h2>${t.receiptTitle}</h2><p>Pay It Forward Meal • SDG 1 + SDG 2</p><hr /><p><b>${t.receiptDonor}</b> ${donorName}</p><p><b>${t.receiptRest}</b> ${d.restaurantName}</p><p><b>${t.receiptMeals}</b> ${d.quantity}</p><p><b>${t.receiptServed}</b> ${d.served_qty}/${d.quantity}</p><p><b>${t.receiptAmount}</b> Rs ${amount}</p><p><b>${t.receiptMethod}</b> ${d.method} • <b>${t.receiptStatus}</b> ${d.payment_status}</p>${d.txn_ref ? `<p><b>${t.receiptTxn}</b> ${d.txn_ref}</p>` : ''}<p><b>${t.receiptDate}</b> ${fmtDate(d.created_at)}</p><hr /><p><small>${t.receiptNote}</small></p></body></html>`);
     w.document.close(); w.focus(); w.print();
   };
   const logout = () => { localStorage.removeItem('pifm_token'); setToken(''); setUser(null); setTeam(null); go('home'); };
@@ -614,7 +608,7 @@ export default function App() {
     <div dir={lang === 'en' ? 'ltr' : 'rtl'}>
       <header>
         <div className="wrap">
-        <div className="brand"><LogoMark /><div><p className="brand-sub">{t.schoolLine}</p></div></div>
+        <div className="brand"><LogoMark /></div>
         <div className="lang">
           {['en', 'ur', 'sd'].map((l) => (<button key={l} className={lang === l ? 'active' : ''} onClick={() => setLang(l)}>{l === 'en' ? 'EN' : l === 'ur' ? 'اردو' : 'سنڌي'}</button>))}
           {' '}
@@ -641,7 +635,6 @@ export default function App() {
             <div className="hero">
               <div>
                 <p><span className="eyebrow">{t.eyebrow}</span></p>
-                <p className="muted" style={{ margin: '0 0 4px', fontSize: 13, fontWeight: 700 }}>{t.schoolLine}</p>
                 <h2>{t.heroHead1} {t.heroHead2}</h2>
                 <p className="lead">{t.heroLead}</p>
                 <p className="muted">{t.oldLine}</p>
@@ -942,10 +935,18 @@ export default function App() {
       </main>
 
       <footer>
-        <div className="wrap">
-          <div><h3>Pay It Forward Meal</h3><p>{t.footerTag}</p></div>
-          <div><h3>{t.footerExplore}</h3><p><button className="btn ghost" onClick={() => go('finder')}>{t.finder}</button><br /><button className="btn ghost" onClick={() => go('donate')}>{t.donate}</button><br /><button className="btn ghost" onClick={() => go('request')}>{t.request}</button></p></div>
-          <div><h3>{t.footerLang}</h3><p>EN • اردو • سنڌي</p><p>{t.schoolLine}</p></div>
+        <div className="wrap foot-grid">
+          <div className="foot-brand"><LogoMark /></div>
+          <div><h3>{t.footerExplore}</h3><p className="foot-links">
+            <button onClick={() => go('finder')}>{t.finder}</button>
+            <button onClick={() => go('donate')}>{t.donate}</button>
+            <button onClick={() => go('board')}>{t.board}</button>
+            <button onClick={() => go('transparency')}>{t.transparency}</button>
+            <button onClick={() => go('request')}>{t.request}</button>
+          </p></div>
+          <div><h3>{t.footerLang}</h3><p className="foot-lang">
+            {['en', 'ur', 'sd'].map((l) => (<button key={l} className={lang === l ? 'active' : ''} onClick={() => setLang(l)}>{l === 'en' ? 'EN' : l === 'ur' ? 'اردو' : 'سنڌي'}</button>))}
+          </p></div>
         </div>
         <div className="foot-bottom"><p>{t.footerCopy}</p></div>
       </footer>

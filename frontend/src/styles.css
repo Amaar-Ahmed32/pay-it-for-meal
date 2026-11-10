@@ -48,7 +48,6 @@ header p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
 /* Header logo mark: inline SVG heart + plate (see LogoMark in App.jsx). */
 .logo-svg { width: 52px; height: 52px; flex-shrink: 0; }
 .brand { display: flex; align-items: center; gap: 10px; }
-.brand-sub { color: var(--muted); font-size: 14px; font-weight: 700; margin: 0; }
 
 .wrap { max-width: 1080px; margin: 0 auto; width: 100%; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
 .wrap.navwrap { justify-content: center; }
@@ -138,7 +137,7 @@ main { max-width: 1080px; margin: 0 auto; padding: 20px; }
 
 .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
 .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.step-num { font-size: 44px; font-weight: 900; color: var(--orange); line-height: 1; }
+.step-num { font-size: 44px; font-weight: 900; color: #146B56; line-height: 1; }
 /* Subtle lift on step cards on hover/touch */
 .tilt { transition: transform .2s ease-out, box-shadow .2s ease-out; }
 .tilt:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,.08); }
@@ -180,12 +179,21 @@ label { font-weight: 700; }
 .success { background: var(--green-soft); border: 1px solid var(--green-soft-border); border-radius: 12px; padding: 12px; color: var(--teal-deep); }
 .notif { border-left: 4px solid var(--teal); background: var(--green-soft); padding: 12px; border-radius: 8px; margin: 10px 0; color: var(--ink); }
 
-footer { background: var(--card); color: var(--ink); padding: 28px 20px; margin-top: 30px; border-top: 1px solid var(--border); }
+footer { background: #0f5a46; color: #f4efe0; padding: 36px 20px 0; margin-top: 30px; }
 footer .wrap { align-items: start; }
-footer h3, footer p { color: var(--ink); }
-footer a, footer button { color: var(--teal-dark); text-decoration: underline; }
-footer a:hover, footer button:hover { color: #0a3d2f; text-decoration-thickness: 2px; }
-.foot-bottom { text-align: center; border-top: 1px solid var(--border); margin-top: 18px; padding-top: 14px; color: var(--muted); }
+footer h3 { color: #ffffff; margin-top: 0; }
+footer p { color: #d9e8e0; }
+footer .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 28px; }
+footer .foot-brand { display: flex; gap: 12px; align-items: flex-start; }
+footer .foot-brand .logo-svg { width: 72px; height: 72px; flex-shrink: 0; }
+footer .foot-links button { display: block; background: none; border: 0; padding: 5px 0; font: inherit; font-size: 15px; color: #ffffff; text-decoration: underline; cursor: pointer; }
+footer .foot-links button:hover, footer .foot-links button:focus-visible { color: #f4c35e; text-decoration-thickness: 2px; outline: none; }
+footer .foot-lang { display: flex; gap: 8px; flex-wrap: wrap; }
+footer .foot-lang button { border: 1px solid rgba(255, 255, 255, .6); background: transparent; color: #ffffff; padding: 8px 14px; border-radius: 999px; font-weight: 700; font-size: 14px; cursor: pointer; }
+footer .foot-lang button:hover { border-color: #f4c35e; color: #f4c35e; }
+footer .foot-lang button.active { background: #f4c35e; border-color: #f4c35e; color: #172428; }
+.foot-bottom { text-align: center; border-top: 1px solid rgba(255, 255, 255, .25); margin-top: 24px; padding: 14px 20px; }
+.foot-bottom p { color: #d9e8e0; margin: 0; }
 
 /* Hamburger menu button — hidden on desktop, shown on phones */
 .menu-btn { display: none; border: 1px solid var(--teal); background: var(--teal); color: #fff; border-radius: 12px; padding: 8px 12px; font-size: 20px; font-weight: 800; line-height: 1; }
@@ -199,14 +207,14 @@ footer a:hover, footer button:hover { color: #0a3d2f; text-decoration-thickness:
   .hero, .grid, .grid3, .stats, .dash { grid-template-columns: 1fr; }
   .hero h2 { font-size: 34px; }
   .chip-left { left: 6px; } .chip-right { right: 6px; }
-  footer .wrap { flex-direction: column; align-items: flex-start; }
+  footer .foot-grid { grid-template-columns: 1fr; gap: 20px; }
+  footer { padding: 28px 16px 0; }
   .partner-banner { flex-direction: column; align-items: flex-start; }
   .partner-banner .btn { width: 100%; text-align: center; }
   header { padding: 10px 12px; }
   header .wrap { gap: 8px; }
   .brand { flex: 1 1 auto; min-width: 0; }
   .logo-svg { width: 42px; height: 42px; }
-  .brand-sub { display: none; }
   .menu-btn { display: inline-flex; flex-shrink: 0; }
   .lang { flex-wrap: wrap; }
   .lang .btn.tomato { margin-left: 0; }
