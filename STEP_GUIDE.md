@@ -29,3 +29,39 @@ Say "next" when you are ready for the next step. Do not skip ahead — each file
 - frontend Donate: Continue to Sandbox Checkout -> Pay Rs amount in Sandbox (simulator, clearly labelled) -> My Donations.
 - Tested: initiate 2 JazzCash meals Rs 500 pending (available stayed 2), confirm -> sandbox_paid, available 4, donated 6.
 - Signup guide: SANDBOX_SETUP.md. Keys template: backend/.env.example. Never send keys in chat.
+
+## Chunky 3D dark-blue rebuild (2026-11-10, done — approved visuals board)
+- Restyle: frontend/src/styles.css + frontend/src/App.jsx rewritten to the approved look —
+  deep navy page (#0A1E4A), warm cream cards, 3px ink borders, hard offset shadows,
+  press-down pill buttons (tomato red Donate, turmeric yellow highlights, leaf green
+  go/served), Fredoka headings + Nunito body (Google Fonts, system fallbacks offline),
+  turmeric scrolling ticker under the hero, floating chips, tilting step cards.
+  Hamburger menu + 600px/800px mobile fixes kept. All features kept working.
+- Hero: new headline "One meal forward, one plate filled today." (old line
+  "A normal dinner becomes someone else's dinner." kept underneath) + cartoon
+  illustration frontend/public/hero-cartoon.webp (local file, served as
+  /hero-cartoon.webp — no external hotlink) of a server handing a hot plate to a
+  seated guest, with floating chips "Your meal was served!" and "N meals available today".
+- FULL translation: every UI string lives in the T dictionaries in App.jsx
+  (en / ur / sd, 253 keys each, verified equal). The language switcher translates
+  the whole site and flips dir to rtl for Urdu/Sindhi. Restaurant names,
+  "Pay It Forward Meal" and SDG 1/2 stay in English inside translations.
+- Restaurant owners add their OWN staff (new): backend role 'owner' linked to one
+  restaurant. Routes (server-side enforced, owner = own restaurant only):
+  GET /api/restaurant/staff, POST /api/restaurant/staff (name/email/password,
+  staffRole Counter/Kitchen/Manager — stored as staff_role on the staff user),
+  DELETE /api/restaurant/staff/:id. Admin still creates owners/staff for any
+  restaurant via /api/admin/users (now also accepts role 'owner').
+  Demo owner seeded: owner@payitforward.school / Owner123! (Sindh Biryani House).
+  Frontend: new "Restaurant" page — Dashboard button for owners, team list with
+  role badges + Remove, Add-staff form, role-permissions list. Owner login
+  redirects to the Restaurant page.
+  Old databases are migrated on startup (db.js): users table rebuilt to allow the
+  'owner' role (foreign keys off during rebuild, all rows kept), staff_role column
+  added, demo owner seeded if none exists.
+- NOT built (deliberately): counter QR, meal wallet, slow-connection mode.
+  Donor "Your meal was served" notifications were already built — kept.
+- Verified 2026-11-10: frontend build clean; owner login + list/add/remove staff
+  tested locally; staff/donor get 403 on owner routes; cross-restaurant delete
+  returns 404 and the staff member stays; full flow register → sandbox donate 2
+  → admin serve → stats consistent.

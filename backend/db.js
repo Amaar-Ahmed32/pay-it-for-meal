@@ -28,8 +28,8 @@ db.exec(`
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL,
-  role TEXT NOT NULL CHECK(role IN ('donor','staff','admin')),
-  restaurant_id INTEGER, language TEXT DEFAULT 'en', show_name INTEGER DEFAULT 1,
+  role TEXT NOT NULL CHECK(role IN ('donor','staff','admin','owner')),
+  restaurant_id INTEGER, staff_role TEXT, language TEXT DEFAULT 'en', show_name INTEGER DEFAULT 1,
   created_at TEXT DEFAULT (datetime('now'))
 );
 CREATE TABLE IF NOT EXISTS restaurants (
@@ -83,9 +83,62 @@ function seed() {
   const hash = bcrypt.hashSync('Admin123!', 10);
   db.prepare("INSERT INTO users (name, email, password_hash, role) VALUES (?,?,?, 'admin')")
     .run('School Admin', 'admin@payitforward.school', hash);
+  // Demo restaurant owner for Sindh Biryani House (restaurant id 1).
+  // Owners add/remove their own staff from the Restaurant page.
+  const ownerHash = bcrypt.hashSync('Owner123!', 10);
+  db.prepare("INSERT INTO users (name, email, password_hash, role, restaurant_id) VALUES (?,?,?, 'owner', 1)")
+    .run('Sindh Biryani House Owner', 'owner@payitforward.school', ownerHash);
   console.log('Seeded 4 restaurants + admin: admin@payitforward.school / Admin123!');
+  console.log('Seeded demo owner: owner@payitforward.school / Owner123! (Sindh Biryani House)');
 }
 seed();
+
+// Migration for restaurant owners (2026-11-10): older DBs have no owner account
+// and no staff_role column. Two steps, existing data untouched:
+// 1) Old users tables were created with CHECK(role IN ('donor','staff','admin')),
+//    which rejects 'owner' rows. Rebuild the table with 'owner' allowed.
+// 2) Add the staff_role column, then seed the demo owner for restaurant 1
+//    if no owner exists yet.
+try {
+  const row = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'").get();
+  if (row && row.sql && row.sql.includes("role IN ('donor','staff','admin')")) {
+    // Foreign keys point at users (donations/notifications/served_meals),
+    // so switch them off while the table is rebuilt, then back on.
+    db.exec('PRAGMA foreign_keys=OFF;');
+    db.exec('DROP TABLE IF EXISTS users_new;');
+    db.exec(`
+      CREATE TABLE users_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL,
+        role TEXT NOT NULL CHECK(role IN ('donor','staff','admin','owner')),
+        restaurant_id INTEGER, staff_role TEXT, language TEXT DEFAULT 'en', show_name INTEGER DEFAULT 1,
+        created_at TEXT DEFAULT (datetime('now'))
+      );
+      INSERT INTO users_new (id, name, email, password_hash, role, restaurant_id, staff_role, language, show_name, created_at)
+        SELECT id, name, email, password_hash, role, restaurant_id, NULL, language, show_name, created_at FROM users;
+      DROP TABLE users;
+      ALTER TABLE users_new RENAME TO users;
+    `);
+    db.exec('PRAGMA foreign_keys=ON;');
+    console.log('users table rebuilt: owner role now allowed, data kept');
+  }
+} catch (e) { console.log('owner CHECK migration skipped -', e.message); }
+try {
+  const hasRole = db.prepare("SELECT COUNT(*) c FROM pragma_table_info('users') WHERE name='staff_role'").get().c;
+  if (!hasRole) db.exec('ALTER TABLE users ADD COLUMN staff_role TEXT');
+} catch (e) { console.log('staff_role migration skipped -', e.message); }
+try {
+  const ownerCount = db.prepare("SELECT COUNT(*) c FROM users WHERE role='owner'").get().c;
+  if (!ownerCount) {
+    const r1 = db.prepare('SELECT id FROM restaurants WHERE id=1').get();
+    if (r1) {
+      const ownerHash = bcrypt.hashSync('Owner123!', 10);
+      db.prepare("INSERT INTO users (name, email, password_hash, role, restaurant_id) VALUES (?,?,?, 'owner', 1)")
+        .run('Sindh Biryani House Owner', 'owner@payitforward.school', ownerHash);
+      console.log('Seeded demo owner: owner@payitforward.school / Owner123! (Sindh Biryani House)');
+    }
+  }
+} catch (e) { console.log('owner seed migration skipped -', e.message); }
 
 // Migration for sandbox payments (2026-10-31): older databases created before
 // this step have no txn_ref / amount_pkr columns on donations. Add them if missing,

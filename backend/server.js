@@ -200,6 +200,42 @@ app.post('/api/serve', auth, requireRole('staff', 'admin'), (req, res) => {
   res.json({ restaurant: db.prepare('SELECT * FROM restaurants WHERE id=?').get(r.id), stats: stats() });
 });
 
+// ---------- Restaurant owner: manage THEIR OWN staff ----------
+// An owner is linked to ONE restaurant (restaurant_id on their account).
+// Every route below enforces that on the server: an owner can only see,
+// add or remove staff whose restaurant_id matches their own. Admin keeps
+// full power via /api/admin/users (any restaurant, any role).
+app.get('/api/restaurant/staff', auth, requireRole('owner'), (req, res) => {
+  if (!req.user.restaurant_id) return res.status(400).json({ error: 'Your owner account is not linked to a restaurant yet. Ask admin to link it.' });
+  const staff = db.prepare("SELECT id, name, email, role, staff_role, restaurant_id FROM users WHERE role='staff' AND restaurant_id=? ORDER BY id").all(req.user.restaurant_id);
+  const rest = db.prepare('SELECT * FROM restaurants WHERE id=?').get(req.user.restaurant_id);
+  res.json({ restaurant: rest || null, staff });
+});
+app.post('/api/restaurant/staff', auth, requireRole('owner'), (req, res) => {
+  if (!req.user.restaurant_id) return res.status(400).json({ error: 'Your owner account is not linked to a restaurant yet. Ask admin to link it.' });
+  const { name, email, password, staffRole } = req.body || {};
+  if (!name || !email || !password || password.length < 6) {
+    return res.status(400).json({ error: 'Name, email and a password of at least 6 characters are required' });
+  }
+  const role = ['Counter', 'Kitchen', 'Manager'].includes(staffRole) ? staffRole : 'Counter';
+  try {
+    const info = db.prepare("INSERT INTO users (name, email, password_hash, role, restaurant_id, staff_role) VALUES (?,?,?, 'staff', ?, ?)")
+      .run(name, email.toLowerCase(), hashPassword(password), req.user.restaurant_id, role);
+    res.json({ staff: db.prepare('SELECT id, name, email, role, staff_role, restaurant_id FROM users WHERE id=?').get(info.lastInsertRowid) });
+  } catch {
+    return res.status(400).json({ error: 'That email is already registered' });
+  }
+});
+app.delete('/api/restaurant/staff/:id', auth, requireRole('owner'), (req, res) => {
+  if (!req.user.restaurant_id) return res.status(400).json({ error: 'Your owner account is not linked to a restaurant yet.' });
+  const target = db.prepare('SELECT * FROM users WHERE id=?').get(req.params.id);
+  if (!target || target.role !== 'staff' || target.restaurant_id !== req.user.restaurant_id) {
+    return res.status(404).json({ error: 'Staff member not found in your restaurant' });
+  }
+  db.prepare('DELETE FROM users WHERE id=?').run(target.id);
+  res.json({ ok: true });
+});
+
 // ---------- Admin only ----------
 app.get('/api/admin/overview', auth, requireRole('admin'), (req, res) => {
   res.json({
@@ -224,10 +260,10 @@ app.get('/api/admin/users', auth, requireRole('admin'), (req, res) => {
 });
 app.post('/api/admin/users', auth, requireRole('admin'), (req, res) => {
   const { name, email, password, role, restaurant_id } = req.body || {};
-  if (!name || !email || !password || !['staff', 'admin', 'donor'].includes(role)) {
+  if (!name || !email || !password || !['staff', 'admin', 'donor', 'owner'].includes(role)) {
     return res.status(400).json({ error: 'Name, email, password and a valid role are required' });
   }
-  if (role === 'staff' && !restaurant_id) return res.status(400).json({ error: 'A staff account must be linked to a restaurant' });
+  if ((role === 'staff' || role === 'owner') && !restaurant_id) return res.status(400).json({ error: 'A staff/owner account must be linked to a restaurant' });
   try {
     const info = db.prepare('INSERT INTO users (name, email, password_hash, role, restaurant_id) VALUES (?,?,?,?,?)')
       .run(name, email.toLowerCase(), hashPassword(password), role, restaurant_id || null);
