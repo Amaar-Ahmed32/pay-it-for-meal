@@ -12,6 +12,11 @@ import React, { useEffect, useState } from 'react';
 
 const API = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL) || 'http://localhost:5001/api';
 const PILOT_DONATION_GOAL = 50; // pilot target from the teacher plan — change this one number if the target changes
+// Standard meals a restaurant can tick on the join / add-restaurant forms.
+const MEAL_OPTIONS = ['Chicken Biryani', 'Beef Biryani', 'Daal', 'Chicken Karahi', 'Vegetable', 'Roti/Naan'];
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const validEmail = (e) => typeof e === 'string' && EMAIL_RE.test(e.trim());
+const validPhonePK = (p) => /^03\d{9}$/.test(String(p || '').replace(/[\s-]/g, ''));
 
 // ---------- FULL TRANSLATION DICTIONARIES ----------
 // {n} is replaced at render time with a number. Restaurant names, "Pay It
@@ -115,6 +120,42 @@ const T = {
     photoTooLarge: 'Photo is too large — max 500KB.',
     photoType: 'Photo must be a JPG or PNG image.',
     photoChoose: 'Choose photo',
+    mealOptions: 'Which meals do you serve?', mealOther: 'Other meal (type the name)', mealPriceEach: 'Price per meal (Rs)',
+    emailLabel: 'Email', phoneLabel: 'Phone (03XX-XXXXXXX)',
+    invalidEmail: 'Please enter a valid email address (e.g. name@example.com)',
+    invalidPhone: 'Please enter a valid Pakistani mobile number (e.g. 0300-1234567)',
+    menuTitle: 'Menu', menuNone: 'No menu yet — add your first meal below.',
+    mealName: 'Meal name', mealPrice: 'Price (Rs)', addMealBtn: 'Add meal',
+    mealAdded: 'Meal added.', mealUpdated: 'Meal updated.', mealDeleted: 'Meal deleted.',
+    mealDeleteConfirm: 'Delete this meal from the menu?', saveBtn: 'Save',
+    reqMealTitle: 'Request a meal',
+    reqMealNote: 'No login, no name, no phone — just pick a restaurant and how many meals you need. The restaurant sees only the number and the time.',
+    reqRest: 'Restaurant', reqQty: 'How many meals? (1–3)', reqNote: 'Note (optional)', reqSend: 'Send request',
+    reqSent: 'Request sent to the restaurant. Show this line at the counter: ',
+    reqSentLine: 'Requested {n} meal(s) • {t}',
+    reqPending: 'Pending requests', reqNone: 'No meal requests right now.',
+    reqFulfil: 'Serve 1 meal', reqCancel: 'Cancel',
+    reqFulfilled: 'Request fulfilled — 1 meal served.', reqCancelled: 'Request cancelled.',
+    reqExpired: 'Expired', reqStatus: 'Status', reqTime: 'Requested at',
+    receiptServeTitle: '💛 Pay It Forward Meal — Serve receipt',
+    receiptMeal: 'Meal:', receiptQty: 'Quantity:', receiptPrice: 'Price per meal:', receiptTotal: 'Total:',
+    receiptServedBy: 'Served by:', receiptServedToday: 'Meals served today here:', receiptAvailLeft: 'Meals available left:',
+    printSlip: 'Print slip', receiptsTitle: 'Served receipts', receiptsNone: 'No served receipts yet.',
+    detailMenu: 'Menu', detailStaff: 'Staff', detailClose: 'Close',
+    claimNote: 'To claim a meal, just ask staff at the restaurant — no login, no form.',
+    lowStock: '⚠️ Only {n} meal(s) left — ask for donations!',
+    lowStockBadge: 'Low stock — {n} left', closedToday: 'Closed today', openNow: 'Open now',
+    toggleClose: 'Mark closed for today', toggleOpen: 'Mark open for today',
+    closedMsg: 'This restaurant is closed today — please donate to another restaurant or try tomorrow.',
+    closedServe: 'This restaurant is closed today — serving is paused until it reopens.',
+    closedReq: 'This restaurant is closed today — please request a meal at another restaurant or try tomorrow.',
+    delRestBtn: 'Delete restaurant',
+    delRestConfirm: 'Delete this restaurant? Its menu, meal requests, receipts and staff accounts will be deleted too.',
+    restDeleted: 'Restaurant deleted.', delUserBtn: 'Delete',
+    delUserConfirm: 'Delete this user account?', userDeleted: 'User deleted.', delMealBtn: 'Delete',
+    adminMealsTitle: 'All menus (delete a meal)', adminReceiptsTitle: 'Recent serve receipts',
+    adminReqsTitle: 'Meal requests (all restaurants)',
+    serveMealLabel: 'Which meal was served?', serveReceiptMsg: 'Served! Receipt saved.',
     
     anon: 'Anonymous donor',
     joinTitle: 'Join as a restaurant', joinNote: 'Your request starts UNVERIFIED and hidden from the public Finder until admin approves it. Checklist: name, area, meal and timings, and you agree to serve without questions.',
@@ -228,6 +269,42 @@ const T = {
     photoTooLarge: 'تصویر بہت بڑی ہے — زیادہ سے زیادہ 500KB۔',
     photoType: 'تصویر JPG یا PNG ہونی چاہیے۔',
     photoChoose: 'تصویر منتخب کریں',
+    mealOptions: 'آپ کون سے کھانے پیش کرتے ہیں؟', mealOther: 'دوسرا کھانا (نام لکھیں)', mealPriceEach: 'فی کھانا قیمت (روپے)',
+    emailLabel: 'ای میل', phoneLabel: 'فون (03XX-XXXXXXX)',
+    invalidEmail: 'براہ کرم درست ای میل لکھیں (مثلاً name@example.com)',
+    invalidPhone: 'براہ کرم درست پاکستانی موبائل نمبر لکھیں (مثلاً 0300-1234567)',
+    menuTitle: 'مینیو', menuNone: 'ابھی کوئی مینیو نہیں — نیچے پہلا کھانا شامل کریں۔',
+    mealName: 'کھانے کا نام', mealPrice: 'قیمت (روپے)', addMealBtn: 'کھانا شامل کریں',
+    mealAdded: 'کھانا شامل کر دیا گیا۔', mealUpdated: 'کھانا اپ ڈیٹ ہو گیا۔', mealDeleted: 'کھانا حذف کر دیا گیا۔',
+    mealDeleteConfirm: 'کیا یہ کھانا مینیو سے حذف کریں؟', saveBtn: 'محفوظ کریں',
+    reqMealTitle: 'کھانے کی درخواست کریں',
+    reqMealNote: 'کوئی لاگ ان نہیں، کوئی نام نہیں، کوئی فون نہیں — بس ریسٹورنٹ منتخب کریں اور بتائیں کتنے کھانے چاہییں۔ ریسٹورنٹ کو صرف تعداد اور وقت نظر آتا ہے۔',
+    reqRest: 'ریسٹورنٹ', reqQty: 'کتنے کھانے؟ (1–3)', reqNote: 'نوٹ (اختیاری)', reqSend: 'درخواست بھیجیں',
+    reqSent: 'درخواست ریسٹورنٹ کو بھیج دی گئی۔ کاؤنٹر پر یہ لائن دکھائیں: ',
+    reqSentLine: '{n} کھانے کی درخواست • {t}',
+    reqPending: 'زیر التواء درخواستیں', reqNone: 'ابھی کوئی درخواست نہیں۔',
+    reqFulfil: '1 کھانا پیش کریں', reqCancel: 'منسوخ کریں',
+    reqFulfilled: 'درخواست مکمل — 1 کھانا پیش کر دیا گیا۔', reqCancelled: 'درخواست منسوخ کر دی گئی۔',
+    reqExpired: 'میعاد ختم', reqStatus: 'حالت', reqTime: 'درخواست کا وقت',
+    receiptServeTitle: '💛 Pay It Forward Meal — پیش کرنے کی رسید',
+    receiptMeal: 'کھانا:', receiptQty: 'تعداد:', receiptPrice: 'فی کھانا قیمت:', receiptTotal: 'کل رقم:',
+    receiptServedBy: 'پیش کرنے والا:', receiptServedToday: 'آج یہاں پیش شدہ کھانے:', receiptAvailLeft: 'باقی دستیاب کھانے:',
+    printSlip: 'پرچی پرنٹ کریں', receiptsTitle: 'پیش کردہ رسیدیں', receiptsNone: 'ابھی کوئی رسید نہیں۔',
+    detailMenu: 'مینیو', detailStaff: 'اسٹاف', detailClose: 'بند کریں',
+    claimNote: 'کھانا لینے کے لیے بس ریسٹورنٹ کے عملے سے پوچھیں — کوئی لاگ ان نہیں، کوئی فارم نہیں۔',
+    lowStock: '⚠️ صرف {n} کھانے باقی — عطیات مانگیں!',
+    lowStockBadge: 'کم اسٹاک — {n} باقی', closedToday: 'آج بند ہے', openNow: 'ابھی کھلا ہے',
+    toggleClose: 'آج کے لیے بند کریں', toggleOpen: 'آج کے لیے کھولیں',
+    closedMsg: 'یہ ریسٹورنٹ آج بند ہے — براہ کرم کسی اور ریسٹورنٹ کو عطیہ دیں یا کل آزمائیں۔',
+    closedServe: 'یہ ریسٹورنٹ آج بند ہے — دوبارہ کھلنے تک پیش کرنا رکا ہوا ہے۔',
+    closedReq: 'یہ ریسٹورنٹ آج بند ہے — براہ کرم کسی اور ریسٹورنٹ سے کھانا مانگیں یا کل آزمائیں۔',
+    delRestBtn: 'ریسٹورنٹ حذف کریں',
+    delRestConfirm: 'کیا یہ ریسٹورنٹ حذف کریں؟ اس کا مینیو، درخواستیں، رسیدیں اور اسٹاف اکاؤنٹ بھی حذف ہو جائیں گے۔',
+    restDeleted: 'ریسٹورنٹ حذف کر دیا گیا۔', delUserBtn: 'حذف کریں',
+    delUserConfirm: 'کیا یہ صارف اکاؤنٹ حذف کریں؟', userDeleted: 'صارف حذف کر دیا گیا۔', delMealBtn: 'حذف کریں',
+    adminMealsTitle: 'تمام مینیو (کھانا حذف کریں)', adminReceiptsTitle: 'حالیہ پیش کرنے کی رسیدیں',
+    adminReqsTitle: 'کھانے کی درخواستیں (تمام ریسٹورنٹ)',
+    serveMealLabel: 'کون سا کھانا پیش کیا گیا؟', serveReceiptMsg: 'پیش کر دیا! رسید محفوظ ہو گئی۔',
     
     anon: 'Anonymous donor',
     joinTitle: 'ریسٹورنٹ بنیں', joinNote: 'آپ کی درخواست غیر تصدیق شدہ شروع ہوتی ہے اور ایڈمن کی منظوری تک عوامی Finder میں چھپی رہتی ہے۔ چیک لسٹ: نام، علاقہ، کھانا اور اوقات، اور آپ بغیر سوال پوچھے پیش کرنے پر راضی ہیں۔',
@@ -341,6 +418,42 @@ const T = {
     photoTooLarge: 'تصوير تمام وڏي آهي — وڌ ۾ وڌ 500KB.',
     photoType: 'تصوير JPG يا PNG هجڻ گهرجي.',
     photoChoose: 'تصوير چونڊيو',
+    mealOptions: 'توهان ڪهڙا کاڌا پيش ڪندا آهيو؟', mealOther: 'ٻيو کاڌو (نالو لکو)', mealPriceEach: 'في کاڌو قيمت (رپيا)',
+    emailLabel: 'اي ميل', phoneLabel: 'فون (03XX-XXXXXXX)',
+    invalidEmail: 'مهرباني ڪري صحيح اي ميل لکو (مثال name@example.com)',
+    invalidPhone: 'مهرباني ڪري صحيح پاڪستاني موبائل نمبر لکو (مثال 0300-1234567)',
+    menuTitle: 'مينيو', menuNone: 'هينئر تائين ڪو مينيو ناهي — هيٺ پهريون کاڌو شامل ڪريو.',
+    mealName: 'کاڌي جو نالو', mealPrice: 'قيمت (رپيا)', addMealBtn: 'کاڌو شامل ڪريو',
+    mealAdded: 'کاڌو شامل ڪيو ويو.', mealUpdated: 'کاڌو اپڊيٽ ٿي ويو.', mealDeleted: 'کاڌو حذف ڪيو ويو.',
+    mealDeleteConfirm: 'هي کاڌو مينيو مان حذف ڪجي؟', saveBtn: 'محفوظ ڪريو',
+    reqMealTitle: 'کاڌي جي درخواست ڪريو',
+    reqMealNote: 'ڪو لاگ ان ناهي، ڪو نالو ناهي، ڪو فون ناهي — بس ريسٽورنٽ چونڊيو ۽ ٻڌايو ڪيترا کاڌا گهرجن. ريسٽورنٽ کي صرف تعداد ۽ وقت نظر اچي ٿو.',
+    reqRest: 'ريسٽورنٽ', reqQty: 'ڪيترا کاڌا؟ (1–3)', reqNote: 'نوٽ (اختياري)', reqSend: 'درخواست موڪليو',
+    reqSent: 'درخواست ريسٽورنٽ ڏانهن موڪلي وئي. ڪائونٽر تي هي لائين ڏيکاريو: ',
+    reqSentLine: '{n} کاڌن جي درخواست • {t}',
+    reqPending: 'التوا واريون درخواستون', reqNone: 'هينئر تائين ڪا درخواست ناهي.',
+    reqFulfil: '1 کاڌو پيش ڪريو', reqCancel: 'رد ڪريو',
+    reqFulfilled: 'درخواست پوري ٿي — 1 کاڌو پيش ڪيو ويو.', reqCancelled: 'درخواست رد ڪئي وئي.',
+    reqExpired: 'مدت ختم', reqStatus: 'حالت', reqTime: 'درخواست جو وقت',
+    receiptServeTitle: '💛 Pay It Forward Meal — پيش ڪرڻ جي رسيد',
+    receiptMeal: 'کاڌو:', receiptQty: 'تعداد:', receiptPrice: 'في کاڌو قيمت:', receiptTotal: 'ڪل رقم:',
+    receiptServedBy: 'پيش ڪندڙ:', receiptServedToday: 'اڄ هتي پيش ٿيل کاڌا:', receiptAvailLeft: 'باقي دستياب کاڌا:',
+    printSlip: 'پرچي پرنٽ ڪريو', receiptsTitle: 'پيش ڪيل رسيدون', receiptsNone: 'هينئر تائين ڪا رسيد ناهي.',
+    detailMenu: 'مينيو', detailStaff: 'اسٽاف', detailClose: 'بند ڪريو',
+    claimNote: 'کاڌو وٺڻ لاءِ بس ريسٽورنٽ جي اسٽاف کان پڇو — ڪو لاگ ان ناهي، ڪو فارم ناهي.',
+    lowStock: '⚠️ صرف {n} کاڌا باقي — عطيا گهرو!',
+    lowStockBadge: 'گهٽ اسٽاڪ — {n} باقي', closedToday: 'اڄ بند آهي', openNow: 'هاڻي کليل آهي',
+    toggleClose: 'اڄ لاءِ بند ڪريو', toggleOpen: 'اڄ لاءِ کليو',
+    closedMsg: 'هي ريسٽورنٽ اڄ بند آهي — مهرباني ڪري ٻئي ريسٽورنٽ کي عطيو ڏيو يا سڀاڻي آزمايو.',
+    closedServe: 'هي ريسٽورنٽ اڄ بند آهي — ٻيهر کلڻ تائين پيش ڪرڻ بند آهي.',
+    closedReq: 'هي ريسٽورنٽ اڄ بند آهي — مهرباني ڪري ٻئي ريسٽورنٽ کان کاڌو گهرو يا سڀاڻي آزمايو.',
+    delRestBtn: 'ريسٽورنٽ حذف ڪريو',
+    delRestConfirm: 'هي ريسٽورنٽ حذف ڪجي؟ ان جو مينيو، درخواستون، رسيدون ۽ اسٽاف اڪائونٽ به حذف ٿي ويندا.',
+    restDeleted: 'ريسٽورنٽ حذف ڪيو ويو.', delUserBtn: 'حذف ڪريو',
+    delUserConfirm: 'هي استعمال ڪندڙ اڪائونٽ حذف ڪجي؟', userDeleted: 'استعمال ڪندڙ حذف ڪيو ويو.', delMealBtn: 'حذف ڪريو',
+    adminMealsTitle: 'سڀ مينيو (کاڌو حذف ڪريو)', adminReceiptsTitle: 'تازيون پيش ڪرڻ جون رسيدون',
+    adminReqsTitle: 'کاڌي جون درخواستون (سڀ ريسٽورنٽ)',
+    serveMealLabel: 'ڪهڙو کاڌو پيش ڪيو ويو؟', serveReceiptMsg: 'پيش ڪيو ويو! رسيد محفوظ ٿي وئي.',
     
     anon: 'Anonymous donor',
     joinTitle: 'ريسٽورنٽ ٿيو', joinNote: 'توهان جي درخواست غير تصديق ٿيل شروع ٿئي ٿي ۽ ايڊمن جي منظوري تائين عوامي Finder ۾ لڪيل رهي ٿي. چيڪ لسٽ: نالو، علائقو، کاڌو ۽ وقت، ۽ توهان بغير سوال پڇڻ جي پيش ڪرڻ تي راضي آهيو.',
@@ -506,12 +619,32 @@ export default function App() {
   const [adminData, setAdminData] = useState(null);
   const [report, setReport] = useState(null);
   const [staffForm, setStaffForm] = useState({ name: '', email: '', password: '', restaurant_id: '', photo: '' });
-  const [newRest, setNewRest] = useState({ name: '', area: '', meal: '', timings: '', meal_price_pkr: '' });
+  const [newRest, setNewRest] = useState({ name: '', area: '', meal: '', timings: '', meal_price_pkr: '', contact_email: '', contact_phone: '' });
   const [priceEdit, setPriceEdit] = useState({ id: '', price: '' });
-  const [reqForm, setReqForm] = useState({ name: '', area: '', meal: '', timings: '', contact_name: '', contact_phone: '' });
+  const [reqForm, setReqForm] = useState({ name: '', area: '', meal: '', timings: '', contact_name: '', contact_phone: '', contact_email: '' });
   // Restaurant owner team
   const [team, setTeam] = useState(null);
   const [ownerForm, setOwnerForm] = useState({ name: '', email: '', password: '', staffRole: 'Counter', photo: '' });
+  // Menus, requests, receipts, detail view
+  const [detailRest, setDetailRest] = useState(null);
+  const [reqForm2, setReqForm2] = useState({ restaurantId: '', qty: 1, note: '' });
+  const [reqSentInfo, setReqSentInfo] = useState(null);
+  const [ownerMeals, setOwnerMeals] = useState([]);
+  const [mealForm, setMealForm] = useState({ name: '', price: '' });
+  const [editMeal, setEditMeal] = useState({ id: '', price: '' });
+  const [ownerReqs, setOwnerReqs] = useState([]);
+  const [ownerReceipts, setOwnerReceipts] = useState([]);
+  const [staffReqs, setStaffReqs] = useState([]);
+  const [staffReceipt, setStaffReceipt] = useState(null);
+  const [serveMealId, setServeMealId] = useState('');
+  const [donMealId, setDonMealId] = useState('');
+  const [adminMeals, setAdminMeals] = useState([]);
+  const [adminReceipts, setAdminReceipts] = useState([]);
+  const [adminReqs, setAdminReqs] = useState([]);
+  const [joinMeals, setJoinMeals] = useState([]);
+  const [joinOther, setJoinOther] = useState('');
+  const [adminMealSel, setAdminMealSel] = useState([]);
+  const [adminOther, setAdminOther] = useState('');
   const t = T[lang];
 
   const api = async (path, opts = {}) => {
@@ -547,15 +680,27 @@ export default function App() {
       });
       // Graphs load with the page (admin only) — no extra button needed.
       setReport(await api('/admin/report').catch(() => null));
+      setAdminMeals(await api('/admin/meals').catch(() => []));
+      setAdminReceipts(await api('/admin/receipts').catch(() => []));
+      setAdminReqs(await api('/admin/meal-requests').catch(() => []));
     } catch (e) { setMsg(e.message); }
   };
   useEffect(() => { if (page === 'admin' && user?.role === 'admin') loadAdmin(); }, [page, user]);
   useEffect(() => { if (page === 'transparency') { api('/transparency/monthly').then(setMonthly).catch(() => {}); } }, [page]);
 
   const loadTeam = async () => {
-    try { setTeam(await api('/restaurant/staff')); } catch (e) { setMsg(e.message); }
+    try {
+      setTeam(await api('/restaurant/staff'));
+      setOwnerMeals((await api('/restaurant/meals')).meals || []);
+      setOwnerReqs(await api('/restaurant/requests').catch(() => []));
+      setOwnerReceipts(await api('/restaurant/receipts').catch(() => []));
+    } catch (e) { setMsg(e.message); }
   };
   useEffect(() => { if (page === 'restaurant' && user?.role === 'owner') loadTeam(); }, [page, user]);
+  const loadStaffReqs = async () => {
+    try { setStaffReqs(await api('/restaurant/requests').catch(() => [])); } catch {}
+  };
+  useEffect(() => { if (page === 'staff' && user && (user.role === 'staff' || user.role === 'admin')) loadStaffReqs(); }, [page, user]);
 
   const go = (p) => { setPage(p); setMsg(''); setMenuOpen(false); window.scrollTo(0, 0); };
   const dashPage = (u) => (u.role === 'admin' ? 'admin' : u.role === 'staff' ? 'staff' : u.role === 'owner' ? 'restaurant' : 'mine');
@@ -581,7 +726,7 @@ export default function App() {
 
   const doDonate = async () => {
     try {
-      const r = await api('/payments/initiate', { method: 'POST', body: JSON.stringify({ restaurantId: donRest, quantity: donQty, method: donMethod }) });
+      const r = await api('/payments/initiate', { method: 'POST', body: JSON.stringify({ restaurantId: donRest, quantity: donQty, method: donMethod, mealId: donMeal ? donMeal.id : undefined }) });
       setCheckout(r.checkout); setMsg(t.pendingMsg);
     } catch (e) { setMsg(e.message); }
   };
@@ -600,9 +745,11 @@ export default function App() {
   };
   const doServe = async () => {
     try {
-      const r = await api('/serve', { method: 'POST', body: JSON.stringify({ restaurantId: user?.role === 'admin' ? restaurants[0]?.id : undefined }) });
+      const r = await api('/serve', { method: 'POST', body: JSON.stringify({ restaurantId: user?.role === 'admin' ? restaurants[0]?.id : undefined, mealId: serveMealId || undefined }) });
       setStats(r.stats); setRestaurants(await api('/restaurants'));
-      setMsg(fmt(t.servedMsg, { a: r.restaurant.available, s: r.restaurant.served }));
+      if (r.receipt) setStaffReceipt({ ...r.receipt, restaurantName: r.restaurant.name, servedBy: user?.name || '', servedToday: r.restaurant.served, availLeft: r.restaurant.available });
+      setMsg(t.serveReceiptMsg);
+      loadStaffReqs();
     } catch (e) { setMsg(e.message); }
   };
   // Staff photo: compulsory. Reads the chosen image (JPG/PNG, max 500KB)
@@ -627,6 +774,80 @@ export default function App() {
   const doRemoveStaff = async (id) => {
     try { await api(`/restaurant/staff/${id}`, { method: 'DELETE' }); setMsg(t.staffRemoved); loadTeam(); } catch (e) { setMsg(e.message); }
   };
+  // ---- Meals (owner menu) ----
+  const doAddMeal = async () => {
+    try {
+      await api('/restaurant/meals', { method: 'POST', body: JSON.stringify(mealForm) });
+      setMealForm({ name: '', price: '' }); setMsg(t.mealAdded); loadTeam(); load();
+    } catch (e) { setMsg(e.message); }
+  };
+  const doUpdateMeal = async (id) => {
+    try {
+      await api(`/restaurant/meals/${id}`, { method: 'PUT', body: JSON.stringify({ price: editMeal.price }) });
+      setEditMeal({ id: '', price: '' }); setMsg(t.mealUpdated); loadTeam(); load();
+    } catch (e) { setMsg(e.message); }
+  };
+  const doDeleteMeal = async (id) => {
+    if (!window.confirm(t.mealDeleteConfirm)) return;
+    try { await api(`/restaurant/meals/${id}`, { method: 'DELETE' }); setMsg(t.mealDeleted); loadTeam(); load(); } catch (e) { setMsg(e.message); }
+  };
+  const doToggleOpen = async () => {
+    try {
+      const r = await api('/restaurant/toggle-open', { method: 'POST' });
+      setMsg(r.restaurant.is_open === 0 ? t.closedToday : t.openNow); loadTeam(); load();
+    } catch (e) { setMsg(e.message); }
+  };
+  // ---- Anonymous meal requests (no identity anywhere) ----
+  const doRequestMeal = async () => {
+    try {
+      const r = await api('/requests', { method: 'POST', body: JSON.stringify({ restaurantId: reqForm2.restaurantId, mealsNeeded: reqForm2.qty, note: reqForm2.note }) });
+      setReqSentInfo({ ...r.request, at: fmtDate(r.request.created_at) });
+      setReqForm2({ restaurantId: '', qty: 1, note: '' });
+      setMsg(t.reqSent + fmt(t.reqSentLine, { n: r.request.meals_needed, t: fmtDate(r.request.created_at) }));
+    } catch (e) { setMsg(e.message); }
+  };
+  const doFulfilReq = async (id, after) => {
+    try {
+      const r = await api(`/restaurant/requests/${id}/fulfil`, { method: 'POST' });
+      setStaffReceipt({ ...r.receipt, restaurantName: r.restaurant.name, servedBy: user?.name || '', servedToday: r.restaurant.served, availLeft: r.restaurant.available });
+      setMsg(t.reqFulfilled); setStats(r.stats);
+      if (after) after(); else { loadTeam(); loadStaffReqs(); }
+      load();
+    } catch (e) { setMsg(e.message); }
+  };
+  const doCancelReq = async (id, after) => {
+    try {
+      await api(`/restaurant/requests/${id}/cancel`, { method: 'POST' });
+      setMsg(t.reqCancelled);
+      if (after) after(); else { loadTeam(); loadStaffReqs(); }
+    } catch (e) { setMsg(e.message); }
+  };
+  // ---- Serve receipt slip (printable, and saved on the server) ----
+  const printServeReceipt = (rc) => {
+    const w = window.open('', '_blank', 'width=600,height=700');
+    if (!w) { setMsg(t.popups); return; }
+    w.document.write(`<html><head><title>${t.receiptServeTitle}</title></head><body style="font-family: sans-serif; max-width: 520px; margin: 30px auto; color: #111;"><h2>${t.receiptServeTitle}</h2><p>Pay It Forward Meal • SDG 1 + SDG 2</p><hr /><p><b>${t.receiptRest}</b> ${rc.restaurantName || ''}</p><p><b>${t.receiptMeal}</b> ${rc.meal_name}</p><p><b>${t.receiptQty}</b> ${rc.quantity}</p><p><b>${t.receiptPrice}</b> Rs ${rc.price_pkr}</p><p><b>${t.receiptTotal}</b> Rs ${rc.total_pkr}</p><p><b>${t.receiptServedBy}</b> ${rc.servedBy || ''}</p><p><b>${t.receiptDate}</b> ${fmtDate(rc.served_at)}</p><p><b>${t.receiptServedToday}</b> ${rc.servedToday ?? ''}</p><p><b>${t.receiptAvailLeft}</b> ${rc.availLeft ?? ''}</p><hr /><p><small>${t.receiptNote}</small></p></body></html>`);
+    w.document.close(); w.focus(); w.print();
+  };
+  // ---- Admin deletes (all confirmed in the UI first) ----
+  const doDeleteRest = async (id, name) => {
+    if (!window.confirm(`${t.delRestConfirm} (${name})`)) return;
+    try { await api(`/admin/restaurants/${id}`, { method: 'DELETE' }); setMsg(t.restDeleted); loadAdmin(); load(); } catch (e) { setMsg(e.message); }
+  };
+  const doDeleteUser = async (id, name) => {
+    if (!window.confirm(`${t.delUserConfirm} (${name})`)) return;
+    try { await api(`/admin/users/${id}`, { method: 'DELETE' }); setMsg(t.userDeleted); loadAdmin(); } catch (e) { setMsg(e.message); }
+  };
+  const doDeleteAdminMeal = async (id) => {
+    if (!window.confirm(t.mealDeleteConfirm)) return;
+    try { await api(`/admin/meals/${id}`, { method: 'DELETE' }); setMsg(t.mealDeleted); loadAdmin(); load(); } catch (e) { setMsg(e.message); }
+  };
+  // Donate price: chosen meal on the menu, else the first menu meal, else the restaurant's own price.
+  const donMeal = (selRest?.meals || []).find((m) => String(m.id) === String(donMealId)) || (selRest?.meals || [])[0] || null;
+  const donPrice = donMeal ? donMeal.price_pkr : (selRest?.meal_price_pkr || 250);
+  const isClosed = (r) => r && r.is_open === 0;
+  const isLowStock = (r) => r && r.available <= 2 && r.available > 0;
+  const reqExpired = (row) => row.status === 'pending' && (Date.now() - new Date(String(row.created_at).replace(' ', 'T') + 'Z').getTime() > 24 * 3600 * 1000);
 
   const areas = [t.allAreas, ...new Set(restaurants.map((r) => r.area))];
   const shown = restaurants.filter((r) => (filter === t.allAreas || r.area === filter) && (!onlyAvailable || r.available > 0));
@@ -635,6 +856,24 @@ export default function App() {
   const myServed = mine.reduce((s, d) => s + (d.served_qty || 0), 0);
   const dailyOk = stats ? stats.donated - stats.served === stats.available : false;
   const selRest = restaurants.find((r) => String(r.id) === String(donRest));
+  // Anonymous meal-request form (no login, no name, no phone) — shown on
+  // Home and on the Finder. The restaurant sees only a number and a time.
+  const requestFormCard = (
+    <div className="card"><h3>{t.reqMealTitle}</h3>
+      <p className="muted">{t.reqMealNote}</p>
+      <label>{t.reqRest}</label>
+      <select value={reqForm2.restaurantId} onChange={(e) => setReqForm2({ ...reqForm2, restaurantId: e.target.value })}>
+        <option value="">{t.donateChoose}</option>
+        {restaurants.map((r) => (<option key={r.id} value={r.id}>{r.name} ({r.area}) — {r.available} {t.available}{isClosed(r) ? ` • ${t.closedToday}` : ''}</option>))}
+      </select>
+      <label>{t.reqQty}</label>
+      <div className="qty">{[1, 2, 3].map((n) => (<button key={n} className={reqForm2.qty === n ? 'active' : ''} onClick={() => setReqForm2({ ...reqForm2, qty: n })}>{n}</button>))}</div>
+      <label>{t.reqNote}</label>
+      <input value={reqForm2.note} onChange={(e) => setReqForm2({ ...reqForm2, note: e.target.value })} maxLength={200} />
+      <button className="btn tomato" disabled={!reqForm2.restaurantId} onClick={doRequestMeal}>{t.reqSend}</button>
+      {reqSentInfo && <p className="success" style={{ marginTop: 10 }}>{t.reqSent}<b>{fmt(t.reqSentLine, { n: reqSentInfo.meals_needed, t: reqSentInfo.at })}</b></p>}
+    </div>
+  );
 
   return (
     <div dir={lang === 'en' ? 'ltr' : 'rtl'}>
@@ -696,9 +935,10 @@ export default function App() {
               <div className="card tilt"><div className="step-num">3</div><h3>{t.step3t}</h3><p>{t.step3d}</p></div>
             </div>
             <p className="muted" style={{ marginTop: 18 }}>{t.trust1} • {t.trust2} • {t.trust3}</p>
-            {restaurants.some((r) => r.available <= 1) && (<div className="notice">⚠️ {t.urgent} {restaurants.filter((r) => r.available <= 1).map((r) => `${r.name} — ${fmt(t.mealsLeft, { n: r.available })}`).join(' • ')}</div>)}
+            {restaurants.some((r) => r.available <= 2) && (<div className="notice">{restaurants.filter((r) => r.available <= 2).map((r) => `${r.name}: ${fmt(t.lowStock, { n: r.available })}`).join(' • ')}</div>)}
             <p><button className="btn tomato" onClick={() => { if (mostNeeded) { setDonRest(String(mostNeeded.id)); } go('donate'); }}>{mostNeeded ? fmt(t.giveMostName, { n: mostNeeded.name }) : t.giveMost}</button></p>
             <div className="partner-banner"><div><h3>{t.partnerTitle}</h3><p>{t.partnerText}</p></div><button className="btn turmeric" onClick={() => go('request')}>{t.partnerBtn}</button></div>
+            {requestFormCard}
             <div className="card"><h3>{t.activityTitle}</h3>
               {activity.slice(0, 6).map((a, i) => (<p key={i}>{a.type === 'served' ? t.activityServed : fmt(t.activityDonated, { n: a.donor, q: a.qty })} {fmt(t.activityAt, { n: a.restaurant })}</p>))}
               {activity.length === 0 && <p className="muted">{t.activityNone}</p>}
@@ -715,8 +955,9 @@ export default function App() {
             <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px', cursor: 'pointer' }}><input type="checkbox" checked={onlyAvailable} onChange={(e) => setOnlyAvailable(e.target.checked)} /> {t.finderOnly}</label>
             <div className="grid3">
               {shown.map((r) => (
-                <div className="card" key={r.id}>
-                  <h3>{r.name} <span className={(r.available <= 1 ? 'badge warn' : 'badge') + ' badge-right'}>{r.available <= 1 ? fmt(t.finderUrgent, { n: r.available }) : fmt(t.finderMeals, { n: r.available })}</span></h3>
+                <div className="card finder-card" key={r.id} onClick={() => setDetailRest(r)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') setDetailRest(r); }}>
+                  {(r.staff || []).length > 0 && (<div className="staff-icons">{(r.staff || []).slice(0, 3).map((s) => (<Avatar key={s.id} photo={s.photo} name={s.name} size={34} />))}{(r.staff || []).length > 3 && <span className="avatar avatar-initials" style={{ width: 34, height: 34 }}>+{(r.staff || []).length - 3}</span>}</div>)}
+                  <h3>{r.name} {isClosed(r) ? <span className="badge warn badge-right">{t.closedToday}</span> : <span className={(r.available <= 2 ? 'badge warn' : 'badge') + ' badge-right'}>{r.available <= 1 ? fmt(t.finderUrgent, { n: r.available }) : r.available === 2 ? fmt(t.lowStockBadge, { n: r.available }) : fmt(t.finderMeals, { n: r.available })}</span>}</h3>
                   <p>{r.area} • {r.meal}<br />{r.timings} • {fmt(t.finderPerMeal, { n: r.meal_price_pkr || 250 })}</p>
                   <p className="muted">{fmt(t.finderServed, { n: r.served })}</p>
                 </div>
@@ -724,6 +965,22 @@ export default function App() {
             </div>
             {shown.length === 0 && <p>{onlyAvailable ? t.finderEmptyAvail : t.finderEmptyArea}</p>}
             <p className="muted">{t.finderNoLogin}</p>
+            {requestFormCard}
+            {detailRest && (
+              <div className="modal-overlay" onClick={() => setDetailRest(null)}>
+                <div className="card modal" onClick={(e) => e.stopPropagation()}>
+                  <button className="btn small outline modal-close" onClick={() => setDetailRest(null)}>✕ {t.detailClose}</button>
+                  <h2>{detailRest.name}</h2>
+                  <p>{detailRest.area} • {detailRest.timings}</p>
+                  <p>{isClosed(detailRest) ? <span className="badge warn">{t.closedToday}</span> : <span className="badge">{fmt(t.finderMeals, { n: detailRest.available })}</span>} <span className="badge">{fmt(t.finderServed, { n: detailRest.served })}</span></p>
+                  <h3>{t.detailMenu}</h3>
+                  {(detailRest.meals || []).length > 0 ? detailRest.meals.map((m) => (<p key={m.id}>{m.name} — <b>Rs {m.price_pkr}</b></p>)) : <p className="muted">{detailRest.meal} — Rs {detailRest.meal_price_pkr || 250}</p>}
+                  <h3>{t.detailStaff}</h3>
+                  {(detailRest.staff || []).length > 0 ? detailRest.staff.map((s) => (<div className="staff-row" key={s.id}><Avatar photo={s.photo} name={s.name} size={48} /><span className="who"><b>{s.name}</b></span> <span className="badge">{s.staff_role || t.roleCounter}</span></div>)) : <p className="muted">{t.teamNone}</p>}
+                  <p className="muted">{t.claimNote}</p>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -734,7 +991,9 @@ export default function App() {
               {!user && <p className="notice" style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}><span>{t.donateLoginFirst}</span><button className="btn small tomato" onClick={() => go('auth')}>{t.login}</button></p>}
               <p><button className="btn small turmeric" onClick={() => { if (mostNeeded) { setDonRest(String(mostNeeded.id)); setMsg(fmt(t.donateMostName, { n: mostNeeded.name, m: mostNeeded.available })); } }}>{mostNeeded ? fmt(t.donateMostName, { n: mostNeeded.name, m: mostNeeded.available }) : t.donateMost}</button></p>
               <label>{t.donateRest}</label>
-              <select value={donRest} onChange={(e) => setDonRest(e.target.value)}><option value="">{t.donateChoose}</option>{restaurants.map((r) => (<option key={r.id} value={r.id}>{r.name} ({r.area}) — Rs {r.meal_price_pkr || 250}/{t.donateVerified}</option>))}</select>
+              <select value={donRest} onChange={(e) => { setDonRest(e.target.value); setDonMealId(''); }}><option value="">{t.donateChoose}</option>{restaurants.map((r) => (<option key={r.id} value={r.id}>{r.name} ({r.area}) — Rs {r.meal_price_pkr || 250}/{t.donateVerified}{isClosed(r) ? ` • ${t.closedToday}` : ''}</option>))}</select>
+              {selRest && (selRest.meals || []).length > 0 && (<><label>{t.menuTitle}</label><select value={donMeal ? donMeal.id : ''} onChange={(e) => setDonMealId(e.target.value)}>{(selRest.meals || []).map((m) => (<option key={m.id} value={m.id}>{m.name} — Rs {m.price_pkr}</option>))}</select></>)}
+              {selRest && isClosed(selRest) && <p className="notice">{t.closedMsg}</p>}
               <label>{t.donateQty}</label>
               <div className="qty">{[1, 2, 5].map((n) => (<button key={n} className={donQty === n ? 'active' : ''} onClick={() => setDonQty(n)}>{n}</button>))}
                 <input type="number" min="1" max="10" value={donQty} onChange={(e) => setDonQty(parseInt(e.target.value, 10) || 1)} style={{ width: 90 }} /> <span className="muted">{t.donateCustom}</span></div>
@@ -743,9 +1002,9 @@ export default function App() {
             </div>
             <div className="card">
               <h3>{t.summary}</h3>
-              {donRest && selRest ? (<p>{t.summaryMeals} <b>{donQty}</b> • {t.summaryMethod} <b>{donMethod}</b> • {t.summaryPrice} <b>Rs {donQty * (selRest.meal_price_pkr || 250)}</b> (Rs {selRest.meal_price_pkr || 250} {fmt(t.summaryPerMeal, { n: selRest.name })})</p>) : (<p className="muted">{t.summaryChoose}</p>)}
+              {donRest && selRest ? (<p>{t.summaryMeals} <b>{donQty}</b> • {t.summaryMethod} <b>{donMethod}</b> • {t.summaryPrice} <b>Rs {donQty * donPrice}</b> (Rs {donPrice} {donMeal ? `${donMeal.name} — ` : ''}{fmt(t.summaryPerMeal, { n: selRest.name })})</p>) : (<p className="muted">{t.summaryChoose}</p>)}
               <p className="notice">{t.testMode}</p>
-              <button className="btn tomato" disabled={!user || !donRest} onClick={doDonate}>{t.continueBtn}</button>
+              <button className="btn tomato" disabled={!user || !donRest || (selRest && isClosed(selRest))} onClick={doDonate}>{t.continueBtn}</button>
               <p className="muted">{t.statusNote}</p>
               {checkout && (
                 <div className="card sandbox-card">
@@ -785,12 +1044,29 @@ export default function App() {
             {user && (user.role === 'staff' || user.role === 'admin') && (<>
               <p className="muted" style={{ textAlign: 'center' }}>{t.staffAvail}</p>
               <div className="big-number">{myRest ? myRest.available : (restaurants[0]?.available ?? 0)}</div>
-              <button className="btn teal-lg" onClick={doServe}>{t.serveBtn}</button>
+              {myRest && isLowStock(myRest) && <p className="notice">{fmt(t.lowStock, { n: myRest.available })}</p>}
+              {myRest && isClosed(myRest) && <p className="notice">{t.closedServe}</p>}
+              {(myRest?.meals || []).length > 0 && (<><label>{t.serveMealLabel}</label><select value={serveMealId || (myRest.meals[0]?.id || '')} onChange={(e) => setServeMealId(e.target.value)}>{(myRest.meals || []).map((m) => (<option key={m.id} value={m.id}>{m.name} — Rs {m.price_pkr}</option>))}</select></>)}
+              <button className="btn teal-lg" disabled={myRest && isClosed(myRest)} onClick={doServe}>{t.serveBtn}</button>
+              {staffReceipt && (<div className="card sandbox-card" style={{ marginTop: 14 }}>
+                <h3>{t.receiptServeTitle}</h3>
+                <p><b>{t.receiptRest}</b> {staffReceipt.restaurantName}</p>
+                <p><b>{t.receiptMeal}</b> {staffReceipt.meal_name} • <b>{t.receiptQty}</b> {staffReceipt.quantity} • <b>{t.receiptPrice}</b> Rs {staffReceipt.price_pkr} • <b>{t.receiptTotal}</b> Rs {staffReceipt.total_pkr}</p>
+                <p><b>{t.receiptServedBy}</b> {staffReceipt.servedBy} • <b>{t.receiptDate}</b> {fmtDate(staffReceipt.served_at)}</p>
+                <p><b>{t.receiptServedToday}</b> {staffReceipt.servedToday} • <b>{t.receiptAvailLeft}</b> {staffReceipt.availLeft}</p>
+                <button className="btn outline" onClick={() => printServeReceipt(staffReceipt)}>{t.printSlip}</button>
+              </div>)}
               <div className="grid" style={{ marginTop: 14 }}>
                 <div className="card"><span className="muted">{t.servedTotal}</span><div><b className="served-number">{myRest ? myRest.served : (restaurants[0]?.served ?? 0)}</b></div></div>
                 <div className="card"><span className="muted">{t.restLabel}</span><div><b>{myRest ? myRest.name : restaurants[0]?.name}</b></div></div>
               </div>
               <p className="muted">{t.serveNote}</p>
+              <div className="card"><h3>{t.reqPending}</h3>
+                {staffReqs.filter((q) => q.status === 'pending').map((q) => (
+                  <p key={q.id}>{fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at) })}{q.note ? ` — ${q.note}` : ''} {reqExpired(q) ? <span className="badge warn">{t.reqExpired}</span> : <><button className="btn small tomato" onClick={() => doFulfilReq(q.id)}>{t.reqFulfil}</button>{' '}<button className="btn small outline" onClick={() => doCancelReq(q.id)}>{t.reqCancel}</button></>}</p>
+                ))}
+                {staffReqs.filter((q) => q.status === 'pending').length === 0 && <p className="muted">{t.reqNone}</p>}
+              </div>
             </>)}
           </div>
         )}
@@ -801,6 +1077,37 @@ export default function App() {
             {user && <p><button className="btn small outline" onClick={logout}>{t.logout}</button> <span className="muted">{fmt(t.signedIn, { n: user.name, r: user.role })}</span></p>}
             {(!user || user.role !== 'owner') && <p className="notice">{t.restLogin}</p>}
             {user?.role === 'owner' && (<>
+              {team?.restaurant && (<div className="card">
+                <h3>{team.restaurant.name} — {team.restaurant.is_open === 0 ? <span className="badge warn">{t.closedToday}</span> : <span className="badge">{t.openNow}</span>}</h3>
+                {team.restaurant.available <= 2 && <p className="notice">{fmt(t.lowStock, { n: team.restaurant.available })}</p>}
+                <p><button className="btn outline" onClick={doToggleOpen}>{team.restaurant.is_open === 0 ? t.toggleOpen : t.toggleClose}</button></p>
+              </div>)}
+              <div className="grid">
+                <div className="card"><h3>{t.menuTitle}</h3>
+                  {ownerMeals.map((m) => (
+                    <div className="staff-row" key={m.id}><span className="who"><b>{m.name}</b> — Rs {m.price_pkr}</span>
+                      <input type="number" min="10" max="2000" style={{ width: 110, margin: 0 }} value={editMeal.id === m.id ? editMeal.price : m.price_pkr} onChange={(e) => setEditMeal({ id: m.id, price: e.target.value })} />
+                      <button className="btn small outline" onClick={() => doUpdateMeal(m.id)}>{t.saveBtn}</button>
+                      <button className="btn small danger" onClick={() => doDeleteMeal(m.id)}>{t.delMealBtn}</button>
+                    </div>
+                  ))}
+                  {ownerMeals.length === 0 && <p className="muted">{t.menuNone}</p>}
+                  <label>{t.mealName}</label><input value={mealForm.name} onChange={(e) => setMealForm({ ...mealForm, name: e.target.value })} placeholder="e.g. Chicken Biryani" />
+                  <label>{t.mealPrice}</label><input type="number" min="10" max="2000" value={mealForm.price} onChange={(e) => setMealForm({ ...mealForm, price: e.target.value })} placeholder="250" />
+                  <button className="btn tomato" onClick={doAddMeal}>{t.addMealBtn}</button>
+                </div>
+                <div className="card"><h3>{t.reqPending}</h3>
+                  {ownerReqs.filter((q) => q.status === 'pending').map((q) => (
+                    <p key={q.id}>{fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at) })}{q.note ? ` — ${q.note}` : ''} {reqExpired(q) ? <span className="badge warn">{t.reqExpired}</span> : <><button className="btn small tomato" onClick={() => doFulfilReq(q.id, loadTeam)}>{t.reqFulfil}</button>{' '}<button className="btn small outline" onClick={() => doCancelReq(q.id, loadTeam)}>{t.reqCancel}</button></>}</p>
+                  ))}
+                  {ownerReqs.filter((q) => q.status === 'pending').length === 0 && <p className="muted">{t.reqNone}</p>}
+                  <h3 style={{ marginTop: 16 }}>{t.receiptsTitle}</h3>
+                  {ownerReceipts.slice(0, 10).map((rc) => (
+                    <p key={rc.id}>{fmtDate(rc.served_at)} — {rc.meal_name} × {rc.quantity} — Rs {rc.total_pkr} ({rc.servedBy || ''}) <button className="btn small outline" onClick={() => printServeReceipt({ ...rc, restaurantName: team?.restaurant?.name || '', servedToday: '', availLeft: '' })}>{t.printSlip}</button></p>
+                  ))}
+                  {ownerReceipts.length === 0 && <p className="muted">{t.receiptsNone}</p>}
+                </div>
+              </div>
               <div className="grid">
                 <div className="card"><h3>{t.teamTitle} {team ? `• ${fmt(t.teamMembers, { n: team.staff.length })}` : ''}</h3>
                   <p className="muted">{team?.restaurant ? `${team.restaurant.name} — ${team.restaurant.area}` : ''}</p>
@@ -880,10 +1187,22 @@ export default function App() {
                 {report && (<div style={{ marginTop: 12 }}>{report.rows.map((r) => (<p key={r.id}>{fmt(t.weeklyRow, { n: r.name, d: r.donated7, s: r.served7, a: r.available, t: r.servedTotal })}</p>))}<p><b>{fmt(t.weeklyTotal, { d: report.totals.donated7, s: report.totals.served7, a: report.totals.available })}</b></p></div>)}
               </div>
               <div className="card"><h3>{t.pricesTitle}</h3>
-                {adminData.all.map((r) => (<p key={r.id}>{r.name} — {fmt(t.pricePerMeal, { n: r.meal_price_pkr || 250 })} {r.verified ? '' : t.unverified}</p>))}
+                {adminData.all.map((r) => (<p key={r.id}>{r.name} — {fmt(t.pricePerMeal, { n: r.meal_price_pkr || 250 })} {r.verified ? '' : t.unverified}{r.is_open === 0 ? ` • ${t.closedToday}` : ''} <button className="btn small outline" onClick={async () => { await api(`/admin/restaurants/${r.id}/toggle-open`, { method: 'POST' }); loadAdmin(); load(); }}>{r.is_open === 0 ? t.toggleOpen : t.toggleClose}</button> <button className="btn small danger" onClick={() => doDeleteRest(r.id, r.name)}>{t.delRestBtn}</button></p>))}
                 <label>{t.restLabel}</label><select value={priceEdit.id} onChange={(e) => setPriceEdit({ ...priceEdit, id: e.target.value })}><option value="">{t.chooseRest}</option>{adminData.all.map((r) => (<option key={r.id} value={r.id}>{r.name}</option>))}</select>
                 <label>{t.newPrice}</label><input type="number" min="50" max="2000" value={priceEdit.price} onChange={(e) => setPriceEdit({ ...priceEdit, price: e.target.value })} />
                 <button className="btn tomato" onClick={async () => { try { await api(`/admin/restaurants/${priceEdit.id}/price`, { method: 'POST', body: JSON.stringify({ mealPricePkr: priceEdit.price }) }); setMsg(t.priceSaved); loadAdmin(); load(); } catch (e) { setMsg(e.message); } }}>{t.savePrice}</button>
+              </div>
+              <div className="card"><h3>{t.adminMealsTitle}</h3>
+                {adminMeals.map((m) => (<p key={m.id}>{m.restaurantName} — {m.name} — Rs {m.price_pkr} <button className="btn small danger" onClick={() => doDeleteAdminMeal(m.id)}>{t.delMealBtn}</button></p>))}
+                {adminMeals.length === 0 && <p className="muted">{t.menuNone}</p>}
+              </div>
+              <div className="card"><h3>{t.adminReceiptsTitle}</h3>
+                {adminReceipts.slice(0, 10).map((rc) => (<p key={rc.id}>{fmtDate(rc.served_at)} — {rc.restaurantName} — {rc.meal_name} × {rc.quantity} — Rs {rc.total_pkr} ({rc.servedBy || ''})</p>))}
+                {adminReceipts.length === 0 && <p className="muted">{t.receiptsNone}</p>}
+              </div>
+              <div className="card"><h3>{t.adminReqsTitle}</h3>
+                {adminReqs.map((q) => (<p key={q.id}>{q.restaurantName} — {fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at) })} — {q.status}{reqExpired(q) ? ` (${t.reqExpired})` : ''}</p>))}
+                {adminReqs.length === 0 && <p className="muted">{t.reqNone}</p>}
               </div>
               <div className="grid">
                 <div className="card"><h3>{t.createStaffTitle}</h3>
@@ -897,15 +1216,25 @@ export default function App() {
                   <label>{t.roleRestLabel}</label>
                   <select value={staffForm.restaurant_id} onChange={(e) => setStaffForm({ ...staffForm, restaurant_id: e.target.value })}><option value="">{t.chooseRest}</option>{adminData.all.map((r) => (<option key={r.id} value={r.id}>{r.name}</option>))}</select>
                   <button className="btn tomato" onClick={async () => { if (!staffForm.photo) { setMsg(t.photoRequired); return; } try { await api('/admin/users', { method: 'POST', body: JSON.stringify({ ...staffForm, role: 'staff' }) }); setMsg(t.staffCreated); setStaffForm({ name: '', email: '', password: '', restaurant_id: '', photo: '' }); loadAdmin(); } catch (e) { setMsg(e.message); } }}>{t.createStaffBtn}</button>
-                  <div style={{ marginTop: 12 }}>{adminData.users.map((u) => (<div className="staff-row" key={u.id}><Avatar photo={u.photo} name={u.name} size={40} /><span className="who">{u.name} ({u.role}){u.restaurantName ? ` — ${u.restaurantName}` : ''}</span></div>))}</div>
+                  <div style={{ marginTop: 12 }}>{adminData.users.map((u) => (<div className="staff-row" key={u.id}><Avatar photo={u.photo} name={u.name} size={40} /><span className="who">{u.name} ({u.role}){u.restaurantName ? ` — ${u.restaurantName}` : ''}</span><button className="btn small danger" onClick={() => doDeleteUser(u.id, u.name)}>{t.delUserBtn}</button></div>))}</div>
                 </div>
                 <div className="card"><h3>{t.addRestTitle}</h3>
                   <label>{t.restName}</label><input value={newRest.name} onChange={(e) => setNewRest({ ...newRest, name: e.target.value })} />
                   <label>{t.restArea}</label><input value={newRest.area} onChange={(e) => setNewRest({ ...newRest, area: e.target.value })} />
                   <label>{t.restMeal}</label><input value={newRest.meal} onChange={(e) => setNewRest({ ...newRest, meal: e.target.value })} />
                   <label>{t.restTimings}</label><input value={newRest.timings} onChange={(e) => setNewRest({ ...newRest, timings: e.target.value })} />
+                  <label>{t.emailLabel}</label><input type="email" value={newRest.contact_email || ''} onChange={(e) => setNewRest({ ...newRest, contact_email: e.target.value })} placeholder="name@example.com" />
+                  <label>{t.phoneLabel}</label><input value={newRest.contact_phone || ''} onChange={(e) => setNewRest({ ...newRest, contact_phone: e.target.value })} placeholder="0300-1234567" />
+                  <label>{t.mealOptions}</label>
+                  <div className="meal-checks">{MEAL_OPTIONS.map((m) => (<label key={m} className="meal-check"><input type="checkbox" checked={adminMealSel.includes(m)} onChange={(e) => setAdminMealSel(e.target.checked ? [...adminMealSel, m] : adminMealSel.filter((x) => x !== m))} /> {m}</label>))}</div>
+                  <label>{t.mealOther}</label><input value={adminOther} onChange={(e) => setAdminOther(e.target.value)} placeholder="e.g. Haleem" />
                   <label>{t.mealPrice}</label><input type="number" min="50" max="2000" value={newRest.meal_price_pkr || ''} onChange={(e) => setNewRest({ ...newRest, meal_price_pkr: e.target.value })} placeholder="250" />
-                  <button className="btn tomato" onClick={async () => { try { await api('/admin/restaurant', { method: 'POST', body: JSON.stringify({ ...newRest, contact_person: '' }) }); setMsg(t.restAdded); loadAdmin(); load(); } catch (e) { setMsg(e.message); } }}>{t.addRestBtn}</button>
+                  <button className="btn tomato" onClick={async () => {
+                    if (!validEmail(newRest.contact_email)) { setMsg(t.invalidEmail); return; }
+                    if (!validPhonePK(newRest.contact_phone)) { setMsg(t.invalidPhone); return; }
+                    const meals = [...adminMealSel, ...(adminOther.trim() ? [adminOther.trim()] : [])].map((name) => ({ name, price: parseInt(newRest.meal_price_pkr, 10) || 250 }));
+                    try { await api('/admin/restaurant', { method: 'POST', body: JSON.stringify({ ...newRest, contact_person: '', meals }) }); setMsg(t.restAdded); setAdminMealSel([]); setAdminOther(''); loadAdmin(); load(); } catch (e) { setMsg(e.message); }
+                  }}>{t.addRestBtn}</button>
                 </div>
               </div>
             </>)}
@@ -951,8 +1280,18 @@ export default function App() {
             <label>{t.restArea}</label><input value={reqForm.area} onChange={(e) => setReqForm({ ...reqForm, area: e.target.value })} />
             <label>{t.restMeal}</label><input value={reqForm.meal} onChange={(e) => setReqForm({ ...reqForm, meal: e.target.value })} />
             <label>{t.restTimings}</label><input value={reqForm.timings} onChange={(e) => setReqForm({ ...reqForm, timings: e.target.value })} />
-            <label>{t.contactLabel}</label><input value={reqForm.contact_name} onChange={(e) => setReqForm({ ...reqForm, contact_name: e.target.value })} /><input value={reqForm.contact_phone} onChange={(e) => setReqForm({ ...reqForm, contact_phone: e.target.value })} />
-            <button className="btn tomato" onClick={async () => { try { await api('/restaurants/request', { method: 'POST', body: JSON.stringify(reqForm) }); setMsg(t.joinSent); } catch (e) { setMsg(e.message); } }}>{t.sendBtn}</button>
+            <label>{t.contactLabel}</label><input value={reqForm.contact_name} onChange={(e) => setReqForm({ ...reqForm, contact_name: e.target.value })} />
+            <label>{t.emailLabel}</label><input type="email" value={reqForm.contact_email} onChange={(e) => setReqForm({ ...reqForm, contact_email: e.target.value })} placeholder="name@example.com" />
+            <label>{t.phoneLabel}</label><input value={reqForm.contact_phone} onChange={(e) => setReqForm({ ...reqForm, contact_phone: e.target.value })} placeholder="0300-1234567" />
+            <label>{t.mealOptions}</label>
+            <div className="meal-checks">{MEAL_OPTIONS.map((m) => (<label key={m} className="meal-check"><input type="checkbox" checked={joinMeals.includes(m)} onChange={(e) => setJoinMeals(e.target.checked ? [...joinMeals, m] : joinMeals.filter((x) => x !== m))} /> {m}</label>))}</div>
+            <label>{t.mealOther}</label><input value={joinOther} onChange={(e) => setJoinOther(e.target.value)} placeholder="e.g. Haleem" />
+            <button className="btn tomato" onClick={async () => {
+              if (!validEmail(reqForm.contact_email)) { setMsg(t.invalidEmail); return; }
+              if (!validPhonePK(reqForm.contact_phone)) { setMsg(t.invalidPhone); return; }
+              const meals = [...joinMeals, ...(joinOther.trim() ? [joinOther.trim()] : [])].join(', ');
+              try { await api('/restaurants/request', { method: 'POST', body: JSON.stringify({ ...reqForm, meals }) }); setMsg(t.joinSent); setJoinMeals([]); setJoinOther(''); } catch (e) { setMsg(e.message); }
+            }}>{t.sendBtn}</button>
           </div>
         )}
 

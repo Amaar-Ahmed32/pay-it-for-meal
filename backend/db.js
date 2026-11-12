@@ -62,8 +62,31 @@ CREATE TABLE IF NOT EXISTS notifications (
 CREATE TABLE IF NOT EXISTS restaurant_requests (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL, area TEXT NOT NULL, meal TEXT, timings TEXT,
-  contact_name TEXT, contact_phone TEXT, status TEXT DEFAULT 'pending',
+  contact_name TEXT, contact_phone TEXT, contact_email TEXT, meals TEXT DEFAULT '[]',
+  status TEXT DEFAULT 'pending',
   created_at TEXT DEFAULT (datetime('now'))
+);
+CREATE TABLE IF NOT EXISTS restaurant_meals (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  restaurant_id INTEGER NOT NULL REFERENCES restaurants(id),
+  name TEXT NOT NULL, price_pkr INTEGER NOT NULL DEFAULT 250,
+  created_at TEXT DEFAULT (datetime('now'))
+);
+CREATE TABLE IF NOT EXISTS meal_requests (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  restaurant_id INTEGER NOT NULL REFERENCES restaurants(id),
+  meals_needed INTEGER NOT NULL DEFAULT 1,
+  note TEXT DEFAULT '',
+  status TEXT DEFAULT 'pending',
+  created_at TEXT DEFAULT (datetime('now'))
+);
+CREATE TABLE IF NOT EXISTS serve_receipts (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  restaurant_id INTEGER NOT NULL REFERENCES restaurants(id),
+  staff_user_id INTEGER REFERENCES users(id),
+  meal_name TEXT NOT NULL, quantity INTEGER NOT NULL DEFAULT 1,
+  price_pkr INTEGER NOT NULL, total_pkr INTEGER NOT NULL,
+  served_at TEXT DEFAULT (datetime('now'))
 );
 `);
 
@@ -190,6 +213,77 @@ function seedDemoData() {
 // Existing DBs that are still empty (no donations, no serves) get the demo
 // numbers too — a DB with any real donation or serve is never touched.
 seedDemoData();
+
+// Seed a menu for each restaurant (2026-11-12): only for restaurants that
+// have no meals yet — never overwrites a menu the owner edited. Prices are
+// the per-meal prices donors pay and staff serve from.
+function seedMeals() {
+  try {
+    const menus = {
+      'Sindh Biryani House': [['Chicken Biryani', 300], ['Beef Biryani', 350]],
+      'Mehran Restaurant': [['Chicken Biryani', 250], ['Daal', 200]],
+      'Al-Madina Foods': [['Chicken Karahi', 280], ['Roti', 50]],
+      'New Taste Point': [['Vegetable', 200], ['Daal', 180]],
+    };
+    for (const [name, meals] of Object.entries(menus)) {
+      const r = db.prepare('SELECT id FROM restaurants WHERE name=?').get(name);
+      if (!r) continue;
+      const count = db.prepare('SELECT COUNT(*) c FROM restaurant_meals WHERE restaurant_id=?').get(r.id).c;
+      if (count > 0) continue;
+      for (const [meal, price] of meals) {
+        db.prepare('INSERT INTO restaurant_meals (restaurant_id, name, price_pkr) VALUES (?,?,?)').run(r.id, meal, price);
+      }
+    }
+  } catch (e) { console.log('Menu seed skipped -', e.message); }
+}
+seedMeals();
+
+// Seed one demo staff member per verified restaurant (2026-11-12): the
+// Finder shows staff as photo icons on each card, and a fresh demo with no
+// staff at all would show none. Only for restaurants that have no staff yet
+// — never overwrites staff the owner added. No photo seeded, so the card
+// shows the initials fallback. Password Demo123! like the other demo users.
+function seedStaff() {
+  try {
+    const bcrypt = require('bcryptjs');
+    const staff = {
+      'Sindh Biryani House': ['Ali Khan', 'ali.khan@demo.school', 'Manager'],
+      'Mehran Restaurant': ['Sara Bibi', 'sara.bibi@demo.school', 'Counter'],
+      'Al-Madina Foods': ['Usman Ali', 'usman.ali@demo.school', 'Counter'],
+    };
+    for (const [name, [sname, semail, srole]] of Object.entries(staff)) {
+      const r = db.prepare('SELECT id FROM restaurants WHERE name=?').get(name);
+      if (!r) continue;
+      const count = db.prepare("SELECT COUNT(*) c FROM users WHERE restaurant_id=? AND role='staff'").get(r.id).c;
+      if (count > 0) continue;
+      const exists = db.prepare('SELECT id FROM users WHERE email=?').get(semail);
+      if (exists) continue;
+      db.prepare("INSERT INTO users (name, email, password_hash, role, restaurant_id, staff_role, photo) VALUES (?,?,?,?,?,?,NULL)")
+        .run(sname, semail, bcrypt.hashSync('Demo123!', 10), 'staff', r.id, srole);
+    }
+  } catch (e) { console.log('Staff seed skipped -', e.message); }
+}
+seedStaff();
+
+// Migrations for restaurant contact details + meal-request data (2026-11-12):
+// older DBs have no contact_email/contact_phone on restaurants, no
+// contact_email/meals on restaurant_requests, and no meal_name/quantity on
+// served_meals. Add them if missing; existing rows are untouched.
+for (const [table, col] of [
+  ['restaurants', 'contact_email TEXT'],
+  ['restaurants', 'contact_phone TEXT'],
+  ['restaurants', 'is_open INTEGER DEFAULT 1'],
+  ['restaurant_requests', 'contact_email TEXT'],
+  ['restaurant_requests', 'meals TEXT DEFAULT \'[]\''],
+  ['served_meals', 'meal_name TEXT'],
+  ['served_meals', 'quantity INTEGER DEFAULT 1'],
+]) {
+  try {
+    const name = col.split(' ')[0];
+    const has = db.prepare(`SELECT COUNT(*) c FROM pragma_table_info('${table}') WHERE name=?`).get(name).c;
+    if (!has) db.exec(`ALTER TABLE ${table} ADD COLUMN ${col}`);
+  } catch (e) { console.log('Migration skipped for', table, col, '-', e.message); }
+}
 
 // Migration for restaurant owners (2026-11-10): older DBs have no owner account
 // and no staff_role column. Two steps, existing data untouched:

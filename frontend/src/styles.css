@@ -253,3 +253,18 @@ footer .foot-lang button.active { background: #f4c35e; border-color: #f4c35e; co
 @media (prefers-reduced-motion: reduce) {
   * { animation: none !important; transition: none !important; }
 }
+
+/* --- 6-feature build (2026-11-12): finder cards, detail modal, meal checkboxes --- */
+.finder-card { position: relative; cursor: pointer; }
+.finder-card:hover { border-color: #146b56; }
+.staff-icons { position: absolute; top: 10px; right: 10px; display: flex; gap: 4px; align-items: center; }
+.staff-icons .avatar { border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.2); }
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: flex-start; justify-content: center; padding: 40px 16px; z-index: 50; overflow-y: auto; }
+.modal { max-width: 560px; width: 100%; position: relative; }
+.modal-close { position: absolute; top: 10px; right: 10px; }
+.meal-checks { display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 6px 0 10px; }
+.meal-check { display: flex; align-items: center; gap: 6px; font-size: 15px; }
+.meal-check input { width: auto; margin: 0; }
+@media (max-width: 640px) {
+  .modal-overlay { padding: 16px 8px; }
+}
