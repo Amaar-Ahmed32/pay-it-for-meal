@@ -8,7 +8,7 @@
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
-const { db, stats } = require('./db');
+const { db, stats, newRequestCode } = require('./db');
 const { hashPassword, checkPassword, sign, auth, requireRole, pubUser } = require('./auth');
 const { MEAL_PRICE_PKR, createTxnRef, jazzcashCheckoutFields, hasJazzcashSandboxKeys, hasEasypaisaSandboxKeys } = require('./payments');
 
@@ -16,7 +16,7 @@ const { MEAL_PRICE_PKR, createTxnRef, jazzcashCheckoutFields, hasJazzcashSandbox
 // the Top-3 columns may still be missing and leaderboard/activity/transparency would
 // fail with "no such column". Add them here too, so the server fixes its own DB
 // on startup instead of returning 500 for those pages. Existing data is untouched.
-for (const [table, col] of [['restaurants', 'meal_price_pkr INTEGER DEFAULT 250'], ['users', 'show_name INTEGER DEFAULT 1'], ['users', 'photo TEXT'], ['restaurants', 'is_open INTEGER DEFAULT 1']]) {
+for (const [table, col] of [['restaurants', 'meal_price_pkr INTEGER DEFAULT 250'], ['users', 'show_name INTEGER DEFAULT 1'], ['users', 'photo TEXT'], ['users', 'phone TEXT'], ['restaurants', 'is_open INTEGER DEFAULT 1'], ['restaurants', 'photo TEXT'], ['restaurant_requests', 'photo TEXT'], ['meal_requests', 'code TEXT']]) {
   try {
     const name = col.split(' ')[0];
     const has = db.prepare(`SELECT COUNT(*) c FROM pragma_table_info('${table}') WHERE name=?`).get(name).c;
@@ -91,8 +91,10 @@ function composeTimings(start, end) {
 }
 // A request row must never leak its owner password hash to any client.
 const stripReqHash = (q) => { if (!q) return q; const { owner_password_hash, ...rest } = q; return rest; };
-// Public-safe staff list for one restaurant (photo, name, role only — no email).
-const publicStaff = (rid) => db.prepare("SELECT id, name, staff_role, photo FROM users WHERE role='staff' AND restaurant_id=? ORDER BY id").all(rid);
+// Public-safe staff list for one restaurant (photo, name, role, counter
+// phone only — no email, no recipient data). The phone is the restaurant's
+// counter number and is public by design: it shows on the Finder profile.
+const publicStaff = (rid) => db.prepare("SELECT id, name, staff_role, photo, phone FROM users WHERE role='staff' AND restaurant_id=? ORDER BY id").all(rid);
 // A request older than 24h counts as Expired (computed, no background job).
 const reqExpired = (row) => row.status === 'pending' && (Date.now() - new Date(String(row.created_at).replace(' ', 'T') + 'Z').getTime() > 24 * 3600 * 1000);
 
@@ -143,7 +145,10 @@ app.post('/api/requests', (req, res) => {
   const n = parseInt(mealsNeeded, 10);
   if (!n || n < 1 || n > 3) return res.status(400).json({ error: 'Number of meals must be 1 to 3' });
   const cleanNote = typeof note === 'string' ? note.trim().slice(0, 200) : '';
-  const info = db.prepare('INSERT INTO meal_requests (restaurant_id, meals_needed, note) VALUES (?,?,?)').run(r.id, n, cleanNote);
+  // Every request gets a short unique code (PIFM-XXXXXX) at creation — the
+  // slip the person shows at the counter. No name, no phone: the code is
+  // the match key, never an identity.
+  const info = db.prepare('INSERT INTO meal_requests (restaurant_id, meals_needed, note, code) VALUES (?,?,?,?)').run(r.id, n, cleanNote, newRequestCode());
   res.json({ request: db.prepare('SELECT * FROM meal_requests WHERE id=?').get(info.lastInsertRowid) });
 });
 app.get('/api/transparency', (req, res) => {
@@ -186,10 +191,15 @@ app.get('/api/activity', (req, res) => {
 // contact_name/contact_phone/meal are no longer sent by the forms; they are
 // accepted and ignored here so an old cached page still works.
 app.post('/api/restaurants/request', (req, res) => {
-  const { name, area, meal, timings, start_time, end_time, contact_name, contact_phone, contact_email, meals, owner_password } = req.body || {};
+  const { name, area, meal, timings, start_time, end_time, contact_name, contact_phone, contact_email, meals, owner_password, photo } = req.body || {};
   if (!name || !area) return res.status(400).json({ error: 'Restaurant name and area are required' });
   if (!validEmail(contact_email)) return res.status(400).json({ error: 'A valid email address is required (e.g. name@example.com)' });
   if (!validPhonePK(contact_phone)) return res.status(400).json({ error: 'A valid Pakistani mobile is required (e.g. 0300-1234567)' });
+  // Restaurant photo is optional; when given it must be a JPG/PNG data URL, max ~500KB.
+  if (photo) {
+    if (typeof photo !== 'string' || !photo.startsWith('data:image/')) return res.status(400).json({ error: 'Photo must be a JPG or PNG image' });
+    if (photo.length > 700000) return res.status(400).json({ error: 'Photo is too large — max 500KB' });
+  }
   let timingsText = (timings || '').trim();
   if (start_time || end_time) {
     const composed = composeTimings(start_time, end_time);
@@ -198,8 +208,8 @@ app.post('/api/restaurants/request', (req, res) => {
   }
   if (!owner_password || String(owner_password).length < 8) return res.status(400).json({ error: 'A dashboard password of at least 8 characters is required' });
   const mealList = parseMeals(meals, 250);
-  const info = db.prepare('INSERT INTO restaurant_requests (name, area, meal, timings, contact_name, contact_phone, contact_email, meals, owner_password_hash) VALUES (?,?,?,?,?,?,?,?,?)')
-    .run(name, area, meal || '', timingsText, contact_name || '', String(contact_phone).trim(), String(contact_email).trim().toLowerCase(), JSON.stringify(mealList), hashPassword(String(owner_password)));
+  const info = db.prepare('INSERT INTO restaurant_requests (name, area, meal, timings, contact_name, contact_phone, contact_email, meals, owner_password_hash, photo) VALUES (?,?,?,?,?,?,?,?,?,?)')
+    .run(name, area, meal || '', timingsText, contact_name || '', String(contact_phone).trim(), String(contact_email).trim().toLowerCase(), JSON.stringify(mealList), hashPassword(String(owner_password)), photo || null);
   res.json({ request: stripReqHash(db.prepare('SELECT * FROM restaurant_requests WHERE id=?').get(info.lastInsertRowid)) });
 });
 
@@ -348,23 +358,29 @@ function validPhoto(p) {
 // full power via /api/admin/users (any restaurant, any role).
 app.get('/api/restaurant/staff', auth, requireRole('owner'), (req, res) => {
   if (!req.user.restaurant_id) return res.status(400).json({ error: 'Your owner account is not linked to a restaurant yet. Ask admin to link it.' });
-  const staff = db.prepare("SELECT id, name, email, role, staff_role, photo, restaurant_id FROM users WHERE role='staff' AND restaurant_id=? ORDER BY id").all(req.user.restaurant_id);
+  const staff = db.prepare("SELECT id, name, email, role, staff_role, photo, phone, restaurant_id FROM users WHERE role='staff' AND restaurant_id=? ORDER BY id").all(req.user.restaurant_id);
   const rest = db.prepare('SELECT * FROM restaurants WHERE id=?').get(req.user.restaurant_id);
   res.json({ restaurant: rest || null, staff });
 });
 app.post('/api/restaurant/staff', auth, requireRole('owner'), (req, res) => {
   if (!req.user.restaurant_id) return res.status(400).json({ error: 'Your owner account is not linked to a restaurant yet. Ask admin to link it.' });
-  const { name, email, password, staffRole, photo } = req.body || {};
+  const { name, email, password, staffRole, photo, phone } = req.body || {};
   if (!name || !email || !password || password.length < 6) {
     return res.status(400).json({ error: 'Name, email and a password of at least 6 characters are required' });
   }
   const photoErr = validPhoto(photo);
   if (photoErr) return res.status(400).json({ error: photoErr });
-  const role = ['Counter', 'Kitchen', 'Manager'].includes(staffRole) ? staffRole : 'Counter';
+  // Phone is the restaurant's counter number (shows publicly on the Finder
+  // profile). Optional, but when given it must be a valid Pakistani mobile.
+  const cleanPhone = typeof phone === 'string' ? phone.trim() : '';
+  if (cleanPhone && !validPhonePK(cleanPhone)) return res.status(400).json({ error: 'A valid Pakistani mobile is required (e.g. 0300-1234567)' });
+  // Role: Counter / Kitchen / Manager, or any custom role the owner types
+  // (e.g. Cashier, Waiter) — any non-empty string up to 40 characters.
+  const role = typeof staffRole === 'string' && staffRole.trim() ? staffRole.trim().slice(0, 40) : 'Counter';
   try {
-    const info = db.prepare("INSERT INTO users (name, email, password_hash, role, restaurant_id, staff_role, photo) VALUES (?,?,?, 'staff', ?, ?, ?)")
-      .run(name, email.toLowerCase(), hashPassword(password), req.user.restaurant_id, role, photo);
-    res.json({ staff: db.prepare('SELECT id, name, email, role, staff_role, photo, restaurant_id FROM users WHERE id=?').get(info.lastInsertRowid) });
+    const info = db.prepare("INSERT INTO users (name, email, password_hash, role, restaurant_id, staff_role, photo, phone) VALUES (?,?,?, 'staff', ?, ?, ?, ?)")
+      .run(name, email.toLowerCase(), hashPassword(password), req.user.restaurant_id, role, photo, cleanPhone || null);
+    res.json({ staff: db.prepare('SELECT id, name, email, role, staff_role, photo, phone, restaurant_id FROM users WHERE id=?').get(info.lastInsertRowid) });
   } catch {
     return res.status(400).json({ error: 'That email is already registered' });
   }
@@ -443,8 +459,11 @@ function canSeeRequests(user) {
 function canFulfil(user) {
   if (user.role === 'owner') return !!user.restaurant_id;
   if (user.role === 'staff') {
+    // Kitchen only prepares and sees requests — it never serves at the
+    // counter. Every other staff role (Counter, Manager, or a custom role
+    // like Cashier/Waiter) may fulfil, because they face the customer.
     const me = db.prepare('SELECT staff_role FROM users WHERE id=?').get(user.id);
-    return !!user.restaurant_id && me && ['Manager', 'Counter'].includes(me.staff_role);
+    return !!user.restaurant_id && me && me.staff_role !== 'Kitchen';
   }
   return false;
 }
@@ -518,10 +537,10 @@ app.get('/api/admin/report', auth, requireRole('admin'), (req, res) => {
   res.json({ rows, totals, daily });
 });
 app.get('/api/admin/users', auth, requireRole('admin'), (req, res) => {
-  res.json(db.prepare('SELECT u.id, u.name, u.email, u.role, u.restaurant_id, u.photo, r.name restaurantName FROM users u LEFT JOIN restaurants r ON r.id=u.restaurant_id ORDER BY u.id').all());
+  res.json(db.prepare('SELECT u.id, u.name, u.email, u.role, u.restaurant_id, u.staff_role, u.photo, u.phone, r.name restaurantName FROM users u LEFT JOIN restaurants r ON r.id=u.restaurant_id ORDER BY u.id').all());
 });
 app.post('/api/admin/users', auth, requireRole('admin'), (req, res) => {
-  const { name, email, password, role, restaurant_id, photo } = req.body || {};
+  const { name, email, password, role, restaurant_id, photo, staffRole, phone } = req.body || {};
   if (!name || !email || !password || !['staff', 'admin', 'donor', 'owner'].includes(role)) {
     return res.status(400).json({ error: 'Name, email, password and a valid role are required' });
   }
@@ -530,9 +549,14 @@ app.post('/api/admin/users', auth, requireRole('admin'), (req, res) => {
     const photoErr = validPhoto(photo);
     if (photoErr) return res.status(400).json({ error: photoErr });
   }
+  const cleanPhone = typeof phone === 'string' ? phone.trim() : '';
+  if (cleanPhone && !validPhonePK(cleanPhone)) return res.status(400).json({ error: 'A valid Pakistani mobile is required (e.g. 0300-1234567)' });
+  // Job role for staff: Counter / Kitchen / Manager or a custom role typed
+  // in the form (e.g. Cashier, Waiter) — any non-empty string up to 40 chars.
+  const jobRole = role === 'staff' ? (typeof staffRole === 'string' && staffRole.trim() ? staffRole.trim().slice(0, 40) : 'Counter') : null;
   try {
-    const info = db.prepare('INSERT INTO users (name, email, password_hash, role, restaurant_id, photo) VALUES (?,?,?,?,?,?)')
-      .run(name, email.toLowerCase(), hashPassword(password), role, restaurant_id || null, photo || null);
+    const info = db.prepare('INSERT INTO users (name, email, password_hash, role, restaurant_id, staff_role, photo, phone) VALUES (?,?,?,?,?,?,?,?)')
+      .run(name, email.toLowerCase(), hashPassword(password), role, restaurant_id || null, jobRole, photo || null, cleanPhone || null);
     res.json({ user: pubUser(db.prepare('SELECT * FROM users WHERE id=?').get(info.lastInsertRowid)) });
   } catch {
     return res.status(400).json({ error: 'That email is already registered' });
@@ -545,10 +569,15 @@ app.post('/api/admin/verify', auth, requireRole('admin'), (req, res) => {
   res.json({ restaurant: db.prepare('SELECT * FROM restaurants WHERE id=?').get(r.id) });
 });
 app.post('/api/admin/restaurant', auth, requireRole('admin'), (req, res) => {
-  const { name, area, meal, timings, start_time, end_time, contact_person, contact_email, contact_phone, meal_price_pkr, meals, owner_password } = req.body || {};
+  const { name, area, meal, timings, start_time, end_time, contact_person, contact_email, contact_phone, meal_price_pkr, meals, owner_password, photo } = req.body || {};
   if (!name || !area) return res.status(400).json({ error: 'Name and area are required' });
   if (!validEmail(contact_email)) return res.status(400).json({ error: 'A valid email address is required (e.g. name@example.com)' });
   if (!validPhonePK(contact_phone)) return res.status(400).json({ error: 'A valid Pakistani mobile is required (e.g. 0300-1234567)' });
+  // Restaurant photo is optional; when given it must be a JPG/PNG data URL, max ~500KB.
+  if (photo) {
+    if (typeof photo !== 'string' || !photo.startsWith('data:image/')) return res.status(400).json({ error: 'Photo must be a JPG or PNG image' });
+    if (photo.length > 700000) return res.status(400).json({ error: 'Photo is too large — max 500KB' });
+  }
   let timingsText = (timings || '').trim() || '12:00 PM - 9:00 PM';
   if (start_time || end_time) {
     const composed = composeTimings(start_time, end_time);
@@ -560,8 +589,8 @@ app.post('/api/admin/restaurant', auth, requireRole('admin'), (req, res) => {
   if (db.prepare('SELECT id FROM users WHERE email=?').get(email)) return res.status(400).json({ error: 'That email already has an account — pick a different owner email' });
   const price = parseInt(meal_price_pkr, 10);
   const finalPrice = (!price || price < 50 || price > 2000) ? 250 : price;
-  const info = db.prepare('INSERT INTO restaurants (name, area, meal, timings, contact_person, contact_email, contact_phone, meal_price_pkr) VALUES (?,?,?,?,?,?,?,?)')
-    .run(name, area, meal || 'Meal of the day', timingsText, contact_person || '', email, String(contact_phone).trim(), finalPrice);
+  const info = db.prepare('INSERT INTO restaurants (name, area, meal, timings, contact_person, contact_email, contact_phone, meal_price_pkr, photo) VALUES (?,?,?,?,?,?,?,?,?)')
+    .run(name, area, meal || 'Meal of the day', timingsText, contact_person || '', email, String(contact_phone).trim(), finalPrice, photo || null);
   const mealList = parseMeals(meals, finalPrice);
   for (const m of mealList) db.prepare('INSERT INTO restaurant_meals (restaurant_id, name, price_pkr) VALUES (?,?,?)').run(info.lastInsertRowid, m.name, m.price);
   // The restaurant's owner account is created at the same time, so the
@@ -632,8 +661,8 @@ app.get('/api/admin/requests', auth, requireRole('admin'), (req, res) => {
 app.post('/api/admin/requests/:id/approve', auth, requireRole('admin'), (req, res) => {
   const q = db.prepare('SELECT * FROM restaurant_requests WHERE id=?').get(req.params.id);
   if (!q) return res.status(404).json({ error: 'Not found' });
-  const info = db.prepare('INSERT INTO restaurants (name, area, meal, timings, verified, contact_person, contact_email, contact_phone) VALUES (?,?,?,?,1,?,?,?)')
-    .run(q.name, q.area, q.meal || 'Meal of the day', q.timings || '12:00 PM - 9:00 PM', q.contact_name || '', q.contact_email || '', q.contact_phone || '');
+  const info = db.prepare('INSERT INTO restaurants (name, area, meal, timings, verified, contact_person, contact_email, contact_phone, photo) VALUES (?,?,?,?,1,?,?,?,?)')
+    .run(q.name, q.area, q.meal || 'Meal of the day', q.timings || '12:00 PM - 9:00 PM', q.contact_name || '', q.contact_email || '', q.contact_phone || '', q.photo || null);
   // Copy the meals the restaurant picked on its join form onto its menu.
   let mealList = [];
   try { mealList = JSON.parse(q.meals || '[]'); } catch {}

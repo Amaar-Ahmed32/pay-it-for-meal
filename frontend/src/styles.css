@@ -45,7 +45,7 @@ footer h3 { font-size: 18px; }
 
 header { background: var(--card); border-bottom: 1px solid var(--border); padding: 14px 20px; }
 header p { margin: 4px 0 0; color: var(--muted); font-size: 14px; }
-/* Header logo mark: inline SVG heart + plate (see LogoMark in App.jsx). */
+/* Header logo mark: inline SVG hand + bowl + heart (see LogoMark in App.jsx). */
 .logo-svg { width: 52px; height: 52px; flex-shrink: 0; }
 .brand { display: flex; align-items: center; gap: 10px; }
 
@@ -272,3 +272,19 @@ footer .foot-lang button.active { background: #f4c35e; border-color: #f4c35e; co
 @media (max-width: 640px) {
   .modal-overlay { padding: 16px 8px; }
 }
+
+/* --- 9 improvements (2026-11-13): staff profiles, request slip, hope
+   lines, new logo, leaderboard charts, custom roles, area dropdown,
+   restaurant photos --- */
+.finder-thumb { width: 100%; height: 150px; object-fit: cover; border-radius: 14px; margin-bottom: 10px; display: block; }
+.hope-line { color: #92400e; font-weight: 700; background: var(--gold-soft); border: 1px solid var(--gold-border); border-radius: 12px; padding: 8px 10px; }
+.detail-photo { width: 100%; height: 200px; object-fit: cover; border-radius: 16px; display: block; margin-bottom: 12px; }
+.detail-photo-placeholder { height: 160px; border-radius: 16px; background: var(--green-soft); border: 1px solid var(--green-soft-border); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--teal-deep); font-weight: 700; margin-bottom: 12px; }
+.detail-photo-placeholder .logo-svg { width: 56px; height: 56px; }
+.staff-row.clickable { cursor: pointer; border-radius: 12px; padding: 6px; }
+.staff-row.clickable:hover { background: var(--bg); }
+.profile-overlay { z-index: 60; }
+.profile-modal { max-width: 440px; }
+.req-slip { margin-top: 12px; }
+.req-code { font-size: 30px; font-weight: 900; letter-spacing: 2px; color: var(--ink); }
+.chart-bar-fill.gold { background: var(--gold); }

@@ -14,6 +14,9 @@ const API = (typeof import.meta !== 'undefined' && import.meta.env && import.met
 const PILOT_DONATION_GOAL = 50; // pilot target from the teacher plan — change this one number if the target changes
 // Standard meals a restaurant can tick on the join / add-restaurant forms.
 const MEAL_OPTIONS = ['Chicken Biryani', 'Beef Biryani', 'Daal', 'Chicken Karahi', 'Vegetable', 'Roti/Naan'];
+// Areas a restaurant can pick on the join / add-restaurant forms, plus
+// "Other" with a free-text box for anywhere not listed.
+const AREAS = ['Bhittaibad', 'Sukkur', 'Karachi', 'Hyderabad', 'Larkana', 'Khairpur', 'Mirpurkhas', 'Nawabshah', 'Jacobabad', 'Shikarpur', 'Dadu'];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const validEmail = (e) => typeof e === 'string' && EMAIL_RE.test(e.trim());
 const validPhonePK = (p) => /^03\d{9}$/.test(String(p || '').replace(/[\s-]/g, ''));
@@ -166,6 +169,38 @@ const T = {
     adminMealsTitle: 'All menus (delete a meal)', adminReceiptsTitle: 'Recent serve receipts',
     adminReqsTitle: 'Meal requests (all restaurants)',
     serveMealLabel: 'Which meal was served?', serveReceiptMsg: 'Served! Receipt saved.',
+    staffPhoneLabel: 'Phone (counter number)',
+    staffPhoneNote: 'Use the restaurant\u2019s counter number \u2014 this shows publicly on the Finder.',
+    staffPhoneNone: 'No counter number listed',
+    staffProfile: 'Staff profile',
+    profileRest: 'Restaurant:',
+    profileRole: 'Role:',
+    profilePhone: 'Phone:',
+    profileEmail: 'Email:',
+    profileStatus: 'Status:',
+    slipTitle: 'Your request slip',
+    slipShow: 'Show this slip at the counter',
+    slipCode: 'Request code:',
+    slipMeals: 'Meals requested:',
+    reqCodeLabel: 'Code:',
+    reqSentShort: 'Request sent! Your slip is below \u2014 show it at the counter.',
+    hopeLine1: 'Only 1 meal left \u2014 someone nearby is hoping for a plate today.',
+    hopeLine2: 'Only 2 meals left \u2014 your kindness can fill the next plate.',
+    boardChartDonors: 'Top donors \u2014 meals served',
+    boardChartRest: 'Top restaurants \u2014 meals served',
+    boardSummary: 'Donated vs served',
+    roleOther: 'Other (custom role)',
+    roleCustom: 'Custom role',
+    roleCustomPh: 'e.g. Cashier',
+    invalidRole: 'Please pick a role or type a custom role',
+    areaOther: 'Other (type your area)',
+    areaChoose: 'Choose an area\u2026',
+    areaCustom: 'Your area',
+    invalidArea: 'Please pick an area or type your own',
+    restPhotoLabel: 'Restaurant photo (optional)',
+    restPhotoHint: 'JPG or PNG, max 500KB. Shows on the Finder card and the restaurant profile.',
+    mapBtn: 'Find on map',
+    photoSoon: 'Photo coming soon',
     
     anon: 'Anonymous donor',
     joinTitle: 'Join as a restaurant', joinNote: 'Your request starts UNVERIFIED and hidden from the public Finder until admin approves it. Checklist: name, area, the meals you serve and your opening times, and you agree to serve without questions.',
@@ -322,6 +357,38 @@ const T = {
     adminMealsTitle: 'تمام مینیو (کھانا حذف کریں)', adminReceiptsTitle: 'حالیہ پیش کرنے کی رسیدیں',
     adminReqsTitle: 'کھانے کی درخواستیں (تمام ریسٹورنٹ)',
     serveMealLabel: 'کون سا کھانا پیش کیا گیا؟', serveReceiptMsg: 'پیش کر دیا! رسید محفوظ ہو گئی۔',
+    staffPhoneLabel: 'فون (کاؤنٹر نمبر)',
+    staffPhoneNote: 'ریسٹورنٹ کا کاؤنٹر نمبر لکھیں — یہ Finder پر سب کو نظر آئے گا۔',
+    staffPhoneNone: 'کاؤنٹر نمبر درج نہیں',
+    staffProfile: 'اسٹاف پروفائل',
+    profileRest: 'ریسٹورنٹ:',
+    profileRole: 'کردار:',
+    profilePhone: 'فون:',
+    profileEmail: 'ای میل:',
+    profileStatus: 'حالت:',
+    slipTitle: 'آپ کی درخواست کی پرچی',
+    slipShow: 'یہ پرچی کاؤنٹر پر دکھائیں',
+    slipCode: 'درخواست کوڈ:',
+    slipMeals: 'مانگے گئے کھانے:',
+    reqCodeLabel: 'کوڈ:',
+    reqSentShort: 'درخواست بھیج دی گئی! آپ کی پرچی نیچے ہے — کاؤنٹر پر دکھائیں۔',
+    hopeLine1: 'صرف 1 کھانا باقی ہے — قریب ہی کوئی آج ایک پلیٹ کی امید لگائے بیٹھا ہے۔',
+    hopeLine2: 'صرف 2 کھانے باقی ہیں — آپ کی مہربانی اگلی پلیٹ بھر سکتی ہے۔',
+    boardChartDonors: 'سب سے زیادہ عطیہ دہندگان — پیش شدہ کھانے',
+    boardChartRest: 'سب سے زیادہ ریسٹورنٹ — پیش شدہ کھانے',
+    boardSummary: 'عطیہ بمقابلہ پیش شدہ',
+    roleOther: 'دیگر (اپنا کردار لکھیں)',
+    roleCustom: 'اپنا کردار',
+    roleCustomPh: 'مثلاً کیشیئر',
+    invalidRole: 'براہ کرم کردار منتخب کریں یا اپنا کردار لکھیں',
+    areaOther: 'دیگر (اپنا علاقہ لکھیں)',
+    areaChoose: 'علاقہ منتخب کریں…',
+    areaCustom: 'آپ کا علاقہ',
+    invalidArea: 'براہ کرم علاقہ منتخب کریں یا اپنا علاقہ لکھیں',
+    restPhotoLabel: 'ریسٹورنٹ کی تصویر (اختیاری)',
+    restPhotoHint: 'JPG یا PNG، زیادہ سے زیادہ 500KB۔ Finder کارڈ اور ریسٹورنٹ پروفائل پر دکھائی دے گی۔',
+    mapBtn: 'نقشے پر تلاش کریں',
+    photoSoon: 'تصویر جلد آئے گی',
     
     anon: 'Anonymous donor',
     joinTitle: 'ریسٹورنٹ بنیں', joinNote: 'آپ کی درخواست غیر تصدیق شدہ شروع ہوتی ہے اور ایڈمن کی منظوری تک عوامی Finder میں چھپی رہتی ہے۔ چیک لسٹ: نام، علاقہ، جو کھانے آپ پیش کرتے ہیں اور آپ کے کھلنے کے اوقات، اور آپ بغیر سوال پوچھے پیش کرنے پر راضی ہیں۔',
@@ -478,6 +545,38 @@ const T = {
     adminMealsTitle: 'سڀ مينيو (کاڌو حذف ڪريو)', adminReceiptsTitle: 'تازيون پيش ڪرڻ جون رسيدون',
     adminReqsTitle: 'کاڌي جون درخواستون (سڀ ريسٽورنٽ)',
     serveMealLabel: 'ڪهڙو کاڌو پيش ڪيو ويو؟', serveReceiptMsg: 'پيش ڪيو ويو! رسيد محفوظ ٿي وئي.',
+    staffPhoneLabel: 'فون (ڪائونٽر نمبر)',
+    staffPhoneNote: 'ريسٽورنٽ جو ڪائونٽر نمبر لکو — هي Finder تي سڀني کي نظر ايندو.',
+    staffPhoneNone: 'ڪائونٽر نمبر درج ناهي',
+    staffProfile: 'اسٽاف پروفائل',
+    profileRest: 'ريسٽورنٽ:',
+    profileRole: 'ڪردار:',
+    profilePhone: 'فون:',
+    profileEmail: 'اي ميل:',
+    profileStatus: 'حالت:',
+    slipTitle: 'توهان جي درخواست جي پرچي',
+    slipShow: 'هي پرچي ڪائونٽر تي ڏيکاريو',
+    slipCode: 'درخواست ڪوڊ:',
+    slipMeals: 'گهريل کاڌا:',
+    reqCodeLabel: 'ڪوڊ:',
+    reqSentShort: 'درخواست موڪلي وئي! توهان جي پرچي هيٺ آهي — ڪائونٽر تي ڏيکاريو.',
+    hopeLine1: 'صرف 1 کاڌو باقي آهي — ويجهو ئي ڪو اڄ هڪ پليٽ جي اميد رکي ويٺو آهي.',
+    hopeLine2: 'صرف 2 کاڌا باقي آهن — توهان جي مهرباني ايندڙ پليٽ ڀري سگهي ٿي.',
+    boardChartDonors: 'سڀ کان وڌيڪ عطيو ڏيندڙ — پيش ٿيل کاڌا',
+    boardChartRest: 'سڀ کان وڌيڪ ريسٽورنٽ — پيش ٿيل کاڌا',
+    boardSummary: 'عطيو بمقابلو پيش ٿيل',
+    roleOther: 'ٻيو (پنهنجو ڪردار لکو)',
+    roleCustom: 'پنهنجو ڪردار',
+    roleCustomPh: 'مثال ڪيشيئر',
+    invalidRole: 'مهرباني ڪري ڪردار چونڊيو يا پنهنجو ڪردار لکو',
+    areaOther: 'ٻيو (پنهنجو علائقو لکو)',
+    areaChoose: 'علائقو چونڊيو…',
+    areaCustom: 'توهان جو علائقو',
+    invalidArea: 'مهرباني ڪري علائقو چونڊيو يا پنهنجو علائقو لکو',
+    restPhotoLabel: 'ريسٽورنٽ جي تصوير (اختياري)',
+    restPhotoHint: 'JPG يا PNG، وڌ ۾ وڌ 500KB. Finder ڪارڊ ۽ ريسٽورنٽ پروفائل تي ڏيکاري ويندي.',
+    mapBtn: 'نقشي تي ڳوليو',
+    photoSoon: 'تصوير جلد ايندي',
     
     anon: 'Anonymous donor',
     joinTitle: 'ريسٽورنٽ ٿيو', joinNote: 'توهان جي درخواست غير تصديق ٿيل شروع ٿئي ٿي ۽ ايڊمن جي منظوري تائين عوامي Finder ۾ لڪيل رهي ٿي. چيڪ لسٽ: نالو، علائقو، جيڪي کاڌا توهان پيش ڪندا آهيو ۽ توهان جي کلڻ جا وقت، ۽ توهان بغير سوال پڇڻ جي پيش ڪرڻ تي راضي آهيو.',
@@ -503,15 +602,20 @@ const fmtDate = (iso) => { try { return new Intl.DateTimeFormat('en-GB', { day: 
 const badgeFor = (t, served) => (served >= 10 ? t.badgeHero : served >= 5 ? t.badgeHeart : served >= 1 ? t.badgeNew : t.badgeNone);
 
 // ---------- Logo ----------
-// Inline SVG logo mark: a gold heart over a serving plate, in a green ring.
-// Crisp at any size, no external file. The header shows this mark + the
-// The header shows this mark only — no text title, no school line.
+// Inline SVG logo mark (2026-11-13): an original drawing in the spirit of
+// the Meal4Hope reference the user shared — a hand holding a bowl with a
+// heart rising above it. Site palette: teal hand, orange bowl, red heart.
+// Crisp at any size, no external file. The header shows this mark only —
+// no text title, no school line.
 const LogoMark = () => (
   <svg className="logo-svg" viewBox="0 0 64 64" role="img" aria-label="Pay It Forward Meal">
-    <circle cx="32" cy="32" r="29" fill="#17765f" stroke="#172428" strokeWidth="3" />
-    <circle cx="32" cy="32" r="23" fill="none" stroke="#F4C35E" strokeWidth="2" />
-    <path d="M32 40 C25 35 21 30.5 21 25.5 A6 6 0 0 1 32 21.5 A6 6 0 0 1 43 25.5 C43 30.5 39 35 32 40 Z" fill="#F4C35E" stroke="#172428" strokeWidth="2" />
-    <ellipse cx="32" cy="47" rx="13" ry="3.5" fill="#FDF6EB" stroke="#172428" strokeWidth="2" />
+    {/* Rising heart */}
+    <path d="M32 30 C22 23 18 18.5 18 14 C18 10 21.5 7.5 25 7.5 C27.5 7.5 30 9 32 11.5 C34 9 36.5 7.5 39 7.5 C42.5 7.5 46 10 46 14 C46 18.5 42 23 32 30 Z" fill="#d64545" stroke="#172428" strokeWidth="2" strokeLinejoin="round" />
+    {/* Bowl */}
+    <path d="M12 36 h40 c0 9.5 -9 16.5 -20 16.5 s-20 -7 -20 -16.5 Z" fill="#f59e0b" stroke="#172428" strokeWidth="2" strokeLinejoin="round" />
+    <ellipse cx="32" cy="36" rx="20" ry="3.5" fill="#fde9c8" stroke="#172428" strokeWidth="2" />
+    {/* Cupped hand under the bowl — its raised sides hold the bowl, like a palm offering it up */}
+    <path d="M6 48 C6 45 8 44 11 44 L15 44 C18 50 24 53 32 53 C40 53 46 50 49 44 L53 44 C56 44 58 45 58 48 C58 55 47 61 32 61 C17 61 6 55 6 48 Z" fill="#146b56" stroke="#172428" strokeWidth="2" strokeLinejoin="round" />
   </svg>
 );
 
@@ -611,6 +715,46 @@ const MonthlyBars = ({ monthly }) => {
   );
 };
 
+// Leaderboard charts (pure SVG/CSS, real data from /api/leaderboard):
+// (a) horizontal gold bars — Top donors by meals SERVED, badge under each
+// name; (b) vertical green bars — Top restaurants by meals served.
+const DonorBars = ({ donors, t, badgeFor }) => {
+  const max = Math.max(1, ...donors.map((d) => d.served));
+  return (<div>{donors.map((d, i) => (
+    <div key={i} style={{ margin: '12px 0' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', gap: 8, flexWrap: 'wrap', alignItems: 'baseline' }}>
+        <span><b>{i + 1}. {d.name}</b>{' '}<span className="badge">{badgeFor(t, d.served)}</span></span>
+        <b>{d.served} {t.served}</b>
+      </div>
+      <div className="chart-bar-track"><div className="chart-bar-fill gold" style={{ width: Math.max(4, (d.served / max) * 100) + '%' }} /></div>
+    </div>
+  ))}</div>);
+};
+const RestServedBars = ({ rows }) => {
+  const max = Math.max(1, ...rows.map((r) => r.served));
+  const W = 560, H = 200, base = 170, pad = 10;
+  const n = Math.max(1, rows.length);
+  const gw = (W - 2 * pad) / n;
+  const bw = Math.min(44, Math.floor(gw - 16));
+  const label = (name) => (name.length > 12 ? name.slice(0, 12) + '…' : name);
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block', maxWidth: '100%' }} role="img">
+      <line x1="10" y1={base} x2={W - 10} y2={base} stroke="#172428" strokeWidth="2" />
+      {rows.map((r, i) => {
+        const x = pad + i * gw + (gw - bw) / 2;
+        const h = Math.round((r.served / max) * 130);
+        return (
+          <g key={r.id}>
+            <rect x={x} y={base - h} width={bw} height={h} fill="#2e9e6b" rx="4" />
+            <text x={x + bw / 2} y={base + 16} textAnchor="middle" fontSize="12" fontWeight="700" fill="#172428">{label(r.name)}</text>
+            <text x={x + bw / 2} y={base - h - 6} textAnchor="middle" fontSize="11" fontWeight="800" fill="#172428">{r.served}</text>
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
 // Staff photo avatar: the uploaded photo, or teal initials when there is no photo yet.
 const Avatar = ({ photo, name, size = 48 }) => (photo
   ? <img src={photo} alt={name || ''} className="avatar" style={{ width: size, height: size }} />
@@ -642,19 +786,26 @@ export default function App() {
   const [notifs, setNotifs] = useState([]);
   const [adminData, setAdminData] = useState(null);
   const [report, setReport] = useState(null);
-  const [staffForm, setStaffForm] = useState({ name: '', email: '', password: '', restaurant_id: '', photo: '' });
-  const [newRest, setNewRest] = useState({ name: '', area: '', meal_price_pkr: '', contact_email: '', contact_phone: '', owner_password: '' });
+  const [staffForm, setStaffForm] = useState({ name: '', email: '', password: '', restaurant_id: '', photo: '', staffRole: 'Counter', phone: '' });
+  const [adminCustomRole, setAdminCustomRole] = useState('');
+  const [newRest, setNewRest] = useState({ name: '', area: '', meal_price_pkr: '', contact_email: '', contact_phone: '', owner_password: '', photo: '' });
+  const [newAreaSel, setNewAreaSel] = useState('');
+  const [newAreaOther, setNewAreaOther] = useState('');
+  const [reqForm, setReqForm] = useState({ name: '', area: '', contact_email: '', contact_phone: '', owner_password: '', photo: '' });
+  const [reqAreaSel, setReqAreaSel] = useState('');
+  const [reqAreaOther, setReqAreaOther] = useState('');
   const [newStart, setNewStart] = useState('');
   const [newEnd, setNewEnd] = useState('');
   const [priceEdit, setPriceEdit] = useState({ id: '', price: '' });
-  const [reqForm, setReqForm] = useState({ name: '', area: '', contact_email: '', contact_phone: '', owner_password: '' });
   const [reqStart, setReqStart] = useState('');
   const [reqEnd, setReqEnd] = useState('');
   // Restaurant owner team
   const [team, setTeam] = useState(null);
-  const [ownerForm, setOwnerForm] = useState({ name: '', email: '', password: '', staffRole: 'Counter', photo: '' });
+  const [ownerForm, setOwnerForm] = useState({ name: '', email: '', password: '', staffRole: 'Counter', photo: '', phone: '' });
+  const [ownerCustomRole, setOwnerCustomRole] = useState('');
   // Menus, requests, receipts, detail view
   const [detailRest, setDetailRest] = useState(null);
+  const [profileStaff, setProfileStaff] = useState(null);
   const [reqForm2, setReqForm2] = useState({ restaurantId: '', qty: 1, note: '' });
   const [reqSentInfo, setReqSentInfo] = useState(null);
   const [ownerMeals, setOwnerMeals] = useState([]);
@@ -793,9 +944,14 @@ export default function App() {
   };
   const doAddStaff = async () => {
     if (!ownerForm.photo) { setMsg(t.photoRequired); return; }
+    // Custom role: when "Other" is picked, the typed role is the role.
+    const role = ownerForm.staffRole === '__other' ? ownerCustomRole.trim() : ownerForm.staffRole;
+    if (!role) { setMsg(t.invalidRole); return; }
+    if (ownerForm.phone && !validPhonePK(ownerForm.phone)) { setMsg(t.invalidPhone); return; }
     try {
-      await api('/restaurant/staff', { method: 'POST', body: JSON.stringify(ownerForm) });
-      setOwnerForm({ name: '', email: '', password: '', staffRole: 'Counter', photo: '' });
+      await api('/restaurant/staff', { method: 'POST', body: JSON.stringify({ ...ownerForm, staffRole: role }) });
+      setOwnerForm({ name: '', email: '', password: '', staffRole: 'Counter', photo: '', phone: '' });
+      setOwnerCustomRole('');
       setMsg(t.staffAdded); loadTeam();
     } catch (e) { setMsg(e.message || t.staffAddFail); }
   };
@@ -829,10 +985,18 @@ export default function App() {
   const doRequestMeal = async () => {
     try {
       const r = await api('/requests', { method: 'POST', body: JSON.stringify({ restaurantId: reqForm2.restaurantId, mealsNeeded: reqForm2.qty, note: reqForm2.note }) });
-      setReqSentInfo({ ...r.request, at: fmtDate(r.request.created_at) });
+      const rest = restaurants.find((x) => String(x.id) === String(reqForm2.restaurantId));
+      setReqSentInfo({ ...r.request, at: fmtDate(r.request.created_at), restaurantName: rest?.name || '' });
       setReqForm2({ restaurantId: '', qty: 1, note: '' });
-      setMsg(t.reqSent + fmt(t.reqSentLine, { n: r.request.meals_needed, t: fmtDate(r.request.created_at) }));
+      setMsg(t.reqSentShort);
     } catch (e) { setMsg(e.message); }
+  };
+  // ---- Request slip (printable): the code is what the person shows at the counter ----
+  const printReqSlip = (slip) => {
+    const w = window.open('', '_blank', 'width=600,height=700');
+    if (!w) { setMsg(t.popups); return; }
+    w.document.write(`<html><head><title>${t.slipTitle}</title></head><body style="font-family: sans-serif; max-width: 520px; margin: 30px auto; color: #111;"><h2>${t.slipTitle}</h2><p>Pay It Forward Meal • SDG 1 + SDG 2</p><hr /><p><b>${t.receiptRest}</b> ${slip.restaurantName || ''}</p><p><b>${t.slipMeals}</b> ${slip.meals_needed}</p><p><b>${t.receiptDate}</b> ${slip.at || ''}</p><p style="font-size: 30px; font-weight: 900; letter-spacing: 2px;">${slip.code || ''}</p><p><b>${t.slipShow}</b></p><hr /><p><small>${t.receiptNote}</small></p></body></html>`);
+    w.document.close(); w.focus(); w.print();
   };
   const doFulfilReq = async (id, after) => {
     try {
@@ -903,7 +1067,17 @@ export default function App() {
       <label>{t.reqNote}</label>
       <input value={reqForm2.note} onChange={(e) => setReqForm2({ ...reqForm2, note: e.target.value })} maxLength={200} />
       <button className="btn tomato" disabled={!reqForm2.restaurantId} onClick={doRequestMeal}>{t.reqSend}</button>
-      {reqSentInfo && <p className="success" style={{ marginTop: 10 }}>{t.reqSent}<b>{fmt(t.reqSentLine, { n: reqSentInfo.meals_needed, t: reqSentInfo.at })}</b></p>}
+      {reqSentInfo && (
+        <div className="card sandbox-card req-slip" style={{ marginTop: 12 }}>
+          <h3>{t.slipTitle}</h3>
+          <p><b>{t.receiptRest}</b> {reqSentInfo.restaurantName}</p>
+          <p><b>{t.slipMeals}</b> {reqSentInfo.meals_needed}</p>
+          <p><b>{t.receiptDate}</b> {reqSentInfo.at}</p>
+          <p><b>{t.slipCode}</b> <span className="req-code">{reqSentInfo.code}</span></p>
+          <p><b>{t.slipShow}</b></p>
+          <button className="btn outline" onClick={() => printReqSlip(reqSentInfo)}>{t.printSlip}</button>
+        </div>
+      )}
     </div>
   );
 
@@ -991,10 +1165,13 @@ export default function App() {
             <div className="grid3">
               {shown.map((r) => (
                 <div className="card finder-card" key={r.id} onClick={() => setDetailRest(r)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') setDetailRest(r); }}>
+                  {r.photo && <img src={r.photo} alt="" className="finder-thumb" />}
                   {(r.staff || []).length > 0 && (<div className="staff-icons">{(r.staff || []).slice(0, 3).map((s) => (<Avatar key={s.id} photo={s.photo} name={s.name} size={34} />))}{(r.staff || []).length > 3 && <span className="avatar avatar-initials" style={{ width: 34, height: 34 }}>+{(r.staff || []).length - 3}</span>}</div>)}
                   <h3>{r.name} {isClosed(r) ? <span className="badge warn badge-right">{t.closedToday}</span> : <span className={(r.available <= 2 ? 'badge warn' : 'badge') + ' badge-right'}>{r.available <= 1 ? fmt(t.finderUrgent, { n: r.available }) : r.available === 2 ? fmt(t.lowStockBadge, { n: r.available }) : fmt(t.finderMeals, { n: r.available })}</span>}</h3>
                   <p>{r.area} • {r.meal}<br />{r.timings} • {fmt(t.finderPerMeal, { n: r.meal_price_pkr || 250 })}</p>
                   <p className="muted">{fmt(t.finderServed, { n: r.served })}</p>
+                  {!isClosed(r) && r.available === 1 && <p className="hope-line">{t.hopeLine1}</p>}
+                  {!isClosed(r) && r.available === 2 && <p className="hope-line">{t.hopeLine2}</p>}
                 </div>
               ))}
             </div>
@@ -1005,13 +1182,17 @@ export default function App() {
               <div className="modal-overlay" onClick={() => setDetailRest(null)}>
                 <div className="card modal" onClick={(e) => e.stopPropagation()}>
                   <button className="btn small outline modal-close" onClick={() => setDetailRest(null)}>✕ {t.detailClose}</button>
+                  {detailRest.photo ? <img src={detailRest.photo} alt={detailRest.name} className="detail-photo" /> : (<div className="detail-photo-placeholder"><LogoMark /><span>{t.photoSoon}</span></div>)}
                   <h2>{detailRest.name}</h2>
                   <p>{detailRest.area} • {detailRest.timings}</p>
                   <p>{isClosed(detailRest) ? <span className="badge warn">{t.closedToday}</span> : <span className="badge">{fmt(t.finderMeals, { n: detailRest.available })}</span>} <span className="badge">{fmt(t.finderServed, { n: detailRest.served })}</span></p>
+                  {!isClosed(detailRest) && detailRest.available === 1 && <p className="hope-line">{t.hopeLine1}</p>}
+                  {!isClosed(detailRest) && detailRest.available === 2 && <p className="hope-line">{t.hopeLine2}</p>}
+                  <p><a className="btn small outline" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(detailRest.name + ', ' + detailRest.area)}`} target="_blank" rel="noreferrer">📍 {t.mapBtn}</a></p>
                   <h3>{t.detailMenu}</h3>
                   {(detailRest.meals || []).length > 0 ? detailRest.meals.map((m) => (<p key={m.id}>{m.name} — <b>Rs {m.price_pkr}</b></p>)) : <p className="muted">{detailRest.meal} — Rs {detailRest.meal_price_pkr || 250}</p>}
                   <h3>{t.detailStaff}</h3>
-                  {(detailRest.staff || []).length > 0 ? detailRest.staff.map((s) => (<div className="staff-row" key={s.id}><Avatar photo={s.photo} name={s.name} size={48} /><span className="who"><b>{s.name}</b></span> <span className="badge">{s.staff_role || t.roleCounter}</span></div>)) : <p className="muted">{t.teamNone}</p>}
+                  {(detailRest.staff || []).length > 0 ? detailRest.staff.map((s) => (<div className="staff-row clickable" key={s.id} onClick={() => setProfileStaff({ staff: s, restaurantName: detailRest.name })} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') setProfileStaff({ staff: s, restaurantName: detailRest.name }); }}><Avatar photo={s.photo} name={s.name} size={48} /><span className="who"><b>{s.name}</b></span> <span className="badge">{s.staff_role || t.roleCounter}</span></div>)) : <p className="muted">{t.teamNone}</p>}
                   <p className="muted">{t.claimNote}</p>
                 </div>
               </div>
@@ -1098,7 +1279,7 @@ export default function App() {
               <p className="muted">{t.serveNote}</p>
               <div className="card"><h3>{t.reqPending}</h3>
                 {staffReqs.filter((q) => q.status === 'pending').map((q) => (
-                  <p key={q.id}>{fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at) })}{q.note ? ` — ${q.note}` : ''} {reqExpired(q) ? <span className="badge warn">{t.reqExpired}</span> : <><button className="btn small tomato" onClick={() => doFulfilReq(q.id)}>{t.reqFulfil}</button>{' '}<button className="btn small outline" onClick={() => doCancelReq(q.id)}>{t.reqCancel}</button></>}</p>
+                  <p key={q.id}>{fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at) })}{q.code ? (<> • <b>{t.reqCodeLabel} {q.code}</b></>) : ''}{q.note ? ` — ${q.note}` : ''} {reqExpired(q) ? <span className="badge warn">{t.reqExpired}</span> : <><button className="btn small tomato" onClick={() => doFulfilReq(q.id)}>{t.reqFulfil}</button>{' '}<button className="btn small outline" onClick={() => doCancelReq(q.id)}>{t.reqCancel}</button></>}</p>
                 ))}
                 {staffReqs.filter((q) => q.status === 'pending').length === 0 && <p className="muted">{t.reqNone}</p>}
               </div>
@@ -1133,7 +1314,7 @@ export default function App() {
                 </div>
                 <div className="card"><h3>{t.reqPending}</h3>
                   {ownerReqs.filter((q) => q.status === 'pending').map((q) => (
-                    <p key={q.id}>{fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at) })}{q.note ? ` — ${q.note}` : ''} {reqExpired(q) ? <span className="badge warn">{t.reqExpired}</span> : <><button className="btn small tomato" onClick={() => doFulfilReq(q.id, loadTeam)}>{t.reqFulfil}</button>{' '}<button className="btn small outline" onClick={() => doCancelReq(q.id, loadTeam)}>{t.reqCancel}</button></>}</p>
+                    <p key={q.id}>{fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at) })}{q.code ? (<> • <b>{t.reqCodeLabel} {q.code}</b></>) : ''}{q.note ? ` — ${q.note}` : ''} {reqExpired(q) ? <span className="badge warn">{t.reqExpired}</span> : <><button className="btn small tomato" onClick={() => doFulfilReq(q.id, loadTeam)}>{t.reqFulfil}</button>{' '}<button className="btn small outline" onClick={() => doCancelReq(q.id, loadTeam)}>{t.reqCancel}</button></>}</p>
                   ))}
                   {ownerReqs.filter((q) => q.status === 'pending').length === 0 && <p className="muted">{t.reqNone}</p>}
                   <h3 style={{ marginTop: 16 }}>{t.receiptsTitle}</h3>
@@ -1146,7 +1327,7 @@ export default function App() {
               <div className="grid">
                 <div className="card"><h3>{t.teamTitle} {team ? `• ${fmt(t.teamMembers, { n: team.staff.length })}` : ''}</h3>
                   <p className="muted">{team?.restaurant ? `${team.restaurant.name} — ${team.restaurant.area}` : ''}</p>
-                  {team?.staff.map((s) => (<div className="staff-row" key={s.id}><Avatar photo={s.photo} name={s.name} size={48} /><span className="who"><b>{s.name}</b> — {s.email}</span> <span className="badge">{s.staff_role || t.roleCounter}</span> <span className="badge">● {t.active}</span> <button className="btn small danger" onClick={() => doRemoveStaff(s.id)}>{t.removeBtn}</button></div>))}
+                  {team?.staff.map((s) => (<div className="staff-row clickable" key={s.id} onClick={() => setProfileStaff({ staff: s, restaurantName: team.restaurant.name })} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') setProfileStaff({ staff: s, restaurantName: team.restaurant.name }); }}><Avatar photo={s.photo} name={s.name} size={48} /><span className="who"><b>{s.name}</b> — {s.email}</span> <span className="badge">{s.staff_role || t.roleCounter}</span> <span className="badge">● {t.active}</span> <button className="btn small danger" onClick={(e) => { e.stopPropagation(); doRemoveStaff(s.id); }}>{t.removeBtn}</button></div>))}
                   {team && team.staff.length === 0 && <p className="muted">{t.teamNone}</p>}
                   {!team && <p className="muted">{t.adminLoading}</p>}
                 </div>
@@ -1155,14 +1336,17 @@ export default function App() {
                   <label>{t.fullName}</label><input value={ownerForm.name} onChange={(e) => setOwnerForm({ ...ownerForm, name: e.target.value })} placeholder="e.g. Fatima Noor" />
                   <label>{t.phoneEmail}</label><input value={ownerForm.email} onChange={(e) => setOwnerForm({ ...ownerForm, email: e.target.value })} placeholder="name@example.com" />
                   <label>{t.password}</label><input type="password" value={ownerForm.password} onChange={(e) => setOwnerForm({ ...ownerForm, password: e.target.value })} />
+                  <label>{t.staffPhoneLabel}</label><input value={ownerForm.phone} onChange={(e) => setOwnerForm({ ...ownerForm, phone: e.target.value })} placeholder="0300-1234567" />
+                  <p className="muted">{t.staffPhoneNote}</p>
                   <label>{t.photoLabel}</label>
                   <input type="file" accept="image/*" onChange={(e) => onPhotoFile(e, setOwnerForm, ownerForm)} />
                   {ownerForm.photo && <img src={ownerForm.photo} alt="" className="avatar-preview" />}
                   <p className="muted">{t.photoHint}</p>
                   <label>{t.roleLabel}</label>
                   <select value={ownerForm.staffRole} onChange={(e) => setOwnerForm({ ...ownerForm, staffRole: e.target.value })}>
-                    <option value="Counter">{t.roleCounter}</option><option value="Kitchen">{t.roleKitchen}</option><option value="Manager">{t.roleManager}</option>
+                    <option value="Counter">{t.roleCounter}</option><option value="Kitchen">{t.roleKitchen}</option><option value="Manager">{t.roleManager}</option><option value="__other">{t.roleOther}</option>
                   </select>
+                  {ownerForm.staffRole === '__other' && (<><label>{t.roleCustom}</label><input value={ownerCustomRole} onChange={(e) => setOwnerCustomRole(e.target.value)} placeholder={t.roleCustomPh} maxLength={40} /></>)}
                   <button className="btn tomato" onClick={doAddStaff}>{t.addBtn}</button>
                 </div>
               </div>
@@ -1236,7 +1420,7 @@ export default function App() {
                 {adminReceipts.length === 0 && <p className="muted">{t.receiptsNone}</p>}
               </div>
               <div className="card"><h3>{t.adminReqsTitle}</h3>
-                {adminReqs.map((q) => (<p key={q.id}>{q.restaurantName} — {fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at) })} — {q.status}{reqExpired(q) ? ` (${t.reqExpired})` : ''}</p>))}
+                {adminReqs.map((q) => (<p key={q.id}>{q.restaurantName} — {fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at) })}{q.code ? (<> • <b>{t.reqCodeLabel} {q.code}</b></>) : ''} — {q.status}{reqExpired(q) ? ` (${t.reqExpired})` : ''}</p>))}
                 {adminReqs.length === 0 && <p className="muted">{t.reqNone}</p>}
               </div>
               <div className="grid">
@@ -1244,24 +1428,41 @@ export default function App() {
                   <label>{t.fullName}</label><input value={staffForm.name} onChange={(e) => setStaffForm({ ...staffForm, name: e.target.value })} />
                   <label>{t.phoneEmail}</label><input value={staffForm.email} onChange={(e) => setStaffForm({ ...staffForm, email: e.target.value })} />
                   <label>{t.password}</label><input type="password" value={staffForm.password} onChange={(e) => setStaffForm({ ...staffForm, password: e.target.value })} />
+                  <label>{t.staffPhoneLabel}</label><input value={staffForm.phone} onChange={(e) => setStaffForm({ ...staffForm, phone: e.target.value })} placeholder="0300-1234567" />
+                  <p className="muted">{t.staffPhoneNote}</p>
                   <label>{t.photoLabel}</label>
                   <input type="file" accept="image/*" onChange={(e) => onPhotoFile(e, setStaffForm, staffForm)} />
                   {staffForm.photo && <img src={staffForm.photo} alt="" className="avatar-preview" />}
                   <p className="muted">{t.photoHint}</p>
+                  <label>{t.roleLabel}</label>
+                  <select value={staffForm.staffRole} onChange={(e) => setStaffForm({ ...staffForm, staffRole: e.target.value })}>
+                    <option value="Counter">{t.roleCounter}</option><option value="Kitchen">{t.roleKitchen}</option><option value="Manager">{t.roleManager}</option><option value="__other">{t.roleOther}</option>
+                  </select>
+                  {staffForm.staffRole === '__other' && (<><label>{t.roleCustom}</label><input value={adminCustomRole} onChange={(e) => setAdminCustomRole(e.target.value)} placeholder={t.roleCustomPh} maxLength={40} /></>)}
                   <label>{t.roleRestLabel}</label>
                   <select value={staffForm.restaurant_id} onChange={(e) => setStaffForm({ ...staffForm, restaurant_id: e.target.value })}><option value="">{t.chooseRest}</option>{adminData.all.map((r) => (<option key={r.id} value={r.id}>{r.name}</option>))}</select>
-                  <button className="btn tomato" onClick={async () => { if (!staffForm.photo) { setMsg(t.photoRequired); return; } try { await api('/admin/users', { method: 'POST', body: JSON.stringify({ ...staffForm, role: 'staff' }) }); setMsg(t.staffCreated); setStaffForm({ name: '', email: '', password: '', restaurant_id: '', photo: '' }); loadAdmin(); } catch (e) { setMsg(e.message); } }}>{t.createStaffBtn}</button>
-                  <div style={{ marginTop: 12 }}>{adminData.users.map((u) => (<div className="staff-row" key={u.id}><Avatar photo={u.photo} name={u.name} size={40} /><span className="who">{u.name} ({u.role}){u.restaurantName ? ` — ${u.restaurantName}` : ''}</span><button className="btn small danger" onClick={() => doDeleteUser(u.id, u.name)}>{t.delUserBtn}</button></div>))}</div>
+                  <button className="btn tomato" onClick={async () => { if (!staffForm.photo) { setMsg(t.photoRequired); return; } const role = staffForm.staffRole === '__other' ? adminCustomRole.trim() : staffForm.staffRole; if (!role) { setMsg(t.invalidRole); return; } if (staffForm.phone && !validPhonePK(staffForm.phone)) { setMsg(t.invalidPhone); return; } try { await api('/admin/users', { method: 'POST', body: JSON.stringify({ ...staffForm, role: 'staff', staffRole: role }) }); setMsg(t.staffCreated); setStaffForm({ name: '', email: '', password: '', restaurant_id: '', photo: '', staffRole: 'Counter', phone: '' }); setAdminCustomRole(''); loadAdmin(); } catch (e) { setMsg(e.message); } }}>{t.createStaffBtn}</button>
+                  <div style={{ marginTop: 12 }}>{adminData.users.map((u) => (<div className="staff-row clickable" key={u.id} onClick={() => setProfileStaff({ staff: u, restaurantName: u.restaurantName || '' })} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') setProfileStaff({ staff: u, restaurantName: u.restaurantName || '' }); }}><Avatar photo={u.photo} name={u.name} size={40} /><span className="who">{u.name} ({u.role}){u.staff_role ? ` — ${u.staff_role}` : ''}{u.restaurantName ? ` — ${u.restaurantName}` : ''}</span><button className="btn small danger" onClick={(e) => { e.stopPropagation(); doDeleteUser(u.id, u.name); }}>{t.delUserBtn}</button></div>))}</div>
                 </div>
                 <div className="card"><h3>{t.addRestTitle}</h3>
                   <label>{t.restName}</label><input value={newRest.name} onChange={(e) => setNewRest({ ...newRest, name: e.target.value })} />
-                  <label>{t.restArea}</label><input value={newRest.area} onChange={(e) => setNewRest({ ...newRest, area: e.target.value })} />
+                  <label>{t.restArea}</label>
+                  <select value={newAreaSel} onChange={(e) => setNewAreaSel(e.target.value)}>
+                    <option value="">{t.areaChoose}</option>
+                    {AREAS.map((a) => (<option key={a} value={a}>{a}</option>))}
+                    <option value="__other">{t.areaOther}</option>
+                  </select>
+                  {newAreaSel === '__other' && (<><label>{t.areaCustom}</label><input value={newAreaOther} onChange={(e) => setNewAreaOther(e.target.value)} placeholder="e.g. Bhittaibad" /></>)}
                   <label>{t.startTime}</label><input type="time" value={newStart} onChange={(e) => setNewStart(e.target.value)} />
                   <label>{t.endTime}</label><input type="time" value={newEnd} onChange={(e) => setNewEnd(e.target.value)} />
                   <label>{t.emailLabel}</label><input type="email" value={newRest.contact_email || ''} onChange={(e) => setNewRest({ ...newRest, contact_email: e.target.value })} placeholder="name@example.com" />
                   <label>{t.phoneLabel}</label><input value={newRest.contact_phone || ''} onChange={(e) => setNewRest({ ...newRest, contact_phone: e.target.value })} placeholder="0300-1234567" />
                   <label>{t.ownerPassLabel}</label><input type="password" value={newRest.owner_password || ''} onChange={(e) => setNewRest({ ...newRest, owner_password: e.target.value })} />
                   <p className="muted">{t.ownerPassNote}</p>
+                  <label>{t.restPhotoLabel}</label>
+                  <input type="file" accept="image/*" onChange={(e) => onPhotoFile(e, setNewRest, newRest)} />
+                  {newRest.photo && <img src={newRest.photo} alt="" className="avatar-preview" />}
+                  <p className="muted">{t.restPhotoHint}</p>
                   <label>{t.mealOptions}</label>
                   <div className="meal-checks">{MEAL_OPTIONS.map((m) => (<label key={m} className="meal-check"><input type="checkbox" checked={adminMealSel.includes(m)} onChange={(e) => setAdminMealSel(e.target.checked ? [...adminMealSel, m] : adminMealSel.filter((x) => x !== m))} /> {m}</label>))}</div>
                   <label>{t.mealOther}</label><input value={adminOther} onChange={(e) => setAdminOther(e.target.value)} placeholder="e.g. Haleem" />
@@ -1269,10 +1470,12 @@ export default function App() {
                   <button className="btn tomato" onClick={async () => {
                     if (!validEmail(newRest.contact_email)) { setMsg(t.invalidEmail); return; }
                     if (!validPhonePK(newRest.contact_phone)) { setMsg(t.invalidPhone); return; }
+                    const area = newAreaSel === '__other' ? newAreaOther.trim() : newAreaSel;
+                    if (!area) { setMsg(t.invalidArea); return; }
                     if (!validTimes(newStart, newEnd)) { setMsg(t.invalidTimes); return; }
                     if (!newRest.owner_password || newRest.owner_password.length < 8) { setMsg(t.passTooShort); return; }
                     const meals = [...adminMealSel, ...(adminOther.trim() ? [adminOther.trim()] : [])].map((name) => ({ name, price: parseInt(newRest.meal_price_pkr, 10) || 250 }));
-                    try { const r = await api('/admin/restaurant', { method: 'POST', body: JSON.stringify({ ...newRest, contact_person: '', meals, start_time: newStart, end_time: newEnd }) }); setMsg(fmt(t.ownerCreated, { e: r.owner.email })); setAdminMealSel([]); setAdminOther(''); setNewStart(''); setNewEnd(''); setNewRest({ name: '', area: '', meal_price_pkr: '', contact_email: '', contact_phone: '', owner_password: '' }); loadAdmin(); load(); } catch (e) { setMsg(e.message); }
+                    try { const r = await api('/admin/restaurant', { method: 'POST', body: JSON.stringify({ ...newRest, area, contact_person: '', meals, start_time: newStart, end_time: newEnd }) }); setMsg(fmt(t.ownerCreated, { e: r.owner.email })); setAdminMealSel([]); setAdminOther(''); setNewStart(''); setNewEnd(''); setNewAreaSel(''); setNewAreaOther(''); setNewRest({ name: '', area: '', meal_price_pkr: '', contact_email: '', contact_phone: '', owner_password: '', photo: '' }); loadAdmin(); load(); } catch (e) { setMsg(e.message); }
                   }}>{t.addRestBtn}</button>
                 </div>
               </div>
@@ -1281,9 +1484,25 @@ export default function App() {
         )}
 
         {page === 'board' && (
-          <div className="grid">
-            <div className="card"><h3>{t.boardDonors}</h3>{board?.donors.map((d, i) => (<p key={i}>{i + 1}. {d.name} — {fmt(t.boardDonated, { d: d.donated, s: d.served })} • {d.served >= 1 ? (<span className="badge">{badgeFor(t, d.served)}</span>) : badgeFor(t, d.served)}</p>))}{!board?.donors.length && <p className="muted">{t.noDonors}</p>}</div>
-            <div className="card"><h3>{t.boardRest}</h3>{board?.restaurants.map((r, i) => (<p key={r.id}>{i + 1}. {r.name} — {r.area} • {r.served} {t.served}, {r.available} {t.available}</p>))}</div>
+          <div>
+            <div className="card"><h3>{t.boardSummary}</h3>
+              {board ? (<>
+                <div className="chart-tiles">
+                  <div className="chart-tile"><b>{board.donors.reduce((s, d) => s + d.donated, 0)}</b><span>{t.donated}</span></div>
+                  <div className="chart-tile"><b>{board.donors.reduce((s, d) => s + d.served, 0)}</b><span>{t.served}</span></div>
+                  <div className="chart-tile"><b>{board.donors.reduce((s, d) => s + d.donated, 0) ? Math.round((board.donors.reduce((s, d) => s + d.served, 0) / board.donors.reduce((s, d) => s + d.donated, 0)) * 100) : 0}%</b><span>{t.gServedPct}</span></div>
+                  <div className="chart-tile"><b>{stats ? stats.available : 0}</b><span>{t.available}</span></div>
+                </div>
+                <h3 style={{ marginTop: 18 }}>{t.boardChartDonors}</h3>
+                <DonorBars donors={board.donors} t={t} badgeFor={badgeFor} />
+                <h3 style={{ marginTop: 18 }}>{t.boardChartRest}</h3>
+                <RestServedBars rows={board.restaurants} />
+              </>) : <p className="muted">{t.adminLoading}</p>}
+            </div>
+            <div className="grid">
+              <div className="card"><h3>{t.boardDonors}</h3>{board?.donors.map((d, i) => (<p key={i}>{i + 1}. {d.name} — {fmt(t.boardDonated, { d: d.donated, s: d.served })} • {d.served >= 1 ? (<span className="badge">{badgeFor(t, d.served)}</span>) : badgeFor(t, d.served)}</p>))}{!board?.donors.length && <p className="muted">{t.noDonors}</p>}</div>
+              <div className="card"><h3>{t.boardRest}</h3>{board?.restaurants.map((r, i) => (<p key={r.id}>{i + 1}. {r.name} — {r.area} • {r.served} {t.served}, {r.available} {t.available}</p>))}</div>
+            </div>
           </div>
         )}
 
@@ -1316,23 +1535,35 @@ export default function App() {
             <h2>{t.joinTitle}</h2>
             <p className="muted">{t.joinNote}</p>
             <label>{t.restName}</label><input value={reqForm.name} onChange={(e) => setReqForm({ ...reqForm, name: e.target.value })} />
-            <label>{t.restArea}</label><input value={reqForm.area} onChange={(e) => setReqForm({ ...reqForm, area: e.target.value })} />
+            <label>{t.restArea}</label>
+            <select value={reqAreaSel} onChange={(e) => setReqAreaSel(e.target.value)}>
+              <option value="">{t.areaChoose}</option>
+              {AREAS.map((a) => (<option key={a} value={a}>{a}</option>))}
+              <option value="__other">{t.areaOther}</option>
+            </select>
+            {reqAreaSel === '__other' && (<><label>{t.areaCustom}</label><input value={reqAreaOther} onChange={(e) => setReqAreaOther(e.target.value)} placeholder="e.g. Bhittaibad" /></>)}
             <label>{t.startTime}</label><input type="time" value={reqStart} onChange={(e) => setReqStart(e.target.value)} />
             <label>{t.endTime}</label><input type="time" value={reqEnd} onChange={(e) => setReqEnd(e.target.value)} />
             <label>{t.emailLabel}</label><input type="email" value={reqForm.contact_email} onChange={(e) => setReqForm({ ...reqForm, contact_email: e.target.value })} placeholder="name@example.com" />
             <label>{t.phoneLabel}</label><input value={reqForm.contact_phone} onChange={(e) => setReqForm({ ...reqForm, contact_phone: e.target.value })} placeholder="0300-1234567" />
             <label>{t.ownerPassLabel}</label><input type="password" value={reqForm.owner_password} onChange={(e) => setReqForm({ ...reqForm, owner_password: e.target.value })} />
             <p className="muted">{t.ownerPassNote}</p>
+            <label>{t.restPhotoLabel}</label>
+            <input type="file" accept="image/*" onChange={(e) => onPhotoFile(e, setReqForm, reqForm)} />
+            {reqForm.photo && <img src={reqForm.photo} alt="" className="avatar-preview" />}
+            <p className="muted">{t.restPhotoHint}</p>
             <label>{t.mealOptions}</label>
             <div className="meal-checks">{MEAL_OPTIONS.map((m) => (<label key={m} className="meal-check"><input type="checkbox" checked={joinMeals.includes(m)} onChange={(e) => setJoinMeals(e.target.checked ? [...joinMeals, m] : joinMeals.filter((x) => x !== m))} /> {m}</label>))}</div>
             <label>{t.mealOther}</label><input value={joinOther} onChange={(e) => setJoinOther(e.target.value)} placeholder="e.g. Haleem" />
             <button className="btn tomato" onClick={async () => {
               if (!validEmail(reqForm.contact_email)) { setMsg(t.invalidEmail); return; }
               if (!validPhonePK(reqForm.contact_phone)) { setMsg(t.invalidPhone); return; }
+              const area = reqAreaSel === '__other' ? reqAreaOther.trim() : reqAreaSel;
+              if (!area) { setMsg(t.invalidArea); return; }
               if (!validTimes(reqStart, reqEnd)) { setMsg(t.invalidTimes); return; }
               if (!reqForm.owner_password || reqForm.owner_password.length < 8) { setMsg(t.passTooShort); return; }
               const meals = [...joinMeals, ...(joinOther.trim() ? [joinOther.trim()] : [])].join(', ');
-              try { await api('/restaurants/request', { method: 'POST', body: JSON.stringify({ ...reqForm, meals, start_time: reqStart, end_time: reqEnd }) }); setMsg(t.joinSent); setJoinMeals([]); setJoinOther(''); setReqStart(''); setReqEnd(''); setReqForm({ name: '', area: '', contact_email: '', contact_phone: '', owner_password: '' }); } catch (e) { setMsg(e.message); }
+              try { await api('/restaurants/request', { method: 'POST', body: JSON.stringify({ ...reqForm, area, meals, start_time: reqStart, end_time: reqEnd }) }); setMsg(t.joinSent); setJoinMeals([]); setJoinOther(''); setReqStart(''); setReqEnd(''); setReqAreaSel(''); setReqAreaOther(''); setReqForm({ name: '', area: '', contact_email: '', contact_phone: '', owner_password: '', photo: '' }); } catch (e) { setMsg(e.message); }
             }}>{t.sendBtn}</button>
           </div>
         )}
@@ -1348,6 +1579,24 @@ export default function App() {
             <button className="btn ghost" onClick={() => setIsRegister(!isRegister)}>{isRegister ? t.toLogin : t.toRegister}</button>
             <p className="muted">{t.seedNote}</p>
             <p className="muted">{t.ownerSeedNote}</p>
+          </div>
+        )}
+        {/* Staff profile — opened by clicking a staff member in the Finder
+            detail view, the owner team list, or the Admin users list. */}
+        {profileStaff && (
+          <div className="modal-overlay profile-overlay" onClick={() => setProfileStaff(null)}>
+            <div className="card modal profile-modal" onClick={(e) => e.stopPropagation()}>
+              <button className="btn small outline modal-close" onClick={() => setProfileStaff(null)}>✕ {t.detailClose}</button>
+              <div style={{ textAlign: 'center' }}>
+                <Avatar photo={profileStaff.staff.photo} name={profileStaff.staff.name} size={96} />
+                <h2 style={{ marginTop: 10 }}>{profileStaff.staff.name}</h2>
+                <p><span className="badge">{profileStaff.staff.staff_role || t.roleCounter}</span>{' '}<span className="badge">● {t.active}</span></p>
+              </div>
+              <p><b>{t.profileRest}</b> {profileStaff.restaurantName}</p>
+              <p><b>{t.profilePhone}</b> {profileStaff.staff.phone || t.staffPhoneNone}</p>
+              {profileStaff.staff.email && <p><b>{t.profileEmail}</b> {profileStaff.staff.email}</p>}
+              <p><b>{t.profileStatus}</b> {t.active}</p>
+            </div>
           </div>
         )}
       </main>

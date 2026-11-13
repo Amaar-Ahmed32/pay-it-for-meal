@@ -5,6 +5,7 @@
 
 const { DatabaseSync } = require('node:sqlite');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
@@ -29,14 +30,14 @@ CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL,
   role TEXT NOT NULL CHECK(role IN ('donor','staff','admin','owner')),
-  restaurant_id INTEGER, staff_role TEXT, photo TEXT, language TEXT DEFAULT 'en', show_name INTEGER DEFAULT 1,
+  restaurant_id INTEGER, staff_role TEXT, photo TEXT, phone TEXT, language TEXT DEFAULT 'en', show_name INTEGER DEFAULT 1,
   created_at TEXT DEFAULT (datetime('now'))
 );
 CREATE TABLE IF NOT EXISTS restaurants (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL, area TEXT NOT NULL, meal TEXT, timings TEXT,
   verified INTEGER DEFAULT 0, available INTEGER DEFAULT 0, served INTEGER DEFAULT 0, meal_price_pkr INTEGER DEFAULT 250,
-  contact_person TEXT, created_at TEXT DEFAULT (datetime('now'))
+  contact_person TEXT, photo TEXT, created_at TEXT DEFAULT (datetime('now'))
 );
 CREATE TABLE IF NOT EXISTS donations (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -63,7 +64,7 @@ CREATE TABLE IF NOT EXISTS restaurant_requests (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL, area TEXT NOT NULL, meal TEXT, timings TEXT,
   contact_name TEXT, contact_phone TEXT, contact_email TEXT, meals TEXT DEFAULT '[]',
-  owner_password_hash TEXT,
+  owner_password_hash TEXT, photo TEXT,
   status TEXT DEFAULT 'pending',
   created_at TEXT DEFAULT (datetime('now'))
 );
@@ -79,6 +80,7 @@ CREATE TABLE IF NOT EXISTS meal_requests (
   meals_needed INTEGER NOT NULL DEFAULT 1,
   note TEXT DEFAULT '',
   status TEXT DEFAULT 'pending',
+  code TEXT,
   created_at TEXT DEFAULT (datetime('now'))
 );
 CREATE TABLE IF NOT EXISTS serve_receipts (
@@ -274,11 +276,15 @@ for (const [table, col] of [
   ['restaurants', 'contact_email TEXT'],
   ['restaurants', 'contact_phone TEXT'],
   ['restaurants', 'is_open INTEGER DEFAULT 1'],
+  ['restaurants', 'photo TEXT'],
   ['restaurant_requests', 'contact_email TEXT'],
   ['restaurant_requests', 'meals TEXT DEFAULT \'[]\''],
   ['restaurant_requests', 'owner_password_hash TEXT'],
+  ['restaurant_requests', 'photo TEXT'],
   ['served_meals', 'meal_name TEXT'],
   ['served_meals', 'quantity INTEGER DEFAULT 1'],
+  ['users', 'phone TEXT'],
+  ['meal_requests', 'code TEXT'],
 ]) {
   try {
     const name = col.split(' ')[0];
@@ -286,6 +292,22 @@ for (const [table, col] of [
     if (!has) db.exec(`ALTER TABLE ${table} ADD COLUMN ${col}`);
   } catch (e) { console.log('Migration skipped for', table, col, '-', e.message); }
 }
+
+// Request slips (2026-11-13): every meal request gets a short unique code
+// (PIFM-XXXXXX) that the person shows at the counter — no name, no phone,
+// the code is the match key. Rows created before this change have no code;
+// give them one now so owner/staff lists always show a code.
+function newRequestCode() {
+  const ABC = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'; // no 0/O, no 1/I — easy to read aloud
+  let s = '';
+  for (const b of crypto.randomBytes(6)) s += ABC[b % ABC.length];
+  return 'PIFM-' + s;
+}
+try {
+  for (const row of db.prepare("SELECT id FROM meal_requests WHERE code IS NULL OR code=''").all()) {
+    db.prepare('UPDATE meal_requests SET code=? WHERE id=?').run(newRequestCode(), row.id);
+  }
+} catch (e) { console.log('Request-code backfill skipped -', e.message); }
 
 // Migration for restaurant owners (2026-11-10): older DBs have no owner account
 // and no staff_role column. Two steps, existing data untouched:
@@ -305,11 +327,11 @@ try {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL, email TEXT UNIQUE NOT NULL, password_hash TEXT NOT NULL,
         role TEXT NOT NULL CHECK(role IN ('donor','staff','admin','owner')),
-        restaurant_id INTEGER, staff_role TEXT, photo TEXT, language TEXT DEFAULT 'en', show_name INTEGER DEFAULT 1,
+        restaurant_id INTEGER, staff_role TEXT, photo TEXT, phone TEXT, language TEXT DEFAULT 'en', show_name INTEGER DEFAULT 1,
         created_at TEXT DEFAULT (datetime('now'))
       );
-      INSERT INTO users_new (id, name, email, password_hash, role, restaurant_id, staff_role, photo, language, show_name, created_at)
-        SELECT id, name, email, password_hash, role, restaurant_id, NULL, NULL, language, show_name, created_at FROM users;
+      INSERT INTO users_new (id, name, email, password_hash, role, restaurant_id, staff_role, photo, phone, language, show_name, created_at)
+        SELECT id, name, email, password_hash, role, restaurant_id, NULL, NULL, NULL, language, show_name, created_at FROM users;
       DROP TABLE users;
       ALTER TABLE users_new RENAME TO users;
     `);
@@ -371,7 +393,7 @@ function stats() {
   return { donated: r.available + r.served, served: r.served, available: r.available, restaurants: r.total };
 }
 
-module.exports = { db, stats };
+module.exports = { db, stats, newRequestCode };
 
 // If you run "node db.js" on its own, it just proves the database works.
 if (require.main === module) {
