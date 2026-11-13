@@ -881,6 +881,10 @@ export default function App() {
   const areas = [t.allAreas, ...new Set(restaurants.map((r) => r.area))];
   const shown = restaurants.filter((r) => (filter === t.allAreas || r.area === filter) && (!onlyAvailable || r.available > 0));
   const myRest = restaurants.find((r) => r.id === user?.restaurant_id);
+  // Header identity: exactly the name the account was registered with,
+  // plus the role in brackets. Never substituted or looked up elsewhere:
+  // the owner's registered name IS the restaurant name from the join form.
+  const headerName = user ? `${user.name} (${user.role})` : '';
   const myDonated = mine.reduce((s, d) => s + d.quantity, 0);
   const myServed = mine.reduce((s, d) => s + (d.served_qty || 0), 0);
   const dailyOk = stats ? stats.donated - stats.served === stats.available : false;
@@ -911,7 +915,11 @@ export default function App() {
         <div className="lang">
           {['en', 'ur', 'sd'].map((l) => (<button key={l} className={lang === l ? 'active' : ''} onClick={() => setLang(l)}>{l === 'en' ? 'EN' : l === 'ur' ? 'اردو' : 'سنڌي'}</button>))}
           {' '}
-          {user ? <button className="btn tomato" onClick={() => go(dashPage(user))}>{t.dashboard}</button> : <button className="btn tomato" onClick={() => go('auth')}>{t.login}</button>}
+          {user ? (<>
+            <span className="whoami">👤 {headerName}</span>
+            <button className="btn tomato" onClick={() => go(dashPage(user))}>{t.dashboard}</button>
+            <button className="btn outline" onClick={logout}>{t.logout}</button>
+          </>) : <button className="btn tomato" onClick={() => go('auth')}>{t.login}</button>}
         </div>
         <button className="menu-btn" aria-label={t.menu} onClick={() => setMenuOpen(!menuOpen)}>{menuOpen ? '✕' : '☰'}</button>
         </div>
@@ -922,7 +930,6 @@ export default function App() {
         {['home', 'finder', 'donate', 'board', 'transparency'].map((p) => (
           <button key={p} className={page === p ? 'active' : ''} onClick={() => go(p)}>{t[p]}</button>
         ))}
-        {user && <span className="muted">👤 {user.name} ({user.role}){myRest ? ` • ${myRest.name}` : ''}</span>}
         </div>
       </nav>
 

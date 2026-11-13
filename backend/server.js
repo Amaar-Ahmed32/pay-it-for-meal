@@ -567,7 +567,7 @@ app.post('/api/admin/restaurant', auth, requireRole('admin'), (req, res) => {
   // The restaurant's owner account is created at the same time, so the
   // owner can log in with this email + password straight away.
   const ownerInfo = db.prepare("INSERT INTO users (name, email, password_hash, role, restaurant_id) VALUES (?,?,?, 'owner', ?)")
-    .run(`${name} owner`, email, hashPassword(String(owner_password)), info.lastInsertRowid);
+    .run(name, email, hashPassword(String(owner_password)), info.lastInsertRowid);
   res.json({ restaurant: db.prepare('SELECT * FROM restaurants WHERE id=?').get(info.lastInsertRowid), meals: restMeals(info.lastInsertRowid), owner: pubUser(db.prepare('SELECT * FROM users WHERE id=?').get(ownerInfo.lastInsertRowid)) });
 });
 // Admin deletes: restaurant (with its meals, meal requests, receipts and
@@ -655,7 +655,7 @@ app.post('/api/admin/requests/:id/approve', auth, requireRole('admin'), (req, re
       hash = hashPassword(tempPassword);
     }
     db.prepare("INSERT INTO users (name, email, password_hash, role, restaurant_id) VALUES (?,?,?, 'owner', ?)")
-      .run(q.contact_name || `${q.name} owner`, ownerEmail, hash, info.lastInsertRowid);
+      .run(q.name, ownerEmail, hash, info.lastInsertRowid);
     ownerCreated = true;
   }
   db.prepare("UPDATE restaurant_requests SET status='approved' WHERE id=?").run(q.id);

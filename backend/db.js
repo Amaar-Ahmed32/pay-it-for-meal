@@ -113,7 +113,7 @@ function seed() {
   // Owners add/remove their own staff from the Restaurant page.
   const ownerHash = bcrypt.hashSync('Owner123!', 10);
   db.prepare("INSERT INTO users (name, email, password_hash, role, restaurant_id) VALUES (?,?,?, 'owner', 1)")
-    .run('Sindh Biryani House Owner', 'owner@payitforward.school', ownerHash);
+    .run('Sindh Biryani House', 'owner@payitforward.school', ownerHash);
   console.log('Seeded 4 restaurants + admin: admin@payitforward.school / Admin123!');
   console.log('Seeded demo owner: owner@payitforward.school / Owner123! (Sindh Biryani House)');
 }
@@ -328,10 +328,15 @@ try {
     if (r1) {
       const ownerHash = bcrypt.hashSync('Owner123!', 10);
       db.prepare("INSERT INTO users (name, email, password_hash, role, restaurant_id) VALUES (?,?,?, 'owner', 1)")
-        .run('Sindh Biryani House Owner', 'owner@payitforward.school', ownerHash);
+        .run('Sindh Biryani House', 'owner@payitforward.school', ownerHash);
       console.log('Seeded demo owner: owner@payitforward.school / Owner123! (Sindh Biryani House)');
     }
   }
+  // Rename the seeded demo owner (2026-11-13): the header shows the
+  // registered name, and the owner's registered name IS the restaurant
+  // name — 'Sindh Biryani House', not '... Owner'. Only touches the
+  // seeded demo account, nothing else.
+  db.prepare("UPDATE users SET name='Sindh Biryani House' WHERE email='owner@payitforward.school' AND name='Sindh Biryani House Owner'").run();
 } catch (e) { console.log('owner seed migration skipped -', e.message); }
 
 // Migration for sandbox payments (2026-10-31): older databases created before
