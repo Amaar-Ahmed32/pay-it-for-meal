@@ -842,6 +842,7 @@ export default function App() {
     if (!window.confirm(t.mealDeleteConfirm)) return;
     try { await api(`/admin/meals/${id}`, { method: 'DELETE' }); setMsg(t.mealDeleted); loadAdmin(); load(); } catch (e) { setMsg(e.message); }
   };
+  const selRest = restaurants.find((r) => String(r.id) === String(donRest));
   // Donate price: chosen meal on the menu, else the first menu meal, else the restaurant's own price.
   const donMeal = (selRest?.meals || []).find((m) => String(m.id) === String(donMealId)) || (selRest?.meals || [])[0] || null;
   const donPrice = donMeal ? donMeal.price_pkr : (selRest?.meal_price_pkr || 250);
@@ -855,7 +856,6 @@ export default function App() {
   const myDonated = mine.reduce((s, d) => s + d.quantity, 0);
   const myServed = mine.reduce((s, d) => s + (d.served_qty || 0), 0);
   const dailyOk = stats ? stats.donated - stats.served === stats.available : false;
-  const selRest = restaurants.find((r) => String(r.id) === String(donRest));
   // Anonymous meal-request form (no login, no name, no phone) — shown on
   // Home and on the Finder. The restaurant sees only a number and a time.
   const requestFormCard = (
