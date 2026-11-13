@@ -17,6 +17,9 @@ const MEAL_OPTIONS = ['Chicken Biryani', 'Beef Biryani', 'Daal', 'Chicken Karahi
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const validEmail = (e) => typeof e === 'string' && EMAIL_RE.test(e.trim());
 const validPhonePK = (p) => /^03\d{9}$/.test(String(p || '').replace(/[\s-]/g, ''));
+// Opening times are two <input type="time"> values ("HH:MM"); end must be
+// after start, same day. String compare works for 24-hour HH:MM times.
+const validTimes = (a, b) => !!a && !!b && b > a;
 
 // ---------- FULL TRANSLATION DICTIONARIES ----------
 // {n} is replaced at render time with a number. Restaurant names, "Pay It
@@ -104,7 +107,7 @@ const T = {
     chooseRest: 'Choose restaurant…', newPrice: 'New meal price (Rs 50–2000)', savePrice: 'Save price', priceSaved: 'Meal price updated.',
     createStaffTitle: 'Create staff / admin account', roleRestLabel: 'Role + linked restaurant (staff must have one)',
     createStaffBtn: 'Create staff account', staffCreated: 'Staff account created.', 
-    addRestTitle: 'Add a restaurant', restName: 'Name', restArea: 'Area', restMeal: 'Meal', restTimings: 'Timings', mealPrice: 'Meal price (Rs)',
+    addRestTitle: 'Add a restaurant', restName: 'Name', restArea: 'Area', mealPrice: 'Meal price (Rs)',
     addRestBtn: 'Add restaurant (unverified)', restAdded: 'Restaurant added (unverified until you Verify it).',
     boardDonors: 'Top donors (by meals served)', boardRest: 'Top restaurants', noDonors: 'No donors yet.',
     boardDonated: '{d} donated, {s} served',
@@ -124,6 +127,13 @@ const T = {
     emailLabel: 'Email', phoneLabel: 'Phone (03XX-XXXXXXX)',
     invalidEmail: 'Please enter a valid email address (e.g. name@example.com)',
     invalidPhone: 'Please enter a valid Pakistani mobile number (e.g. 0300-1234567)',
+    startTime: 'Start time', endTime: 'End time',
+    ownerPassLabel: 'Password for your restaurant dashboard', ownerPassNote: 'You will log in with your email and this password after approval.',
+    passTooShort: 'Password must be at least 8 characters',
+    invalidTimes: 'Please pick a start time and an end time — the end time must be after the start time',
+    ownerCreated: 'Owner account created — the owner can now log in with {e}',
+    ownerTempPass: 'Temporary owner password — please share it with the owner: {p}',
+    ownerExists: 'An account with that email already exists — no new owner account was created',
     menuTitle: 'Menu', menuNone: 'No menu yet — add your first meal below.',
     mealName: 'Meal name', mealPrice: 'Price (Rs)', addMealBtn: 'Add meal',
     mealAdded: 'Meal added.', mealUpdated: 'Meal updated.', mealDeleted: 'Meal deleted.',
@@ -158,8 +168,8 @@ const T = {
     serveMealLabel: 'Which meal was served?', serveReceiptMsg: 'Served! Receipt saved.',
     
     anon: 'Anonymous donor',
-    joinTitle: 'Join as a restaurant', joinNote: 'Your request starts UNVERIFIED and hidden from the public Finder until admin approves it. Checklist: name, area, meal and timings, and you agree to serve without questions.',
-    contactLabel: 'Contact name / phone', sendBtn: 'Send request', joinSent: 'Request sent! Admin will review it. It will NOT show publicly until approved.',
+    joinTitle: 'Join as a restaurant', joinNote: 'Your request starts UNVERIFIED and hidden from the public Finder until admin approves it. Checklist: name, area, the meals you serve and your opening times, and you agree to serve without questions.',
+    sendBtn: 'Send request', joinSent: 'Request sent! Admin will review it. It will NOT show publicly until approved.',
     authTitle: 'Login / Sign Up', authNote: 'Public sign-up creates a donor account. Staff and admin accounts are created by an admin.',
     authName: 'Full name', authEmail: 'Email', authPass: 'Password (min 6 characters, stored hashed)',
     createAccount: 'Create donor account', loginBtn: 'Login', toLogin: 'Already have an account? Login', toRegister: 'New here? Create an account',
@@ -253,7 +263,7 @@ const T = {
     chooseRest: 'ریسٹورنٹ منتخب کریں…', newPrice: 'کھانے کی نئی قیمت (50–2000 روپے)', savePrice: 'قیمت محفوظ کریں', priceSaved: 'کھانے کی قیمت اپ ڈیٹ ہو گئی۔',
     createStaffTitle: 'اسٹاف / ایڈمن اکاؤنٹ بنائیں', roleRestLabel: 'کردار + منسلک ریسٹورنٹ (اسٹاف کے لیے ضروری)',
     createStaffBtn: 'اسٹاف اکاؤنٹ بنائیں', staffCreated: 'اسٹاف اکاؤنٹ بن گیا۔', 
-    addRestTitle: 'ریسٹورنٹ شامل کریں', restName: 'نام', restArea: 'علاقہ', restMeal: 'کھانا', restTimings: 'اوقات', mealPrice: 'کھانے کی قیمت (روپے)',
+    addRestTitle: 'ریسٹورنٹ شامل کریں', restName: 'نام', restArea: 'علاقہ', mealPrice: 'کھانے کی قیمت (روپے)',
     addRestBtn: 'ریسٹورنٹ شامل کریں (غیر تصدیق شدہ)', restAdded: 'ریسٹورنٹ شامل کر دیا گیا (تصدیق تک غیر تصدیق شدہ)۔',
     boardDonors: 'سب سے زیادہ عطیہ دہندگان (پیش شدہ کھانوں کے حساب سے)', boardRest: 'سب سے زیادہ ریسٹورنٹ', noDonors: 'ابھی کوئی عطیہ دہندہ نہیں۔',
     boardDonated: '{d} عطیہ، {s} پیش شدہ',
@@ -273,6 +283,13 @@ const T = {
     emailLabel: 'ای میل', phoneLabel: 'فون (03XX-XXXXXXX)',
     invalidEmail: 'براہ کرم درست ای میل لکھیں (مثلاً name@example.com)',
     invalidPhone: 'براہ کرم درست پاکستانی موبائل نمبر لکھیں (مثلاً 0300-1234567)',
+    startTime: 'شروع کا وقت', endTime: 'ختم کا وقت',
+    ownerPassLabel: 'اپنے ریسٹورنٹ ڈیش بورڈ کا پاس ورڈ', ownerPassNote: 'منظوری کے بعد آپ اپنے ای میل اور اس پاس ورڈ سے لاگ ان کریں گے۔',
+    passTooShort: 'پاس ورڈ کم از کم 8 حروف کا ہونا چاہیے',
+    invalidTimes: 'براہ کرم شروع اور ختم کا وقت منتخب کریں — ختم کا وقت شروع کے بعد ہونا چاہیے',
+    ownerCreated: 'مالک کا اکاؤنٹ بن گیا — مالک اب {e} سے لاگ ان کر سکتا ہے',
+    ownerTempPass: 'مالک کا عارضی پاس ورڈ — براہ کرم مالک کو بتائیں: {p}',
+    ownerExists: 'اس ای میل کا اکاؤنٹ پہلے سے موجود ہے — نیا مالک اکاؤنٹ نہیں بنایا گیا',
     menuTitle: 'مینیو', menuNone: 'ابھی کوئی مینیو نہیں — نیچے پہلا کھانا شامل کریں۔',
     mealName: 'کھانے کا نام', mealPrice: 'قیمت (روپے)', addMealBtn: 'کھانا شامل کریں',
     mealAdded: 'کھانا شامل کر دیا گیا۔', mealUpdated: 'کھانا اپ ڈیٹ ہو گیا۔', mealDeleted: 'کھانا حذف کر دیا گیا۔',
@@ -307,8 +324,8 @@ const T = {
     serveMealLabel: 'کون سا کھانا پیش کیا گیا؟', serveReceiptMsg: 'پیش کر دیا! رسید محفوظ ہو گئی۔',
     
     anon: 'Anonymous donor',
-    joinTitle: 'ریسٹورنٹ بنیں', joinNote: 'آپ کی درخواست غیر تصدیق شدہ شروع ہوتی ہے اور ایڈمن کی منظوری تک عوامی Finder میں چھپی رہتی ہے۔ چیک لسٹ: نام، علاقہ، کھانا اور اوقات، اور آپ بغیر سوال پوچھے پیش کرنے پر راضی ہیں۔',
-    contactLabel: 'رابطہ نام / فون', sendBtn: 'درخواست بھیجیں', joinSent: 'درخواست بھیج دی گئی! ایڈمن جائزہ لے گا۔ منظوری تک یہ عوامی طور پر نہیں دکھائی دے گی۔',
+    joinTitle: 'ریسٹورنٹ بنیں', joinNote: 'آپ کی درخواست غیر تصدیق شدہ شروع ہوتی ہے اور ایڈمن کی منظوری تک عوامی Finder میں چھپی رہتی ہے۔ چیک لسٹ: نام، علاقہ، جو کھانے آپ پیش کرتے ہیں اور آپ کے کھلنے کے اوقات، اور آپ بغیر سوال پوچھے پیش کرنے پر راضی ہیں۔',
+    sendBtn: 'درخواست بھیجیں', joinSent: 'درخواست بھیج دی گئی! ایڈمن جائزہ لے گا۔ منظوری تک یہ عوامی طور پر نہیں دکھائی دے گی۔',
     authTitle: 'لاگ ان / سائن اپ', authNote: 'عوامی سائن اپ سے عطیہ دہندہ کا اکاؤنٹ بنتا ہے۔ اسٹاف اور ایڈمن اکاؤنٹ ایڈمن بناتا ہے۔',
     authName: 'پورا نام', authEmail: 'ای میل', authPass: 'پاس ورڈ (کم از کم 6 حروف، ہیش کر کے محفوظ)',
     createAccount: 'عطیہ دہندہ اکاؤنٹ بنائیں', loginBtn: 'لاگ ان', toLogin: 'پہلے سے اکاؤنٹ ہے؟ لاگ ان کریں', toRegister: 'نئے ہیں؟ اکاؤنٹ بنائیں',
@@ -402,7 +419,7 @@ const T = {
     chooseRest: 'ريسٽورنٽ چونڊيو…', newPrice: 'کاڌي جي نئين قيمت (50–2000 رپيا)', savePrice: 'قيمت محفوظ ڪريو', priceSaved: 'کاڌي جي قيمت اپڊيٽ ٿي وئي.',
     createStaffTitle: 'اسٽاف / ايڊمن اڪائونٽ ٺاهيو', roleRestLabel: 'ڪردار + ڳنڍيل ريسٽورنٽ (اسٽاف لاءِ ضروري)',
     createStaffBtn: 'اسٽاف اڪائونٽ ٺاهيو', staffCreated: 'اسٽاف اڪائونٽ ٺهي ويو.', 
-    addRestTitle: 'ريسٽورنٽ شامل ڪريو', restName: 'نالو', restArea: 'علائقو', restMeal: 'کاڌو', restTimings: 'وقت', mealPrice: 'کاڌي جي قيمت (رپيا)',
+    addRestTitle: 'ريسٽورنٽ شامل ڪريو', restName: 'نالو', restArea: 'علائقو', mealPrice: 'کاڌي جي قيمت (رپيا)',
     addRestBtn: 'ريسٽورنٽ شامل ڪريو (غير تصديق ٿيل)', restAdded: 'ريسٽورنٽ شامل ڪيو ويو (تصديق تائين غير تصديق ٿيل).',
     boardDonors: 'سڀ کان وڌيڪ عطيو ڏيندڙ (پيش ٿيل کاڌن موجب)', boardRest: 'سڀ کان وڌيڪ ريسٽورنٽ', noDonors: 'هينئر تائين ڪو عطيو ڏيندڙ ناهي.',
     boardDonated: '{d} عطيا، {s} پيش ٿيل',
@@ -422,6 +439,13 @@ const T = {
     emailLabel: 'اي ميل', phoneLabel: 'فون (03XX-XXXXXXX)',
     invalidEmail: 'مهرباني ڪري صحيح اي ميل لکو (مثال name@example.com)',
     invalidPhone: 'مهرباني ڪري صحيح پاڪستاني موبائل نمبر لکو (مثال 0300-1234567)',
+    startTime: 'شروعات جو وقت', endTime: 'ختم ٿيڻ جو وقت',
+    ownerPassLabel: 'پنهنجي ريسٽورنٽ ڊيش بورڊ جو پاسورڊ', ownerPassNote: 'منظوري کان پوءِ توهان پنهنجي اي ميل ۽ هن پاسورڊ سان لاگ ان ڪندا.',
+    passTooShort: 'پاسورڊ گهٽ ۾ گهٽ 8 اکرن جو هجڻ گهرجي',
+    invalidTimes: 'مهرباني ڪري شروعات ۽ ختم ٿيڻ جو وقت چونڊيو — ختم ٿيڻ جو وقت شروعات کان پوءِ هجڻ گهرجي',
+    ownerCreated: 'مالڪ جو اڪائونٽ ٺهي ويو — مالڪ هاڻي {e} سان لاگ ان ڪري سگهي ٿو',
+    ownerTempPass: 'مالڪ جو عارضي پاسورڊ — مهرباني ڪري مالڪ کي ٻڌايو: {p}',
+    ownerExists: 'هن اي ميل جو اڪائونٽ اڳ ۾ ئي موجود آهي — نئون مالڪ اڪائونٽ نه ٺاهيو ويو',
     menuTitle: 'مينيو', menuNone: 'هينئر تائين ڪو مينيو ناهي — هيٺ پهريون کاڌو شامل ڪريو.',
     mealName: 'کاڌي جو نالو', mealPrice: 'قيمت (رپيا)', addMealBtn: 'کاڌو شامل ڪريو',
     mealAdded: 'کاڌو شامل ڪيو ويو.', mealUpdated: 'کاڌو اپڊيٽ ٿي ويو.', mealDeleted: 'کاڌو حذف ڪيو ويو.',
@@ -456,8 +480,8 @@ const T = {
     serveMealLabel: 'ڪهڙو کاڌو پيش ڪيو ويو؟', serveReceiptMsg: 'پيش ڪيو ويو! رسيد محفوظ ٿي وئي.',
     
     anon: 'Anonymous donor',
-    joinTitle: 'ريسٽورنٽ ٿيو', joinNote: 'توهان جي درخواست غير تصديق ٿيل شروع ٿئي ٿي ۽ ايڊمن جي منظوري تائين عوامي Finder ۾ لڪيل رهي ٿي. چيڪ لسٽ: نالو، علائقو، کاڌو ۽ وقت، ۽ توهان بغير سوال پڇڻ جي پيش ڪرڻ تي راضي آهيو.',
-    contactLabel: 'رابطو نالو / فون', sendBtn: 'درخواست موڪليو', joinSent: 'درخواست موڪلي وئي! ايڊمن جائزو وٺندو. منظوري تائين هي عوامي طور تي نه ڏيکاري ويندي.',
+    joinTitle: 'ريسٽورنٽ ٿيو', joinNote: 'توهان جي درخواست غير تصديق ٿيل شروع ٿئي ٿي ۽ ايڊمن جي منظوري تائين عوامي Finder ۾ لڪيل رهي ٿي. چيڪ لسٽ: نالو، علائقو، جيڪي کاڌا توهان پيش ڪندا آهيو ۽ توهان جي کلڻ جا وقت، ۽ توهان بغير سوال پڇڻ جي پيش ڪرڻ تي راضي آهيو.',
+    sendBtn: 'درخواست موڪليو', joinSent: 'درخواست موڪلي وئي! ايڊمن جائزو وٺندو. منظوري تائين هي عوامي طور تي نه ڏيکاري ويندي.',
     authTitle: 'لاگ ان / سائن اپ', authNote: 'عوامي سائن اپ سان عطيو ڏيندڙ جو اڪائونٽ ٺهي ٿو. اسٽاف ۽ ايڊمن اڪائونٽ ايڊمن ٺاهي ٿو.',
     authName: 'پورو نالو', authEmail: 'اي ميل', authPass: 'پاس ورڊ (گهٽ ۾ گهٽ 6 اکر، هيش ڪري محفوظ)',
     createAccount: 'عطيو ڏيندڙ اڪائونٽ ٺاهيو', loginBtn: 'لاگ ان', toLogin: 'اڳ ئي اڪائونٽ آهي؟ لاگ ان ڪريو', toRegister: 'نوان آهيو؟ اڪائونٽ ٺاهيو',
@@ -619,9 +643,13 @@ export default function App() {
   const [adminData, setAdminData] = useState(null);
   const [report, setReport] = useState(null);
   const [staffForm, setStaffForm] = useState({ name: '', email: '', password: '', restaurant_id: '', photo: '' });
-  const [newRest, setNewRest] = useState({ name: '', area: '', meal: '', timings: '', meal_price_pkr: '', contact_email: '', contact_phone: '' });
+  const [newRest, setNewRest] = useState({ name: '', area: '', meal_price_pkr: '', contact_email: '', contact_phone: '', owner_password: '' });
+  const [newStart, setNewStart] = useState('');
+  const [newEnd, setNewEnd] = useState('');
   const [priceEdit, setPriceEdit] = useState({ id: '', price: '' });
-  const [reqForm, setReqForm] = useState({ name: '', area: '', meal: '', timings: '', contact_name: '', contact_phone: '', contact_email: '' });
+  const [reqForm, setReqForm] = useState({ name: '', area: '', contact_email: '', contact_phone: '', owner_password: '' });
+  const [reqStart, setReqStart] = useState('');
+  const [reqEnd, setReqEnd] = useState('');
   // Restaurant owner team
   const [team, setTeam] = useState(null);
   const [ownerForm, setOwnerForm] = useState({ name: '', email: '', password: '', staffRole: 'Counter', photo: '' });
@@ -1151,7 +1179,7 @@ export default function App() {
               <div className="grid3">
                 <div className="card"><h3>{t.dailyTitle}</h3><p>{t.dailyText}</p><p>{stats.donated} − {stats.served} <span className={dailyOk ? 'badge' : 'badge warn'}>= {stats.available}, {dailyOk ? t.matches : t.mismatch}</span></p><p className="muted">{fmt(t.overviewLine, { u: adminData.overview.users, d: adminData.overview.donations, p: adminData.overview.pendingRequests })}</p></div>
                 <div className="card"><h3>{t.verifyTitle}</h3>{adminData.all.filter((r) => !r.verified).map((r) => (<p key={r.id}>{r.name} — {r.area} <button className="btn small tomato" onClick={async () => { await api('/admin/verify', { method: 'POST', body: JSON.stringify({ restaurantId: r.id }) }); loadAdmin(); load(); }}>{t.verifyBtn}</button></p>))}{adminData.all.filter((r) => !r.verified).length === 0 && <p className="muted">{fmt(t.noUnverified, { n: adminData.all.length })}</p>}</div>
-                <div className="card"><h3>{t.reqTitle}</h3>{adminData.requests.map((q) => (<p key={q.id}>{q.name} — {q.area} ({q.status}) {q.status === 'pending' && (<><button onClick={async () => { await api(`/admin/requests/${q.id}/approve`, { method: 'POST' }); loadAdmin(); load(); }}>{t.approveBtn}</button>{' '}<button onClick={async () => { await api(`/admin/requests/${q.id}/reject`, { method: 'POST' }); loadAdmin(); }}>{t.rejectBtn}</button></>)}</p>))}{adminData.requests.length === 0 && <p className="muted">{t.noReq}</p>}</div>
+                <div className="card"><h3>{t.reqTitle}</h3>{adminData.requests.map((q) => (<p key={q.id}>{q.name} — {q.area} ({q.status}) {q.status === 'pending' && (<><button onClick={async () => { try { const r = await api(`/admin/requests/${q.id}/approve`, { method: 'POST' }); if (r.tempPassword) setMsg(fmt(t.ownerTempPass, { p: r.tempPassword })); else if (r.ownerCreated) setMsg(fmt(t.ownerCreated, { e: r.ownerEmail })); else setMsg(r.ownerNote || t.ownerExists); } catch (e) { setMsg(e.message); } loadAdmin(); load(); }}>{t.approveBtn}</button>{' '}<button onClick={async () => { await api(`/admin/requests/${q.id}/reject`, { method: 'POST' }); loadAdmin(); }}>{t.rejectBtn}</button></>)}</p>))}{adminData.requests.length === 0 && <p className="muted">{t.noReq}</p>}</div>
               </div>
               {report && report.daily && (
                 <div className="card"><h3>{t.gTitle}</h3>
@@ -1221,10 +1249,12 @@ export default function App() {
                 <div className="card"><h3>{t.addRestTitle}</h3>
                   <label>{t.restName}</label><input value={newRest.name} onChange={(e) => setNewRest({ ...newRest, name: e.target.value })} />
                   <label>{t.restArea}</label><input value={newRest.area} onChange={(e) => setNewRest({ ...newRest, area: e.target.value })} />
-                  <label>{t.restMeal}</label><input value={newRest.meal} onChange={(e) => setNewRest({ ...newRest, meal: e.target.value })} />
-                  <label>{t.restTimings}</label><input value={newRest.timings} onChange={(e) => setNewRest({ ...newRest, timings: e.target.value })} />
+                  <label>{t.startTime}</label><input type="time" value={newStart} onChange={(e) => setNewStart(e.target.value)} />
+                  <label>{t.endTime}</label><input type="time" value={newEnd} onChange={(e) => setNewEnd(e.target.value)} />
                   <label>{t.emailLabel}</label><input type="email" value={newRest.contact_email || ''} onChange={(e) => setNewRest({ ...newRest, contact_email: e.target.value })} placeholder="name@example.com" />
                   <label>{t.phoneLabel}</label><input value={newRest.contact_phone || ''} onChange={(e) => setNewRest({ ...newRest, contact_phone: e.target.value })} placeholder="0300-1234567" />
+                  <label>{t.ownerPassLabel}</label><input type="password" value={newRest.owner_password || ''} onChange={(e) => setNewRest({ ...newRest, owner_password: e.target.value })} />
+                  <p className="muted">{t.ownerPassNote}</p>
                   <label>{t.mealOptions}</label>
                   <div className="meal-checks">{MEAL_OPTIONS.map((m) => (<label key={m} className="meal-check"><input type="checkbox" checked={adminMealSel.includes(m)} onChange={(e) => setAdminMealSel(e.target.checked ? [...adminMealSel, m] : adminMealSel.filter((x) => x !== m))} /> {m}</label>))}</div>
                   <label>{t.mealOther}</label><input value={adminOther} onChange={(e) => setAdminOther(e.target.value)} placeholder="e.g. Haleem" />
@@ -1232,8 +1262,10 @@ export default function App() {
                   <button className="btn tomato" onClick={async () => {
                     if (!validEmail(newRest.contact_email)) { setMsg(t.invalidEmail); return; }
                     if (!validPhonePK(newRest.contact_phone)) { setMsg(t.invalidPhone); return; }
+                    if (!validTimes(newStart, newEnd)) { setMsg(t.invalidTimes); return; }
+                    if (!newRest.owner_password || newRest.owner_password.length < 8) { setMsg(t.passTooShort); return; }
                     const meals = [...adminMealSel, ...(adminOther.trim() ? [adminOther.trim()] : [])].map((name) => ({ name, price: parseInt(newRest.meal_price_pkr, 10) || 250 }));
-                    try { await api('/admin/restaurant', { method: 'POST', body: JSON.stringify({ ...newRest, contact_person: '', meals }) }); setMsg(t.restAdded); setAdminMealSel([]); setAdminOther(''); loadAdmin(); load(); } catch (e) { setMsg(e.message); }
+                    try { const r = await api('/admin/restaurant', { method: 'POST', body: JSON.stringify({ ...newRest, contact_person: '', meals, start_time: newStart, end_time: newEnd }) }); setMsg(fmt(t.ownerCreated, { e: r.owner.email })); setAdminMealSel([]); setAdminOther(''); setNewStart(''); setNewEnd(''); setNewRest({ name: '', area: '', meal_price_pkr: '', contact_email: '', contact_phone: '', owner_password: '' }); loadAdmin(); load(); } catch (e) { setMsg(e.message); }
                   }}>{t.addRestBtn}</button>
                 </div>
               </div>
@@ -1278,19 +1310,22 @@ export default function App() {
             <p className="muted">{t.joinNote}</p>
             <label>{t.restName}</label><input value={reqForm.name} onChange={(e) => setReqForm({ ...reqForm, name: e.target.value })} />
             <label>{t.restArea}</label><input value={reqForm.area} onChange={(e) => setReqForm({ ...reqForm, area: e.target.value })} />
-            <label>{t.restMeal}</label><input value={reqForm.meal} onChange={(e) => setReqForm({ ...reqForm, meal: e.target.value })} />
-            <label>{t.restTimings}</label><input value={reqForm.timings} onChange={(e) => setReqForm({ ...reqForm, timings: e.target.value })} />
-            <label>{t.contactLabel}</label><input value={reqForm.contact_name} onChange={(e) => setReqForm({ ...reqForm, contact_name: e.target.value })} />
+            <label>{t.startTime}</label><input type="time" value={reqStart} onChange={(e) => setReqStart(e.target.value)} />
+            <label>{t.endTime}</label><input type="time" value={reqEnd} onChange={(e) => setReqEnd(e.target.value)} />
             <label>{t.emailLabel}</label><input type="email" value={reqForm.contact_email} onChange={(e) => setReqForm({ ...reqForm, contact_email: e.target.value })} placeholder="name@example.com" />
             <label>{t.phoneLabel}</label><input value={reqForm.contact_phone} onChange={(e) => setReqForm({ ...reqForm, contact_phone: e.target.value })} placeholder="0300-1234567" />
+            <label>{t.ownerPassLabel}</label><input type="password" value={reqForm.owner_password} onChange={(e) => setReqForm({ ...reqForm, owner_password: e.target.value })} />
+            <p className="muted">{t.ownerPassNote}</p>
             <label>{t.mealOptions}</label>
             <div className="meal-checks">{MEAL_OPTIONS.map((m) => (<label key={m} className="meal-check"><input type="checkbox" checked={joinMeals.includes(m)} onChange={(e) => setJoinMeals(e.target.checked ? [...joinMeals, m] : joinMeals.filter((x) => x !== m))} /> {m}</label>))}</div>
             <label>{t.mealOther}</label><input value={joinOther} onChange={(e) => setJoinOther(e.target.value)} placeholder="e.g. Haleem" />
             <button className="btn tomato" onClick={async () => {
               if (!validEmail(reqForm.contact_email)) { setMsg(t.invalidEmail); return; }
               if (!validPhonePK(reqForm.contact_phone)) { setMsg(t.invalidPhone); return; }
+              if (!validTimes(reqStart, reqEnd)) { setMsg(t.invalidTimes); return; }
+              if (!reqForm.owner_password || reqForm.owner_password.length < 8) { setMsg(t.passTooShort); return; }
               const meals = [...joinMeals, ...(joinOther.trim() ? [joinOther.trim()] : [])].join(', ');
-              try { await api('/restaurants/request', { method: 'POST', body: JSON.stringify({ ...reqForm, meals }) }); setMsg(t.joinSent); setJoinMeals([]); setJoinOther(''); } catch (e) { setMsg(e.message); }
+              try { await api('/restaurants/request', { method: 'POST', body: JSON.stringify({ ...reqForm, meals, start_time: reqStart, end_time: reqEnd }) }); setMsg(t.joinSent); setJoinMeals([]); setJoinOther(''); setReqStart(''); setReqEnd(''); setReqForm({ name: '', area: '', contact_email: '', contact_phone: '', owner_password: '' }); } catch (e) { setMsg(e.message); }
             }}>{t.sendBtn}</button>
           </div>
         )}

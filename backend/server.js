@@ -7,6 +7,7 @@
 
 const express = require('express');
 const cors = require('cors');
+const crypto = require('crypto');
 const { db, stats } = require('./db');
 const { hashPassword, checkPassword, sign, auth, requireRole, pubUser } = require('./auth');
 const { MEAL_PRICE_PKR, createTxnRef, jazzcashCheckoutFields, hasJazzcashSandboxKeys, hasEasypaisaSandboxKeys } = require('./payments');
@@ -73,6 +74,23 @@ function serveMeal(r, staffUserId, meal) {
   const receipt = db.prepare('SELECT * FROM serve_receipts WHERE id=?').get(info.lastInsertRowid);
   return { restaurant: db.prepare('SELECT * FROM restaurants WHERE id=?').get(r.id), receipt };
 }
+// Opening times: the forms send Start/End as 24-hour "HH:MM" (<input type="time">).
+// Stored as "9:00 AM - 10:00 PM" to match the existing seed data style.
+// End must be after start, same day — overnight hours are not supported yet.
+const validTime = (s) => typeof s === 'string' && /^([01]\d|2[0-3]):[0-5]\d$/.test(s);
+function to12h(hhmm) {
+  const [h, m] = hhmm.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const h12 = h % 12 === 0 ? 12 : h % 12;
+  return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+}
+function composeTimings(start, end) {
+  if (!validTime(start) || !validTime(end)) return null;
+  if (end <= start) return null; // string compare works for HH:MM 24-hour times
+  return `${to12h(start)} - ${to12h(end)}`;
+}
+// A request row must never leak its owner password hash to any client.
+const stripReqHash = (q) => { if (!q) return q; const { owner_password_hash, ...rest } = q; return rest; };
 // Public-safe staff list for one restaurant (photo, name, role only — no email).
 const publicStaff = (rid) => db.prepare("SELECT id, name, staff_role, photo FROM users WHERE role='staff' AND restaurant_id=? ORDER BY id").all(rid);
 // A request older than 24h counts as Expired (computed, no background job).
@@ -161,16 +179,28 @@ app.get('/api/activity', (req, res) => {
 });
 // Anyone can ask a restaurant to join. It starts UNVERIFIED and hidden until admin approves.
 // Email and phone are required and validated (Pakistani mobile 03XX-XXXXXXX),
-// and the restaurant picks which meals it serves (checkboxes + Other).
+// the restaurant picks which meals it serves (checkboxes + Other), picks
+// opening Start/End times, and sets a password for its owner dashboard.
+// The password is hashed with bcrypt — never stored in plain text — and
+// on approval the owner account is created from that hash automatically.
+// contact_name/contact_phone/meal are no longer sent by the forms; they are
+// accepted and ignored here so an old cached page still works.
 app.post('/api/restaurants/request', (req, res) => {
-  const { name, area, meal, timings, contact_name, contact_phone, contact_email, meals } = req.body || {};
+  const { name, area, meal, timings, start_time, end_time, contact_name, contact_phone, contact_email, meals, owner_password } = req.body || {};
   if (!name || !area) return res.status(400).json({ error: 'Restaurant name and area are required' });
   if (!validEmail(contact_email)) return res.status(400).json({ error: 'A valid email address is required (e.g. name@example.com)' });
   if (!validPhonePK(contact_phone)) return res.status(400).json({ error: 'A valid Pakistani mobile is required (e.g. 0300-1234567)' });
+  let timingsText = (timings || '').trim();
+  if (start_time || end_time) {
+    const composed = composeTimings(start_time, end_time);
+    if (!composed) return res.status(400).json({ error: 'Pick a start time and an end time — the end time must be after the start time' });
+    timingsText = composed;
+  }
+  if (!owner_password || String(owner_password).length < 8) return res.status(400).json({ error: 'A dashboard password of at least 8 characters is required' });
   const mealList = parseMeals(meals, 250);
-  const info = db.prepare('INSERT INTO restaurant_requests (name, area, meal, timings, contact_name, contact_phone, contact_email, meals) VALUES (?,?,?,?,?,?,?,?)')
-    .run(name, area, meal || '', timings || '', contact_name || '', String(contact_phone).trim(), String(contact_email).trim().toLowerCase(), JSON.stringify(mealList));
-  res.json({ request: db.prepare('SELECT * FROM restaurant_requests WHERE id=?').get(info.lastInsertRowid) });
+  const info = db.prepare('INSERT INTO restaurant_requests (name, area, meal, timings, contact_name, contact_phone, contact_email, meals, owner_password_hash) VALUES (?,?,?,?,?,?,?,?,?)')
+    .run(name, area, meal || '', timingsText, contact_name || '', String(contact_phone).trim(), String(contact_email).trim().toLowerCase(), JSON.stringify(mealList), hashPassword(String(owner_password)));
+  res.json({ request: stripReqHash(db.prepare('SELECT * FROM restaurant_requests WHERE id=?').get(info.lastInsertRowid)) });
 });
 
 // ---------- Accounts ----------
@@ -515,17 +545,30 @@ app.post('/api/admin/verify', auth, requireRole('admin'), (req, res) => {
   res.json({ restaurant: db.prepare('SELECT * FROM restaurants WHERE id=?').get(r.id) });
 });
 app.post('/api/admin/restaurant', auth, requireRole('admin'), (req, res) => {
-  const { name, area, meal, timings, contact_person, contact_email, contact_phone, meal_price_pkr, meals } = req.body || {};
+  const { name, area, meal, timings, start_time, end_time, contact_person, contact_email, contact_phone, meal_price_pkr, meals, owner_password } = req.body || {};
   if (!name || !area) return res.status(400).json({ error: 'Name and area are required' });
   if (!validEmail(contact_email)) return res.status(400).json({ error: 'A valid email address is required (e.g. name@example.com)' });
   if (!validPhonePK(contact_phone)) return res.status(400).json({ error: 'A valid Pakistani mobile is required (e.g. 0300-1234567)' });
+  let timingsText = (timings || '').trim() || '12:00 PM - 9:00 PM';
+  if (start_time || end_time) {
+    const composed = composeTimings(start_time, end_time);
+    if (!composed) return res.status(400).json({ error: 'Pick a start time and an end time — the end time must be after the start time' });
+    timingsText = composed;
+  }
+  if (!owner_password || String(owner_password).length < 8) return res.status(400).json({ error: 'A dashboard password of at least 8 characters is required for the owner' });
+  const email = String(contact_email).trim().toLowerCase();
+  if (db.prepare('SELECT id FROM users WHERE email=?').get(email)) return res.status(400).json({ error: 'That email already has an account — pick a different owner email' });
   const price = parseInt(meal_price_pkr, 10);
   const finalPrice = (!price || price < 50 || price > 2000) ? 250 : price;
   const info = db.prepare('INSERT INTO restaurants (name, area, meal, timings, contact_person, contact_email, contact_phone, meal_price_pkr) VALUES (?,?,?,?,?,?,?,?)')
-    .run(name, area, meal || 'Meal of the day', timings || '12:00 PM - 9:00 PM', contact_person || '', String(contact_email).trim().toLowerCase(), String(contact_phone).trim(), finalPrice);
+    .run(name, area, meal || 'Meal of the day', timingsText, contact_person || '', email, String(contact_phone).trim(), finalPrice);
   const mealList = parseMeals(meals, finalPrice);
   for (const m of mealList) db.prepare('INSERT INTO restaurant_meals (restaurant_id, name, price_pkr) VALUES (?,?,?)').run(info.lastInsertRowid, m.name, m.price);
-  res.json({ restaurant: db.prepare('SELECT * FROM restaurants WHERE id=?').get(info.lastInsertRowid), meals: restMeals(info.lastInsertRowid) });
+  // The restaurant's owner account is created at the same time, so the
+  // owner can log in with this email + password straight away.
+  const ownerInfo = db.prepare("INSERT INTO users (name, email, password_hash, role, restaurant_id) VALUES (?,?,?, 'owner', ?)")
+    .run(`${name} owner`, email, hashPassword(String(owner_password)), info.lastInsertRowid);
+  res.json({ restaurant: db.prepare('SELECT * FROM restaurants WHERE id=?').get(info.lastInsertRowid), meals: restMeals(info.lastInsertRowid), owner: pubUser(db.prepare('SELECT * FROM users WHERE id=?').get(ownerInfo.lastInsertRowid)) });
 });
 // Admin deletes: restaurant (with its meals, meal requests, receipts and
 // staff), a user account, or a single meal. Every delete is confirmed in
@@ -584,7 +627,7 @@ app.post('/api/admin/restaurants/:id/toggle-open', auth, requireRole('admin'), (
   res.json({ restaurant: db.prepare('SELECT * FROM restaurants WHERE id=?').get(r.id) });
 });
 app.get('/api/admin/requests', auth, requireRole('admin'), (req, res) => {
-  res.json(db.prepare('SELECT * FROM restaurant_requests ORDER BY id DESC').all());
+  res.json(db.prepare('SELECT * FROM restaurant_requests ORDER BY id DESC').all().map(stripReqHash));
 });
 app.post('/api/admin/requests/:id/approve', auth, requireRole('admin'), (req, res) => {
   const q = db.prepare('SELECT * FROM restaurant_requests WHERE id=?').get(req.params.id);
@@ -596,8 +639,27 @@ app.post('/api/admin/requests/:id/approve', auth, requireRole('admin'), (req, re
   try { mealList = JSON.parse(q.meals || '[]'); } catch {}
   mealList = parseMeals(mealList, 250);
   for (const m of mealList) db.prepare('INSERT INTO restaurant_meals (restaurant_id, name, price_pkr) VALUES (?,?,?)').run(info.lastInsertRowid, m.name, m.price);
+  // The owner account is created automatically, so the owner can log in
+  // with the email from the request + the password they chose on the form.
+  let ownerCreated = false, tempPassword = null, ownerEmail = (q.contact_email || '').trim().toLowerCase(), ownerNote = '';
+  if (!ownerEmail) {
+    ownerNote = 'No email on the request, so no owner account was created';
+  } else if (db.prepare('SELECT id FROM users WHERE email=?').get(ownerEmail)) {
+    ownerNote = 'An account with that email already exists — no new owner account was created';
+  } else {
+    let hash = q.owner_password_hash;
+    if (!hash) {
+      // Request from before passwords existed: make a temporary one and
+      // show it to the admin, who passes it to the owner.
+      tempPassword = crypto.randomBytes(6).toString('base64').replace(/[^A-Za-z0-9]/g, '').slice(0, 10);
+      hash = hashPassword(tempPassword);
+    }
+    db.prepare("INSERT INTO users (name, email, password_hash, role, restaurant_id) VALUES (?,?,?, 'owner', ?)")
+      .run(q.contact_name || `${q.name} owner`, ownerEmail, hash, info.lastInsertRowid);
+    ownerCreated = true;
+  }
   db.prepare("UPDATE restaurant_requests SET status='approved' WHERE id=?").run(q.id);
-  res.json({ restaurant: db.prepare('SELECT * FROM restaurants WHERE id=?').get(info.lastInsertRowid), meals: restMeals(info.lastInsertRowid) });
+  res.json({ restaurant: db.prepare('SELECT * FROM restaurants WHERE id=?').get(info.lastInsertRowid), meals: restMeals(info.lastInsertRowid), ownerCreated, tempPassword, ownerEmail, ownerNote });
 });
 app.post('/api/admin/requests/:id/reject', auth, requireRole('admin'), (req, res) => {
   db.prepare("UPDATE restaurant_requests SET status='rejected' WHERE id=?").run(req.params.id);

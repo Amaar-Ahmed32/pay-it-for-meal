@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS restaurant_requests (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL, area TEXT NOT NULL, meal TEXT, timings TEXT,
   contact_name TEXT, contact_phone TEXT, contact_email TEXT, meals TEXT DEFAULT '[]',
+  owner_password_hash TEXT,
   status TEXT DEFAULT 'pending',
   created_at TEXT DEFAULT (datetime('now'))
 );
@@ -275,6 +276,7 @@ for (const [table, col] of [
   ['restaurants', 'is_open INTEGER DEFAULT 1'],
   ['restaurant_requests', 'contact_email TEXT'],
   ['restaurant_requests', 'meals TEXT DEFAULT \'[]\''],
+  ['restaurant_requests', 'owner_password_hash TEXT'],
   ['served_meals', 'meal_name TEXT'],
   ['served_meals', 'quantity INTEGER DEFAULT 1'],
 ]) {
