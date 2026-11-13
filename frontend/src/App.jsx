@@ -37,9 +37,10 @@ const T = {
     oldLine: 'A normal dinner becomes someone else’s dinner.',
     donateBtn: 'Donate a meal', findBtn: 'Find a free meal',
     needLine: 'Need a meal? No login, no questions, no form — just ask staff at a listed restaurant.',
-    availLine: '{n} meal(s) available right now — find one near you, or donate to keep the shelf full.',
+    availLine: '{n} {m} available right now — find one near you, or donate to keep the shelf full.',
+    mealOne: 'meal', mealMany: 'meals',
     noAvailLine: 'No meals available right now — be the first donor today.',
-    servedChip: 'Your meal was served!', availChip: '{n} meals available today', 
+    servedChip: 'Your meal was served!', availChip: '{m} available today', 
     
     liveDash: 'Live dashboard', liveNote: 'Numbers come live from the database. Nothing is typed in by hand.',
     donated: 'Donated', served: 'Served', available: 'Available now', byRest: 'By restaurant', noRest: 'No partner restaurants with meals right now. Be the first donor!',
@@ -49,12 +50,12 @@ const T = {
     step2t: 'Served', step2d: 'A person in need asks staff for a Pay It Forward meal. No questions, no payment.',
     step3t: 'You get a message', step3d: '“Your meal was served.” You see proof and never learn who received it.',
     trust1: '✓ Verified restaurants only', trust2: '✓ No recipient data stored', trust3: '✓ Money released only after serving',
-    urgent: 'Urgent:', mealsLeft: '{n} meal(s) left', giveMost: '💛 Give where most needed', giveMostName: '💛 Give where most needed — {n}',
+    urgent: 'Urgent:', mealsLeft: '{n} {m} left', giveMost: '💛 Give where most needed', giveMostName: '💛 Give where most needed — {n}',
     partnerTitle: 'Run a restaurant?', partnerText: 'Join as a partner and serve free meals paid for by your own customers.', partnerBtn: 'Become a partner',
     activityTitle: 'Recent activity (recipients never named)', activityServed: '🍲 A meal was served', activityDonated: '💛 {n} donated {q}', activityAt: 'at {n}', activityNone: 'No activity yet — be the first donor.',
     finderTitle: 'Free meals today', finderNote: 'Free meals available here today. Just ask staff for a Pay It Forward meal.',
     finderArea: 'Area / city', finderOnly: 'Only show restaurants with meals available',
-    finderUrgent: '⚠️ {n} left — urgent', finderMeals: '{n} meals', finderPerMeal: 'Rs {n} per meal', finderServed: '{n} served so far',
+    finderUrgent: '⚠️ {n} left — urgent', finderMeals: '{n} {m}', finderPerMeal: 'Rs {n} per meal', finderServed: '{n} served so far',
     finderEmptyAvail: 'No restaurant with meals available in that area right now — try All areas, or check back after a donation.',
     finderEmptyArea: 'No verified restaurant in that area yet.', finderNoLogin: 'No login. No form. We never ask for or store anything about you.',
     allAreas: 'All areas',
@@ -68,7 +69,7 @@ const T = {
     testMode: 'Test mode: no real money moves in the pilot.', continueBtn: 'Continue to Sandbox Checkout',
     statusNote: 'Status: Pending → Paid (sandbox) → Available → Served. Meals are NOT Available while Pending.',
     sandboxTitle: 'Sandbox Checkout — {n} (SIMULATOR, not the real gateway site)',
-    sandboxPay: 'Pay Rs {n} for {q} meal(s)', sandboxTxn: 'Txn ref:', sandboxNote: 'This is our own sandbox simulator for the contest demo. No real money moves. Real JazzCash/Easypaisa gateway needs merchant sandbox keys in backend/.env.',
+    sandboxPay: 'Pay Rs {n} for {q} {m}', sandboxTxn: 'Txn ref:', sandboxNote: 'This is our own sandbox simulator for the contest demo. No real money moves. Real JazzCash/Easypaisa gateway needs merchant sandbox keys in backend/.env.',
     sandboxMobile: 'Test mobile number (any test number, e.g. 0300-1234567)', sandboxPayBtn: 'Pay Rs {n} in Sandbox', sandboxCancel: 'Cancel payment',
     pendingMsg: 'Sandbox payment created — it is PENDING. Meals become Available only after you confirm on the Sandbox Checkout below.',
     paidMsg: 'Sandbox payment successful! {n} PKR paid in sandbox (no real money). Meals are now Available.',
@@ -76,7 +77,7 @@ const T = {
     mineTitle: 'My donations', mineLogin: 'Log in to see your donations and messages.',
     mineDonated: 'Donated', mineServed: 'Served', mineAvail: 'Still available', yourBadge: 'Your badge:',
     privacy: 'Show my name on Leaderboard and Transparency (untick = Anonymous donor)',
-    donationsTitle: 'Donations', mealsAt: '{q} meal(s) at {n}', servedOf: '{s}/{q} served', noDonations: 'No donations yet.',
+    donationsTitle: 'Donations', mealsAt: '{q} {m} at {n}', servedOf: '{s}/{q} served', noDonations: 'No donations yet.',
     printReceipt: 'Print receipt', messagesTitle: 'Messages', noMessages: 'No messages yet — you’ll get one here when your meal is served.',
     markRead: 'Mark read', readMark: '✓ read', popups: 'Please allow pop-ups for this site to print the receipt.',
     signedIn: 'Signed in as {n} ({r})',
@@ -145,7 +146,7 @@ const T = {
     reqMealNote: 'No login, no name, no phone — just pick a restaurant and how many meals you need. The restaurant sees only the number and the time.',
     reqRest: 'Restaurant', reqQty: 'How many meals? (1–3)', reqNote: 'Note (optional)', reqSend: 'Send request',
     reqSent: 'Request sent to the restaurant. Show this line at the counter: ',
-    reqSentLine: 'Requested {n} meal(s) • {t}',
+    reqSentLine: 'Requested {n} {m} • {t}',
     reqPending: 'Pending requests', reqNone: 'No meal requests right now.',
     reqFulfil: 'Serve 1 meal', reqCancel: 'Cancel',
     reqFulfilled: 'Request fulfilled — 1 meal served.', reqCancelled: 'Request cancelled.',
@@ -156,7 +157,7 @@ const T = {
     printSlip: 'Print slip', receiptsTitle: 'Served receipts', receiptsNone: 'No served receipts yet.',
     detailMenu: 'Menu', detailStaff: 'Staff', detailClose: 'Close',
     claimNote: 'To claim a meal, just ask staff at the restaurant — no login, no form.',
-    lowStock: '⚠️ Only {n} meal(s) left — ask for donations!',
+    lowStock: '⚠️ Only {n} {m} left — ask for donations!',
     lowStockBadge: 'Low stock — {n} left', closedToday: 'Closed today', openNow: 'Open now',
     toggleClose: 'Mark closed for today', toggleOpen: 'Mark open for today',
     closedMsg: 'This restaurant is closed today — please donate to another restaurant or try tomorrow.',
@@ -225,9 +226,10 @@ const T = {
     oldLine: 'ایک عام رات کا کھانا کسی اور کا رات کا کھانا بن جاتا ہے۔',
     donateBtn: 'کھانا عطیہ کریں', findBtn: 'مفت کھانا تلاش کریں',
     needLine: 'کھانا چاہیے؟ کوئی لاگ ان نہیں، کوئی سوال نہیں، کوئی فارم نہیں — بس درج ریسٹورنٹ کے عملے سے پوچھیں۔',
-    availLine: 'ابھی {n} کھانے دستیاب ہیں — اپنے قریب تلاش کریں، یا عطیہ دے کر شیلف بھرا رکھیں۔',
+    availLine: 'ابھی {n} {m} دستیاب ہیں — اپنے قریب تلاش کریں، یا عطیہ دے کر شیلف بھرا رکھیں۔',
+    mealOne: 'کھانا', mealMany: 'کھانے',
     noAvailLine: 'ابھی کوئی کھانا دستیاب نہیں — آج پہلے عطیہ دہندہ بنیں۔',
-    servedChip: 'آپ کا کھانا پیش کر دیا گیا!', availChip: 'آج {n} کھانے دستیاب ہیں', 
+    servedChip: 'آپ کا کھانا پیش کر دیا گیا!', availChip: 'آج {m} دستیاب ہیں', 
     
     liveDash: 'لائیو ڈیش بورڈ', liveNote: 'اعداد ڈیٹا بیس سے براہ راست آتے ہیں۔ کچھ بھی ہاتھ سے نہیں لکھا جاتا۔',
     donated: 'عطیہ شدہ', served: 'پیش شدہ', available: 'ابھی دستیاب', byRest: 'ریسٹورنٹ کے حساب سے', noRest: 'ابھی کسی پارٹنر ریسٹورنٹ میں کھانا نہیں ہے۔ پہلے عطیہ دہندہ بنیں!',
@@ -237,12 +239,12 @@ const T = {
     step2t: 'پیش کیا گیا', step2d: 'ضرورت مند شخص عملے سے Pay It Forward کھانا مانگتا ہے۔ کوئی سوال نہیں، کوئی ادائیگی نہیں۔',
     step3t: 'آپ کو پیغام ملتا ہے', step3d: '”آپ کا کھانا پیش کر دیا گیا۔“ آپ کو ثبوت ملتا ہے اور آپ کبھی نہیں جانتے کہ کس نے وصول کیا۔',
     trust1: '✓ صرف تصدیق شدہ ریسٹورنٹ', trust2: '✓ وصول کنندہ کا کوئی ڈیٹا محفوظ نہیں', trust3: '✓ رقم صرف پیش کرنے کے بعد ملتی ہے',
-    urgent: 'فوری:', mealsLeft: '{n} کھانے باقی', giveMost: '💛 جہاں سب سے زیادہ ضرورت ہے وہاں دیں', giveMostName: '💛 جہاں سب سے زیادہ ضرورت ہے — {n}',
+    urgent: 'فوری:', mealsLeft: '{n} {m} باقی', giveMost: '💛 جہاں سب سے زیادہ ضرورت ہے وہاں دیں', giveMostName: '💛 جہاں سب سے زیادہ ضرورت ہے — {n}',
     partnerTitle: 'ریسٹورنٹ چلاتے ہیں؟', partnerText: 'پارٹنر بنیں اور اپنے صارفین کے پیسوں سے مفت کھانے پیش کریں۔', partnerBtn: 'پارٹنر بنیں',
     activityTitle: 'تازہ سرگرمی (وصول کنندہ کا نام کبھی نہیں)', activityServed: '🍲 ایک کھانا پیش کیا گیا', activityDonated: '💛 {n} نے {q} عطیہ کیے', activityAt: '{n} میں', activityNone: 'ابھی کوئی سرگرمی نہیں — پہلے عطیہ دہندہ بنیں۔',
     finderTitle: 'آج کے مفت کھانے', finderNote: 'آج یہاں مفت کھانے دستیاب ہیں۔ بس عملے سے Pay It Forward کھانا مانگیں۔',
     finderArea: 'علاقہ / شہر', finderOnly: 'صرف وہ ریسٹورنٹ دکھائیں جن میں کھانا دستیاب ہے',
-    finderUrgent: '⚠️ {n} باقی — فوری', finderMeals: '{n} کھانے', finderPerMeal: 'فی کھانا {n} روپے', finderServed: 'اب تک {n} پیش ہوئے',
+    finderUrgent: '⚠️ {n} باقی — فوری', finderMeals: '{n} {m}', finderPerMeal: 'فی کھانا {n} روپے', finderServed: 'اب تک {n} پیش ہوئے',
     finderEmptyAvail: 'اس علاقے میں ابھی کوئی ریسٹورنٹ میں کھانا دستیاب نہیں — تمام علاقے آزمائیں، یا عطیے کے بعد دوبارہ دیکھیں۔',
     finderEmptyArea: 'اس علاقے میں ابھی کوئی تصدیق شدہ ریسٹورنٹ نہیں۔', finderNoLogin: 'کوئی لاگ ان نہیں۔ کوئی فارم نہیں۔ ہم آپ کے بارے میں کچھ نہیں پوچھتے اور نہ محفوظ کرتے ہیں۔',
     allAreas: 'تمام علاقے',
@@ -256,7 +258,7 @@ const T = {
     testMode: 'ٹیسٹ موڈ: پائلٹ میں کوئی اصلی رقم نہیں چلتی۔', continueBtn: 'سینڈ باکس چیک آؤٹ پر جائیں',
     statusNote: 'حالت: زیر التواء → ادا شدہ (سینڈ باکس) → دستیاب → پیش شدہ۔ زیر التواء کھانے دستیاب نہیں ہوتے۔',
     sandboxTitle: 'سینڈ باکس چیک آؤٹ — {n} (سیمولیٹر، اصلی گیٹ وے سائٹ نہیں)',
-    sandboxPay: '{q} کھانوں کے لیے {n} روپے ادا کریں', sandboxTxn: 'لین دین نمبر:', sandboxNote: 'یہ مقابلے کے ڈیمو کے لیے ہمارا اپنا سینڈ باکس سیمولیٹر ہے۔ کوئی اصلی رقم نہیں چلتی۔ اصلی JazzCash/Easypaisa گیٹ وے کے لیے backend/.env میں مرچنٹ سینڈ باکس کیز چاہییں۔',
+    sandboxPay: '{q} {m} — {n} روپے ادا کریں', sandboxTxn: 'لین دین نمبر:', sandboxNote: 'یہ مقابلے کے ڈیمو کے لیے ہمارا اپنا سینڈ باکس سیمولیٹر ہے۔ کوئی اصلی رقم نہیں چلتی۔ اصلی JazzCash/Easypaisa گیٹ وے کے لیے backend/.env میں مرچنٹ سینڈ باکس کیز چاہییں۔',
     sandboxMobile: 'ٹیسٹ موبائل نمبر (کوئی بھی ٹیسٹ نمبر، مثلاً 0300-1234567)', sandboxPayBtn: 'سینڈ باکس میں {n} روپے ادا کریں', sandboxCancel: 'ادائیگی منسوخ کریں',
     pendingMsg: 'سینڈ باکس ادائیگی بن گئی — یہ زیر التواء ہے۔ کھانے صرف نیچے سینڈ باکس چیک آؤٹ پر تصدیق کے بعد دستیاب ہوں گے۔',
     paidMsg: 'سینڈ باکس ادائیگی کامیاب! سینڈ باکس میں {n} روپے ادا ہوئے (کوئی اصلی رقم نہیں)۔ کھانے اب دستیاب ہیں۔',
@@ -264,7 +266,7 @@ const T = {
     mineTitle: 'میرے عطیات', mineLogin: 'اپنے عطیات اور پیغامات دیکھنے کے لیے لاگ ان کریں۔',
     mineDonated: 'عطیہ شدہ', mineServed: 'پیش شدہ', mineAvail: 'ابھی دستیاب', yourBadge: 'آپ کا بیج:',
     privacy: 'لیڈر بورڈ اور شفافیت پر میرا نام دکھائیں (ان ٹک کریں تو Anonymous donor)',
-    donationsTitle: 'عطیات', mealsAt: '{n} میں {q} کھانے', servedOf: '{s}/{q} پیش ہوئے', noDonations: 'ابھی کوئی عطیہ نہیں۔',
+    donationsTitle: 'عطیات', mealsAt: '{n} میں {q} {m}', servedOf: '{s}/{q} پیش ہوئے', noDonations: 'ابھی کوئی عطیہ نہیں۔',
     printReceipt: 'رسید پرنٹ کریں', messagesTitle: 'پیغامات', noMessages: 'ابھی کوئی پیغام نہیں — جب آپ کا کھانا پیش ہوگا تو یہاں پیغام آئے گا۔',
     markRead: 'پڑھا ہوا کریں', readMark: '✓ پڑھا ہوا', popups: 'رسید پرنٹ کرنے کے لیے اس سائٹ کے لیے پاپ اپ کی اجازت دیں۔',
     signedIn: '{n} ({r}) کے طور پر لاگ ان ہیں',
@@ -333,7 +335,7 @@ const T = {
     reqMealNote: 'کوئی لاگ ان نہیں، کوئی نام نہیں، کوئی فون نہیں — بس ریسٹورنٹ منتخب کریں اور بتائیں کتنے کھانے چاہییں۔ ریسٹورنٹ کو صرف تعداد اور وقت نظر آتا ہے۔',
     reqRest: 'ریسٹورنٹ', reqQty: 'کتنے کھانے؟ (1–3)', reqNote: 'نوٹ (اختیاری)', reqSend: 'درخواست بھیجیں',
     reqSent: 'درخواست ریسٹورنٹ کو بھیج دی گئی۔ کاؤنٹر پر یہ لائن دکھائیں: ',
-    reqSentLine: '{n} کھانے کی درخواست • {t}',
+    reqSentLine: '{n} {m} کی درخواست • {t}',
     reqPending: 'زیر التواء درخواستیں', reqNone: 'ابھی کوئی درخواست نہیں۔',
     reqFulfil: '1 کھانا پیش کریں', reqCancel: 'منسوخ کریں',
     reqFulfilled: 'درخواست مکمل — 1 کھانا پیش کر دیا گیا۔', reqCancelled: 'درخواست منسوخ کر دی گئی۔',
@@ -344,7 +346,7 @@ const T = {
     printSlip: 'پرچی پرنٹ کریں', receiptsTitle: 'پیش کردہ رسیدیں', receiptsNone: 'ابھی کوئی رسید نہیں۔',
     detailMenu: 'مینیو', detailStaff: 'اسٹاف', detailClose: 'بند کریں',
     claimNote: 'کھانا لینے کے لیے بس ریسٹورنٹ کے عملے سے پوچھیں — کوئی لاگ ان نہیں، کوئی فارم نہیں۔',
-    lowStock: '⚠️ صرف {n} کھانے باقی — عطیات مانگیں!',
+    lowStock: '⚠️ صرف {n} {m} باقی — عطیات مانگیں!',
     lowStockBadge: 'کم اسٹاک — {n} باقی', closedToday: 'آج بند ہے', openNow: 'ابھی کھلا ہے',
     toggleClose: 'آج کے لیے بند کریں', toggleOpen: 'آج کے لیے کھولیں',
     closedMsg: 'یہ ریسٹورنٹ آج بند ہے — براہ کرم کسی اور ریسٹورنٹ کو عطیہ دیں یا کل آزمائیں۔',
@@ -413,9 +415,10 @@ const T = {
     oldLine: 'هڪ عام رات جو کاڌو ڪنهن ٻئي جو رات جو کاڌو بڻجي وڃي ٿو.',
     donateBtn: 'کاڌو عطيو ڪريو', findBtn: 'مفت کاڌو ڳوليو',
     needLine: 'کاڌو گهرجي؟ ڪو لاگ ان ناهي، ڪو سوال ناهي، ڪو فارم ناهي — بس درج ٿيل ريسٽورنٽ جي اسٽاف کان پڇو.',
-    availLine: 'هاڻي {n} کاڌا دستياب آهن — پنهنجي ويجهو ڳوليو، يا عطيو ڏئي شيلف ڀريو رکو.',
+    availLine: 'هاڻي {n} {m} دستياب آهن — پنهنجي ويجهو ڳوليو، يا عطيو ڏئي شيلف ڀريو رکو.',
+    mealOne: 'کاڌو', mealMany: 'کاڌا',
     noAvailLine: 'هاڻي ڪو کاڌو دستياب ناهي — اڄ پهريون عطيو ڏيندڙ ٿيو.',
-    servedChip: 'توهان جو کاڌو پيش ڪيو ويو!', availChip: 'اڄ {n} کاڌا دستياب آهن', 
+    servedChip: 'توهان جو کاڌو پيش ڪيو ويو!', availChip: 'اڄ {m} دستياب آهن', 
     
     liveDash: 'لائيو ڊيش بورڊ', liveNote: 'انگ ڊيٽابيس مان سڌو اچن ٿا. ڪجهه به هٿ سان ناهي لکيو ويندو.',
     donated: 'عطيو ٿيل', served: 'پيش ٿيل', available: 'هاڻي دستياب', byRest: 'ريسٽورنٽ موجب', noRest: 'هاڻي ڪنهن پارٽنر ريسٽورنٽ ۾ کاڌو ناهي. پهريون عطيو ڏيندڙ ٿيو!',
@@ -425,12 +428,12 @@ const T = {
     step2t: 'پيش ڪيو ويو', step2d: 'ضرورت مند ماڻهو اسٽاف کان Pay It Forward کاڌو گهري ٿو. ڪو سوال ناهي، ڪا ادائيگي ناهي.',
     step3t: 'توهان کي پيغام ملي ٿو', step3d: '”توهان جو کاڌو پيش ڪيو ويو.“ توهان کي ثبوت ملي ٿو ۽ توهان ڪڏهن نٿا ڄاڻو ته ڪنهن وصول ڪيو.',
     trust1: '✓ صرف تصديق ٿيل ريسٽورنٽ', trust2: '✓ وصول ڪندڙ جو ڪو ڊيٽا محفوظ ناهي', trust3: '✓ رقم صرف پيش ڪرڻ کان پوءِ ملي ٿي',
-    urgent: 'تڪڙ:', mealsLeft: '{n} کاڌا باقي', giveMost: '💛 جتي سڀ کان وڌيڪ ضرورت آهي اتي ڏيو', giveMostName: '💛 جتي سڀ کان وڌيڪ ضرورت آهي — {n}',
+    urgent: 'تڪڙ:', mealsLeft: '{n} {m} باقي', giveMost: '💛 جتي سڀ کان وڌيڪ ضرورت آهي اتي ڏيو', giveMostName: '💛 جتي سڀ کان وڌيڪ ضرورت آهي — {n}',
     partnerTitle: 'ريسٽورنٽ هلايو ٿا؟', partnerText: 'پارٽنر ٿيو ۽ پنهنجن گراهڪن جي پئسن سان مفت کاڌا پيش ڪريو.', partnerBtn: 'پارٽنر ٿيو',
     activityTitle: 'تازي سرگرمي (وصول ڪندڙ جو نالو ڪڏهن ناهي)', activityServed: '🍲 هڪ کاڌو پيش ڪيو ويو', activityDonated: '💛 {n} {q} عطيا ڪيا', activityAt: '{n} ۾', activityNone: 'هينئر تائين ڪا سرگرمي ناهي — پهريون عطيو ڏيندڙ ٿيو.',
     finderTitle: 'اڄ جا مفت کاڌا', finderNote: 'اڄ هتي مفت کاڌا دستياب آهن. بس اسٽاف کان Pay It Forward کاڌو گهرو.',
     finderArea: 'علائقو / شهر', finderOnly: 'صرف اهي ريسٽورنٽ ڏيکاريو جن ۾ کاڌو دستياب آهي',
-    finderUrgent: '⚠️ {n} باقي — تڪڙ', finderMeals: '{n} کاڌا', finderPerMeal: 'في کاڌو {n} رپيا', finderServed: 'هينئر تائين {n} پيش ٿيا',
+    finderUrgent: '⚠️ {n} باقي — تڪڙ', finderMeals: '{n} {m}', finderPerMeal: 'في کاڌو {n} رپيا', finderServed: 'هينئر تائين {n} پيش ٿيا',
     finderEmptyAvail: 'هن علائقي ۾ هاڻي ڪنهن ريسٽورنٽ ۾ کاڌو دستياب ناهي — سڀ علائقا آزمايو، يا عطيي کان پوءِ واپس ڏسو.',
     finderEmptyArea: 'هن علائقي ۾ هينئر تائين ڪو تصديق ٿيل ريسٽورنٽ ناهي.', finderNoLogin: 'ڪو لاگ ان ناهي. ڪو فارم ناهي. اسان توهان بابت ڪجهه نٿا پڇون ۽ نه محفوظ ڪريون ٿا.',
     allAreas: 'سڀ علائقا',
@@ -444,7 +447,7 @@ const T = {
     testMode: 'ٽيسٽ موڊ: پائلٽ ۾ ڪا حقيقي رقم نٿي هلي.', continueBtn: 'سينڊ باڪس چيڪ آئوٽ ڏانهن وڃو',
     statusNote: 'حالت: التوا ۾ → ادا ٿيل (سينڊ باڪس) → دستياب → پيش ٿيل. التوا وارا کاڌا دستياب ناهن.',
     sandboxTitle: 'سينڊ باڪس چيڪ آئوٽ — {n} (سيموليٽر، حقيقي گيٽ وي سائيٽ ناهي)',
-    sandboxPay: '{q} کاڌن لاءِ {n} رپيا ادا ڪريو', sandboxTxn: 'لين دين نمبر:', sandboxNote: 'هي مقابلي جي ڊيمو لاءِ اسان جو پنهنجو سينڊ باڪس سيموليٽر آهي. ڪا حقيقي رقم نٿي هلي. حقيقي JazzCash/Easypaisa گيٽ وي لاءِ backend/.env ۾ مرچنٽ سينڊ باڪس ڪيز گهرجن.',
+    sandboxPay: '{q} {m} — {n} رپيا ادا ڪريو', sandboxTxn: 'لين دين نمبر:', sandboxNote: 'هي مقابلي جي ڊيمو لاءِ اسان جو پنهنجو سينڊ باڪس سيموليٽر آهي. ڪا حقيقي رقم نٿي هلي. حقيقي JazzCash/Easypaisa گيٽ وي لاءِ backend/.env ۾ مرچنٽ سينڊ باڪس ڪيز گهرجن.',
     sandboxMobile: 'ٽيسٽ موبائل نمبر (ڪو به ٽيسٽ نمبر، مثال 0300-1234567)', sandboxPayBtn: 'سينڊ باڪس ۾ {n} رپيا ادا ڪريو', sandboxCancel: 'ادائيگي رد ڪريو',
     pendingMsg: 'سينڊ باڪس ادائيگي ٺهي وئي — اها التوا ۾ آهي. کاڌا صرف هيٺ سينڊ باڪس چيڪ آئوٽ تي تصديق کان پوءِ دستياب ٿيندا.',
     paidMsg: 'سينڊ باڪس ادائيگي ڪامياب! سينڊ باڪس ۾ {n} رپيا ادا ٿيا (ڪا حقيقي رقم ناهي). کاڌا هاڻي دستياب آهن.',
@@ -452,7 +455,7 @@ const T = {
     mineTitle: 'منهنجا عطيا', mineLogin: 'پنهنجا عطيا ۽ پيغام ڏسڻ لاءِ لاگ ان ڪريو.',
     mineDonated: 'عطيو ٿيل', mineServed: 'پيش ٿيل', mineAvail: 'اڃا دستياب', yourBadge: 'توهان جو بيج:',
     privacy: 'ليڊر بورڊ ۽ شفافيت تي منهنجو نالو ڏيکاريو (ان ٽڪ ڪريو ته Anonymous donor)',
-    donationsTitle: 'عطيا', mealsAt: '{n} ۾ {q} کاڌا', servedOf: '{s}/{q} پيش ٿيا', noDonations: 'هينئر تائين ڪو عطيو ناهي.',
+    donationsTitle: 'عطيا', mealsAt: '{n} ۾ {q} {m}', servedOf: '{s}/{q} پيش ٿيا', noDonations: 'هينئر تائين ڪو عطيو ناهي.',
     printReceipt: 'رسيد پرنٽ ڪريو', messagesTitle: 'پيغام', noMessages: 'هينئر تائين ڪو پيغام ناهي — جڏهن توهان جو کاڌو پيش ٿيندو ته هتي پيغام ايندو.',
     markRead: 'پڙهيل ڪريو', readMark: '✓ پڙهيل', popups: 'رسيد پرنٽ ڪرڻ لاءِ هن سائيٽ لاءِ پاپ اپ جي اجازت ڏيو.',
     signedIn: '{n} ({r}) طور لاگ ان آهيو',
@@ -521,7 +524,7 @@ const T = {
     reqMealNote: 'ڪو لاگ ان ناهي، ڪو نالو ناهي، ڪو فون ناهي — بس ريسٽورنٽ چونڊيو ۽ ٻڌايو ڪيترا کاڌا گهرجن. ريسٽورنٽ کي صرف تعداد ۽ وقت نظر اچي ٿو.',
     reqRest: 'ريسٽورنٽ', reqQty: 'ڪيترا کاڌا؟ (1–3)', reqNote: 'نوٽ (اختياري)', reqSend: 'درخواست موڪليو',
     reqSent: 'درخواست ريسٽورنٽ ڏانهن موڪلي وئي. ڪائونٽر تي هي لائين ڏيکاريو: ',
-    reqSentLine: '{n} کاڌن جي درخواست • {t}',
+    reqSentLine: '{n} {m} جي درخواست • {t}',
     reqPending: 'التوا واريون درخواستون', reqNone: 'هينئر تائين ڪا درخواست ناهي.',
     reqFulfil: '1 کاڌو پيش ڪريو', reqCancel: 'رد ڪريو',
     reqFulfilled: 'درخواست پوري ٿي — 1 کاڌو پيش ڪيو ويو.', reqCancelled: 'درخواست رد ڪئي وئي.',
@@ -532,7 +535,7 @@ const T = {
     printSlip: 'پرچي پرنٽ ڪريو', receiptsTitle: 'پيش ڪيل رسيدون', receiptsNone: 'هينئر تائين ڪا رسيد ناهي.',
     detailMenu: 'مينيو', detailStaff: 'اسٽاف', detailClose: 'بند ڪريو',
     claimNote: 'کاڌو وٺڻ لاءِ بس ريسٽورنٽ جي اسٽاف کان پڇو — ڪو لاگ ان ناهي، ڪو فارم ناهي.',
-    lowStock: '⚠️ صرف {n} کاڌا باقي — عطيا گهرو!',
+    lowStock: '⚠️ صرف {n} {m} باقي — عطيا گهرو!',
     lowStockBadge: 'گهٽ اسٽاڪ — {n} باقي', closedToday: 'اڄ بند آهي', openNow: 'هاڻي کليل آهي',
     toggleClose: 'اڄ لاءِ بند ڪريو', toggleOpen: 'اڄ لاءِ کليو',
     closedMsg: 'هي ريسٽورنٽ اڄ بند آهي — مهرباني ڪري ٻئي ريسٽورنٽ کي عطيو ڏيو يا سڀاڻي آزمايو.',
@@ -602,9 +605,12 @@ const fmtDate = (iso) => { try { return new Intl.DateTimeFormat('en-GB', { day: 
 const badgeFor = (t, served) => (served >= 10 ? t.badgeHero : served >= 5 ? t.badgeHeart : served >= 1 ? t.badgeNew : t.badgeNone);
 
 // ---------- Logo ----------
-// Inline SVG logo mark (2026-11-13): an original drawing in the spirit of
-// the Meal4Hope reference the user shared — a hand holding a bowl with a
-// heart rising above it. Site palette: teal hand, orange bowl, red heart.
+// Inline SVG logo mark (redrawn 2026-11-13): an original drawing in the
+// spirit of the Meal4Hope reference the user shared — an open hand holding
+// a bowl with a heart rising above it. Site palette: teal hand, orange
+// bowl, red heart. The hand is a cupped palm (wrist at the left edge) with
+// three fingers curving up around the bowl's right side and a thumb rising
+// on its left, so it reads as a hand at 40px and 72px — not a saucer.
 // Crisp at any size, no external file. The header shows this mark only —
 // no text title, no school line.
 const LogoMark = () => (
@@ -612,10 +618,14 @@ const LogoMark = () => (
     {/* Rising heart */}
     <path d="M32 30 C22 23 18 18.5 18 14 C18 10 21.5 7.5 25 7.5 C27.5 7.5 30 9 32 11.5 C34 9 36.5 7.5 39 7.5 C42.5 7.5 46 10 46 14 C46 18.5 42 23 32 30 Z" fill="#d64545" stroke="#172428" strokeWidth="2" strokeLinejoin="round" />
     {/* Bowl */}
-    <path d="M12 36 h40 c0 9.5 -9 16.5 -20 16.5 s-20 -7 -20 -16.5 Z" fill="#f59e0b" stroke="#172428" strokeWidth="2" strokeLinejoin="round" />
-    <ellipse cx="32" cy="36" rx="20" ry="3.5" fill="#fde9c8" stroke="#172428" strokeWidth="2" />
-    {/* Cupped hand under the bowl — its raised sides hold the bowl, like a palm offering it up */}
-    <path d="M6 48 C6 45 8 44 11 44 L15 44 C18 50 24 53 32 53 C40 53 46 50 49 44 L53 44 C56 44 58 45 58 48 C58 55 47 61 32 61 C17 61 6 55 6 48 Z" fill="#146b56" stroke="#172428" strokeWidth="2" strokeLinejoin="round" />
+    <path d="M14 33 h36 c0 9 -8 15 -18 15 s-18 -6 -18 -15 Z" fill="#f59e0b" stroke="#172428" strokeWidth="2" strokeLinejoin="round" />
+    <ellipse cx="32" cy="33" rx="18" ry="3" fill="#fde9c8" stroke="#172428" strokeWidth="2" />
+    {/* Open hand under the bowl — ONE silhouette, so it reads as a hand at
+        any size: wrist entering from the left, a thumb rising on the bowl's
+        left side, a palm cupping underneath, and three fingers curving up
+        around the bowl's right side, the middle finger tallest, with deep
+        valleys between the fingers so each one reads separately. */}
+    <path d="M0 63 L0 56 C2 53 5 51 8 49 C9 45 10 40 12 38 C14 36 15 38 15 42 C15 46 16 48 18 48 C24 46 30 46 35 47 C37 47 38 44 39 40 C40 37 42 36 43 38 C44 42 45 47 47 48 C48 44 49 38 50 34 C51 31 53 31 54 34 C55 39 56 44 57 47 C58 43 59 39 60 38 C61 37 62 39 62 43 C62 48 61 54 59 58 C57 61 54 62 51 62 L6 63 Z" fill="#146b56" stroke="#172428" strokeWidth="2" strokeLinejoin="round" />
   </svg>
 );
 
@@ -649,17 +659,30 @@ const DailyBars = ({ daily }) => {
 };
 
 
+// Split a long label (e.g. a restaurant name) into two balanced lines so
+// under-bar chart labels show the full name instead of truncating with "…".
+const splitLabel = (name) => {
+  const words = String(name || '').split(' ').filter(Boolean);
+  if (words.length < 2) return [String(name || '')];
+  let best = 1, bestDiff = Infinity;
+  for (let i = 1; i < words.length; i++) {
+    const d = Math.abs(words.slice(0, i).join(' ').length - words.slice(i).join(' ').length);
+    if (d < bestDiff) { bestDiff = d; best = i; }
+  }
+  return [words.slice(0, best).join(' '), words.slice(best).join(' ')];
+};
+
 // Weekly bars (Admin weekly report): donated (gold) vs served (green) per
 // restaurant, last 7 days — same flat style as DailyBars, colours match the
-// legend. Labels are the restaurant name, shortened to fit under the bars.
+// legend. Labels are the restaurant name, wrapped to two lines so the full
+// name is readable under the bars.
 const WeeklyBars = ({ rows }) => {
   const max = Math.max(1, ...rows.flatMap((r) => [r.donated7, r.served7]));
-  const W = 560, H = 200, base = 170, pad = 10;
+  const W = 560, H = 216, base = 170, pad = 10;
   const n = Math.max(1, rows.length);
   const gw = (W - 2 * pad) / n;
   const bw = Math.min(30, Math.floor((gw - 14) / 2));
   const x0 = pad;
-  const label = (name) => (name.length > 12 ? name.slice(0, 12) + '…' : name);
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block', maxWidth: '100%' }} role="img">
       <line x1="10" y1={base} x2={W - 10} y2={base} stroke="#172428" strokeWidth="2" />
@@ -671,7 +694,7 @@ const WeeklyBars = ({ rows }) => {
           <g key={r.id}>
             <rect x={x} y={base - hD} width={bw} height={hD} fill="#f4c35e" rx="4" />
             <rect x={x + bw + 4} y={base - hS} width={bw} height={hS} fill="#2e9e6b" rx="4" />
-            <text x={x + bw + 2} y={base + 16} textAnchor="middle" fontSize="12" fontWeight="700" fill="#172428">{label(r.name)}</text>
+            <text x={x + bw + 2} y={base + 15} textAnchor="middle" fontSize="12" fontWeight="700" fill="#172428">{splitLabel(r.name).map((ln, li) => (<tspan key={li} x={x + bw + 2} dy={li === 0 ? 0 : 14}>{ln}</tspan>))}</text>
             <text x={x + bw + 2} y={base - Math.max(hD, hS) - 6} textAnchor="middle" fontSize="11" fontWeight="800" fill="#172428">{r.donated7}/{r.served7}</text>
           </g>
         );
@@ -732,11 +755,10 @@ const DonorBars = ({ donors, t, badgeFor }) => {
 };
 const RestServedBars = ({ rows }) => {
   const max = Math.max(1, ...rows.map((r) => r.served));
-  const W = 560, H = 200, base = 170, pad = 10;
+  const W = 560, H = 216, base = 170, pad = 10;
   const n = Math.max(1, rows.length);
   const gw = (W - 2 * pad) / n;
   const bw = Math.min(44, Math.floor(gw - 16));
-  const label = (name) => (name.length > 12 ? name.slice(0, 12) + '…' : name);
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block', maxWidth: '100%' }} role="img">
       <line x1="10" y1={base} x2={W - 10} y2={base} stroke="#172428" strokeWidth="2" />
@@ -746,7 +768,7 @@ const RestServedBars = ({ rows }) => {
         return (
           <g key={r.id}>
             <rect x={x} y={base - h} width={bw} height={h} fill="#2e9e6b" rx="4" />
-            <text x={x + bw / 2} y={base + 16} textAnchor="middle" fontSize="12" fontWeight="700" fill="#172428">{label(r.name)}</text>
+            <text x={x + bw / 2} y={base + 15} textAnchor="middle" fontSize="12" fontWeight="700" fill="#172428">{splitLabel(r.name).map((ln, li) => (<tspan key={li} x={x + bw / 2} dy={li === 0 ? 0 : 14}>{ln}</tspan>))}</text>
             <text x={x + bw / 2} y={base - h - 6} textAnchor="middle" fontSize="11" fontWeight="800" fill="#172428">{r.served}</text>
           </g>
         );
@@ -825,6 +847,9 @@ export default function App() {
   const [adminMealSel, setAdminMealSel] = useState([]);
   const [adminOther, setAdminOther] = useState('');
   const t = T[lang];
+  // Meal word with correct singular/plural for the current language —
+  // "1 meal" / "7 meals" (never "7 meal" or "7 meal(s)").
+  const mw = (n) => (n === 1 ? t.mealOne : t.mealMany);
 
   const api = async (path, opts = {}) => {
     const res = await fetch(API + path, { ...opts, headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: 'Bearer ' + token } : {}), ...(opts.headers || {}) } });
@@ -1120,12 +1145,12 @@ export default function App() {
                 <p className="muted">{t.oldLine}</p>
                 <p><button className="btn tomato" onClick={() => go('donate')}>{t.donateBtn}</button>{' '}<button className="btn turmeric" onClick={() => go('finder')}>{t.findBtn}</button></p>
                 <p className="muted">{t.needLine}</p>
-                {stats && (<p>{stats.available > 0 ? (<><b>🍲 {fmt(t.availLine, { n: stats.available })}</b></>) : (<><b>{t.noAvailLine}</b></>)}</p>)}
+                {stats && (<p>{stats.available > 0 ? (<><b>🍲 {fmt(t.availLine, { n: stats.available, m: mw(stats.available) })}</b></>) : (<><b>{t.noAvailLine}</b></>)}</p>)}
               </div>
               <div className="hero-art">
                 <img src="/hero-photo.webp" alt={t.heroHead1 + ' ' + t.heroHead2} />
                 <div className="glass-chip chip-left"><b>✅</b>{t.servedChip}</div>
-                <div className="glass-chip amber chip-right"><b>{stats ? stats.available : 0}</b>{fmt(t.availChip, { n: stats ? stats.available : 0 })}</div>
+                <div className="glass-chip amber chip-right"><b>{stats ? stats.available : 0}</b>{fmt(t.availChip, { m: mw(stats ? stats.available : 0) })}</div>
               </div>
             </div>
             <div className="card dashcard">
@@ -1144,7 +1169,7 @@ export default function App() {
               <div className="card tilt"><div className="step-num">3</div><h3>{t.step3t}</h3><p>{t.step3d}</p></div>
             </div>
             <p className="muted" style={{ marginTop: 18 }}>{t.trust1} • {t.trust2} • {t.trust3}</p>
-            {restaurants.some((r) => r.available <= 2) && (<div className="notice">{restaurants.filter((r) => r.available <= 2).map((r) => `${r.name}: ${fmt(t.lowStock, { n: r.available })}`).join(' • ')}</div>)}
+            {restaurants.some((r) => r.available <= 2) && (<div className="notice">{restaurants.filter((r) => r.available <= 2).map((r) => `${r.name}: ${fmt(t.lowStock, { n: r.available, m: mw(r.available) })}`).join(' • ')}</div>)}
             <p><button className="btn tomato" onClick={() => { if (mostNeeded) { setDonRest(String(mostNeeded.id)); } go('donate'); }}>{mostNeeded ? fmt(t.giveMostName, { n: mostNeeded.name }) : t.giveMost}</button></p>
             <div className="partner-banner"><div><h3>{t.partnerTitle}</h3><p>{t.partnerText}</p></div><button className="btn turmeric" onClick={() => go('request')}>{t.partnerBtn}</button></div>
             {requestFormCard}
@@ -1166,8 +1191,7 @@ export default function App() {
               {shown.map((r) => (
                 <div className="card finder-card" key={r.id} onClick={() => setDetailRest(r)} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter') setDetailRest(r); }}>
                   {r.photo && <img src={r.photo} alt="" className="finder-thumb" />}
-                  {(r.staff || []).length > 0 && (<div className="staff-icons">{(r.staff || []).slice(0, 3).map((s) => (<Avatar key={s.id} photo={s.photo} name={s.name} size={34} />))}{(r.staff || []).length > 3 && <span className="avatar avatar-initials" style={{ width: 34, height: 34 }}>+{(r.staff || []).length - 3}</span>}</div>)}
-                  <h3>{r.name} {isClosed(r) ? <span className="badge warn badge-right">{t.closedToday}</span> : <span className={(r.available <= 2 ? 'badge warn' : 'badge') + ' badge-right'}>{r.available <= 1 ? fmt(t.finderUrgent, { n: r.available }) : r.available === 2 ? fmt(t.lowStockBadge, { n: r.available }) : fmt(t.finderMeals, { n: r.available })}</span>}</h3>
+                  <h3 className="finder-head"><span className="finder-name">{r.name}</span> {isClosed(r) ? <span className="badge warn badge-right">{t.closedToday}</span> : <span className={(r.available <= 2 ? 'badge warn' : 'badge') + ' badge-right'}>{r.available <= 1 ? fmt(t.finderUrgent, { n: r.available }) : r.available === 2 ? fmt(t.lowStockBadge, { n: r.available }) : fmt(t.finderMeals, { n: r.available, m: mw(r.available) })}</span>}{(r.staff || []).length > 0 && (<span className="staff-icons">{(r.staff || []).slice(0, 3).map((s) => (<Avatar key={s.id} photo={s.photo} name={s.name} size={34} />))}{(r.staff || []).length > 3 && <span className="avatar avatar-initials" style={{ width: 34, height: 34 }}>+{(r.staff || []).length - 3}</span>}</span>)}</h3>
                   <p>{r.area} • {r.meal}<br />{r.timings} • {fmt(t.finderPerMeal, { n: r.meal_price_pkr || 250 })}</p>
                   <p className="muted">{fmt(t.finderServed, { n: r.served })}</p>
                   {!isClosed(r) && r.available === 1 && <p className="hope-line">{t.hopeLine1}</p>}
@@ -1185,7 +1209,7 @@ export default function App() {
                   {detailRest.photo ? <img src={detailRest.photo} alt={detailRest.name} className="detail-photo" /> : (<div className="detail-photo-placeholder"><LogoMark /><span>{t.photoSoon}</span></div>)}
                   <h2>{detailRest.name}</h2>
                   <p>{detailRest.area} • {detailRest.timings}</p>
-                  <p>{isClosed(detailRest) ? <span className="badge warn">{t.closedToday}</span> : <span className="badge">{fmt(t.finderMeals, { n: detailRest.available })}</span>} <span className="badge">{fmt(t.finderServed, { n: detailRest.served })}</span></p>
+                  <p>{isClosed(detailRest) ? <span className="badge warn">{t.closedToday}</span> : <span className="badge">{fmt(t.finderMeals, { n: detailRest.available, m: mw(detailRest.available) })}</span>} <span className="badge">{fmt(t.finderServed, { n: detailRest.served })}</span></p>
                   {!isClosed(detailRest) && detailRest.available === 1 && <p className="hope-line">{t.hopeLine1}</p>}
                   {!isClosed(detailRest) && detailRest.available === 2 && <p className="hope-line">{t.hopeLine2}</p>}
                   <p><a className="btn small outline" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(detailRest.name + ', ' + detailRest.area)}`} target="_blank" rel="noreferrer">📍 {t.mapBtn}</a></p>
@@ -1225,7 +1249,7 @@ export default function App() {
               {checkout && (
                 <div className="card sandbox-card">
                   <h3>{fmt(t.sandboxTitle, { n: checkout.gateway })}</h3>
-                  <p>{fmt(t.sandboxPay, { n: checkout.amountPkr, q: donQty })} • {t.sandboxTxn} <b>{checkout.txnRef}</b></p>
+                  <p>{fmt(t.sandboxPay, { n: checkout.amountPkr, q: donQty, m: mw(donQty) })} • {t.sandboxTxn} <b>{checkout.txnRef}</b></p>
                   <p className="muted">{t.sandboxNote}</p>
                   <label>{t.sandboxMobile}</label>
                   <input value={testMobile} onChange={(e) => setTestMobile(e.target.value)} placeholder="03XX-XXXXXXX" />
@@ -1246,7 +1270,7 @@ export default function App() {
               <div className="stats"><div className="stat"><b>{myDonated}</b>{t.mineDonated}</div><div className="stat orange"><b>{myServed}</b>{t.mineServed}</div><div className="stat"><b>{myDonated - myServed}</b>{t.mineAvail}</div></div>
               <p><b>{t.yourBadge}</b> {myServed >= 1 ? (<span className="badge">{badgeFor(t, myServed)}</span>) : badgeFor(t, myServed)}</p>
               <p><label><input type="checkbox" style={{ width: 'auto' }} checked={user.show_name !== 0} onChange={async (e) => { const data = await api('/me/privacy', { method: 'POST', body: JSON.stringify({ showName: e.target.checked }) }); setUser(data.user); load(); }} /> {t.privacy}</label></p>
-              <div className="card"><h3>{t.donationsTitle}</h3>{mine.map((d) => (<p key={d.id}>{fmt(t.mealsAt, { q: d.quantity, n: d.restaurantName })} • {fmt(t.servedOf, { s: d.served_qty, q: d.quantity })} • {d.method} • {d.payment_status}{d.txn_ref ? ` • ${d.txn_ref}` : ''} <button className="btn small outline" onClick={() => printReceipt(d)}>{t.printReceipt}</button></p>))}{mine.length === 0 && <p className="muted">{t.noDonations}</p>}</div>
+              <div className="card"><h3>{t.donationsTitle}</h3>{mine.map((d) => (<p key={d.id}>{fmt(t.mealsAt, { q: d.quantity, n: d.restaurantName, m: mw(d.quantity) })} • {fmt(t.servedOf, { s: d.served_qty, q: d.quantity })} • {d.method} • {d.payment_status}{d.txn_ref ? ` • ${d.txn_ref}` : ''} <button className="btn small outline" onClick={() => printReceipt(d)}>{t.printReceipt}</button></p>))}{mine.length === 0 && <p className="muted">{t.noDonations}</p>}</div>
               <div className="card"><h3>{t.messagesTitle}</h3>{notifs.map((n) => (<div className="notif" key={n.id}>{n.message} <button className="btn small outline" onClick={async () => { await api(`/notifications/${n.id}/read`, { method: 'POST' }); setNotifs(await api('/notifications/mine')); }}>{t.markRead}</button> {n.is_read ? t.readMark : ''}</div>))}{notifs.length === 0 && <p className="muted">{t.noMessages}</p>}</div>
             </>)}
           </div>
@@ -1260,7 +1284,7 @@ export default function App() {
             {user && (user.role === 'staff' || user.role === 'admin') && (<>
               <p className="muted" style={{ textAlign: 'center' }}>{t.staffAvail}</p>
               <div className="big-number">{myRest ? myRest.available : (restaurants[0]?.available ?? 0)}</div>
-              {myRest && isLowStock(myRest) && <p className="notice">{fmt(t.lowStock, { n: myRest.available })}</p>}
+              {myRest && isLowStock(myRest) && <p className="notice">{fmt(t.lowStock, { n: myRest.available, m: mw(myRest.available) })}</p>}
               {myRest && isClosed(myRest) && <p className="notice">{t.closedServe}</p>}
               {(myRest?.meals || []).length > 0 && (<><label>{t.serveMealLabel}</label><select value={serveMealId || (myRest.meals[0]?.id || '')} onChange={(e) => setServeMealId(e.target.value)}>{(myRest.meals || []).map((m) => (<option key={m.id} value={m.id}>{m.name} — Rs {m.price_pkr}</option>))}</select></>)}
               <button className="btn teal-lg" disabled={myRest && isClosed(myRest)} onClick={doServe}>{t.serveBtn}</button>
@@ -1279,7 +1303,7 @@ export default function App() {
               <p className="muted">{t.serveNote}</p>
               <div className="card"><h3>{t.reqPending}</h3>
                 {staffReqs.filter((q) => q.status === 'pending').map((q) => (
-                  <p key={q.id}>{fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at) })}{q.code ? (<> • <b>{t.reqCodeLabel} {q.code}</b></>) : ''}{q.note ? ` — ${q.note}` : ''} {reqExpired(q) ? <span className="badge warn">{t.reqExpired}</span> : <><button className="btn small tomato" onClick={() => doFulfilReq(q.id)}>{t.reqFulfil}</button>{' '}<button className="btn small outline" onClick={() => doCancelReq(q.id)}>{t.reqCancel}</button></>}</p>
+                  <p key={q.id}>{fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at), m: mw(q.meals_needed) })}{q.code ? (<> • <b>{t.reqCodeLabel} {q.code}</b></>) : ''}{q.note ? ` — ${q.note}` : ''} {reqExpired(q) ? <span className="badge warn">{t.reqExpired}</span> : <><button className="btn small tomato" onClick={() => doFulfilReq(q.id)}>{t.reqFulfil}</button>{' '}<button className="btn small outline" onClick={() => doCancelReq(q.id)}>{t.reqCancel}</button></>}</p>
                 ))}
                 {staffReqs.filter((q) => q.status === 'pending').length === 0 && <p className="muted">{t.reqNone}</p>}
               </div>
@@ -1295,7 +1319,7 @@ export default function App() {
             {user?.role === 'owner' && (<>
               {team?.restaurant && (<div className="card">
                 <h3>{team.restaurant.name} — {team.restaurant.is_open === 0 ? <span className="badge warn">{t.closedToday}</span> : <span className="badge">{t.openNow}</span>}</h3>
-                {team.restaurant.available <= 2 && <p className="notice">{fmt(t.lowStock, { n: team.restaurant.available })}</p>}
+                {team.restaurant.available <= 2 && <p className="notice">{fmt(t.lowStock, { n: team.restaurant.available, m: mw(team.restaurant.available) })}</p>}
                 <p><button className="btn outline" onClick={doToggleOpen}>{team.restaurant.is_open === 0 ? t.toggleOpen : t.toggleClose}</button></p>
               </div>)}
               <div className="grid">
@@ -1314,7 +1338,7 @@ export default function App() {
                 </div>
                 <div className="card"><h3>{t.reqPending}</h3>
                   {ownerReqs.filter((q) => q.status === 'pending').map((q) => (
-                    <p key={q.id}>{fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at) })}{q.code ? (<> • <b>{t.reqCodeLabel} {q.code}</b></>) : ''}{q.note ? ` — ${q.note}` : ''} {reqExpired(q) ? <span className="badge warn">{t.reqExpired}</span> : <><button className="btn small tomato" onClick={() => doFulfilReq(q.id, loadTeam)}>{t.reqFulfil}</button>{' '}<button className="btn small outline" onClick={() => doCancelReq(q.id, loadTeam)}>{t.reqCancel}</button></>}</p>
+                    <p key={q.id}>{fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at), m: mw(q.meals_needed) })}{q.code ? (<> • <b>{t.reqCodeLabel} {q.code}</b></>) : ''}{q.note ? ` — ${q.note}` : ''} {reqExpired(q) ? <span className="badge warn">{t.reqExpired}</span> : <><button className="btn small tomato" onClick={() => doFulfilReq(q.id, loadTeam)}>{t.reqFulfil}</button>{' '}<button className="btn small outline" onClick={() => doCancelReq(q.id, loadTeam)}>{t.reqCancel}</button></>}</p>
                   ))}
                   {ownerReqs.filter((q) => q.status === 'pending').length === 0 && <p className="muted">{t.reqNone}</p>}
                   <h3 style={{ marginTop: 16 }}>{t.receiptsTitle}</h3>
@@ -1420,7 +1444,7 @@ export default function App() {
                 {adminReceipts.length === 0 && <p className="muted">{t.receiptsNone}</p>}
               </div>
               <div className="card"><h3>{t.adminReqsTitle}</h3>
-                {adminReqs.map((q) => (<p key={q.id}>{q.restaurantName} — {fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at) })}{q.code ? (<> • <b>{t.reqCodeLabel} {q.code}</b></>) : ''} — {q.status}{reqExpired(q) ? ` (${t.reqExpired})` : ''}</p>))}
+                {adminReqs.map((q) => (<p key={q.id}>{q.restaurantName} — {fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at), m: mw(q.meals_needed) })}{q.code ? (<> • <b>{t.reqCodeLabel} {q.code}</b></>) : ''} — {q.status}{reqExpired(q) ? ` (${t.reqExpired})` : ''}</p>))}
                 {adminReqs.length === 0 && <p className="muted">{t.reqNone}</p>}
               </div>
               <div className="grid">
