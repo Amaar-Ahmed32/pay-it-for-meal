@@ -147,7 +147,7 @@ const T = {
     reqRest: 'Restaurant', reqQty: 'How many meals? (1–3)', reqNote: 'Note (optional)', reqSend: 'Send request',
     reqSent: 'Request sent to the restaurant. Show this line at the counter: ',
     reqSentLine: 'Requested {n} {m} • {t}',
-    reqPending: 'Pending requests', reqNone: 'No meal requests right now.',
+    reqPending: 'Pending requests', reqNone: 'No meal requests right now.', refreshBtn: 'Refresh', updatedAt: 'Updated {t}',
     reqFulfil: 'Serve 1 meal', reqCancel: 'Cancel',
     reqFulfilled: 'Request fulfilled — 1 meal served.', reqCancelled: 'Request cancelled.',
     reqExpired: 'Expired', reqStatus: 'Status', reqTime: 'Requested at',
@@ -336,7 +336,7 @@ const T = {
     reqRest: 'ریسٹورنٹ', reqQty: 'کتنے کھانے؟ (1–3)', reqNote: 'نوٹ (اختیاری)', reqSend: 'درخواست بھیجیں',
     reqSent: 'درخواست ریسٹورنٹ کو بھیج دی گئی۔ کاؤنٹر پر یہ لائن دکھائیں: ',
     reqSentLine: '{n} {m} کی درخواست • {t}',
-    reqPending: 'زیر التواء درخواستیں', reqNone: 'ابھی کوئی درخواست نہیں۔',
+    reqPending: 'زیر التواء درخواستیں', reqNone: 'ابھی کوئی درخواست نہیں۔', refreshBtn: 'ریفریش', updatedAt: 'اپ ڈیٹ ہوا: {t}',
     reqFulfil: '1 کھانا پیش کریں', reqCancel: 'منسوخ کریں',
     reqFulfilled: 'درخواست مکمل — 1 کھانا پیش کر دیا گیا۔', reqCancelled: 'درخواست منسوخ کر دی گئی۔',
     reqExpired: 'میعاد ختم', reqStatus: 'حالت', reqTime: 'درخواست کا وقت',
@@ -525,7 +525,7 @@ const T = {
     reqRest: 'ريسٽورنٽ', reqQty: 'ڪيترا کاڌا؟ (1–3)', reqNote: 'نوٽ (اختياري)', reqSend: 'درخواست موڪليو',
     reqSent: 'درخواست ريسٽورنٽ ڏانهن موڪلي وئي. ڪائونٽر تي هي لائين ڏيکاريو: ',
     reqSentLine: '{n} {m} جي درخواست • {t}',
-    reqPending: 'التوا واريون درخواستون', reqNone: 'هينئر تائين ڪا درخواست ناهي.',
+    reqPending: 'التوا واريون درخواستون', reqNone: 'هينئر تائين ڪا درخواست ناهي.', refreshBtn: 'ريفريش', updatedAt: 'اپڊيٽ ٿيو: {t}',
     reqFulfil: '1 کاڌو پيش ڪريو', reqCancel: 'رد ڪريو',
     reqFulfilled: 'درخواست پوري ٿي — 1 کاڌو پيش ڪيو ويو.', reqCancelled: 'درخواست رد ڪئي وئي.',
     reqExpired: 'مدت ختم', reqStatus: 'حالت', reqTime: 'درخواست جو وقت',
@@ -602,6 +602,8 @@ const fmt = (s, v = {}) => String(s).replace(/\{(\w)\}/g, (_, k) => (v[k] !== un
 
 // Readable date/time in Asia/Karachi, e.g. "10 Nov 2026, 3:45 PM" — never show raw ISO timestamps.
 const fmtDate = (iso) => { try { return new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: 'Asia/Karachi' }).format(new Date(iso)); } catch { return iso || ''; } };
+// Short clock time (Asia/Karachi) for the "Updated HH:MM:SS" line on the request lists.
+const fmtTime = (d) => { try { return new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'Asia/Karachi' }).format(new Date(d)); } catch { return ''; } };
 const badgeFor = (t, served) => (served >= 10 ? t.badgeHero : served >= 5 ? t.badgeHeart : served >= 1 ? t.badgeNew : t.badgeNone);
 
 // ---------- Logo ----------
@@ -836,6 +838,8 @@ export default function App() {
   const [ownerReqs, setOwnerReqs] = useState([]);
   const [ownerReceipts, setOwnerReceipts] = useState([]);
   const [staffReqs, setStaffReqs] = useState([]);
+  // When the request lists were last refreshed (auto-refresh, see the effects below).
+  const [reqsUpdatedAt, setReqsUpdatedAt] = useState(null);
   const [staffReceipt, setStaffReceipt] = useState(null);
   const [serveMealId, setServeMealId] = useState('');
   const [donMealId, setDonMealId] = useState('');
@@ -874,7 +878,7 @@ export default function App() {
   };
   useEffect(() => { load(); }, [token]);
 
-  const loadAdmin = async () => {
+  const loadAdmin = async (silent) => {
     try {
       setAdminData({
         overview: await api('/admin/overview'),
@@ -887,24 +891,31 @@ export default function App() {
       setAdminMeals(await api('/admin/meals').catch(() => []));
       setAdminReceipts(await api('/admin/receipts').catch(() => []));
       setAdminReqs(await api('/admin/meal-requests').catch(() => []));
-    } catch (e) { setMsg(e.message); }
+      setReqsUpdatedAt(new Date());
+    } catch (e) { if (!silent) setMsg(e.message); }
   };
-  useEffect(() => { if (page === 'admin' && user?.role === 'admin') loadAdmin(); }, [page, user]);
+  // Admin request lists auto-refresh every 20s while on the Admin page, so a
+  // new meal request appears without a reload. The timer is cleared when the
+  // page changes or the user logs out — it never polls in the background.
+  useEffect(() => { if (page === 'admin' && user?.role === 'admin') { loadAdmin(); const id = setInterval(() => loadAdmin(true), 20000); return () => clearInterval(id); } }, [page, user]);
   useEffect(() => { if (page === 'transparency') { api('/transparency/monthly').then(setMonthly).catch(() => {}); } }, [page]);
 
-  const loadTeam = async () => {
+  const loadTeam = async (silent) => {
     try {
       setTeam(await api('/restaurant/staff'));
       setOwnerMeals((await api('/restaurant/meals')).meals || []);
       setOwnerReqs(await api('/restaurant/requests').catch(() => []));
       setOwnerReceipts(await api('/restaurant/receipts').catch(() => []));
-    } catch (e) { setMsg(e.message); }
+      setReqsUpdatedAt(new Date());
+    } catch (e) { if (!silent) setMsg(e.message); }
   };
-  useEffect(() => { if (page === 'restaurant' && user?.role === 'owner') loadTeam(); }, [page, user]);
+  // Owner request list auto-refreshes every 20s while on the Restaurant page.
+  useEffect(() => { if (page === 'restaurant' && user?.role === 'owner') { loadTeam(); const id = setInterval(() => loadTeam(true), 20000); return () => clearInterval(id); } }, [page, user]);
   const loadStaffReqs = async () => {
-    try { setStaffReqs(await api('/restaurant/requests').catch(() => [])); } catch {}
+    try { const r = await api('/restaurant/requests'); setStaffReqs(r); setReqsUpdatedAt(new Date()); } catch {}
   };
-  useEffect(() => { if (page === 'staff' && user && (user.role === 'staff' || user.role === 'admin')) loadStaffReqs(); }, [page, user]);
+  // Staff request list auto-refreshes every 20s while on the Staff page.
+  useEffect(() => { if (page === 'staff' && user && (user.role === 'staff' || user.role === 'admin')) { loadStaffReqs(); const id = setInterval(loadStaffReqs, 20000); return () => clearInterval(id); } }, [page, user]);
 
   const go = (p) => { setPage(p); setMsg(''); setMenuOpen(false); window.scrollTo(0, 0); };
   const dashPage = (u) => (u.role === 'admin' ? 'admin' : u.role === 'staff' ? 'staff' : u.role === 'owner' ? 'restaurant' : 'mine');
@@ -1301,7 +1312,8 @@ export default function App() {
                 <div className="card"><span className="muted">{t.restLabel}</span><div><b>{myRest ? myRest.name : restaurants[0]?.name}</b></div></div>
               </div>
               <p className="muted">{t.serveNote}</p>
-              <div className="card"><h3>{t.reqPending}</h3>
+              <div className="card"><h3>{t.reqPending} <button className="btn small outline" onClick={() => loadStaffReqs()}>{t.refreshBtn}</button></h3>
+                {reqsUpdatedAt && <p className="muted">{fmt(t.updatedAt, { t: fmtTime(reqsUpdatedAt) })}</p>}
                 {staffReqs.filter((q) => q.status === 'pending').map((q) => (
                   <p key={q.id}>{fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at), m: mw(q.meals_needed) })}{q.code ? (<> • <b>{t.reqCodeLabel} {q.code}</b></>) : ''}{q.note ? ` — ${q.note}` : ''} {reqExpired(q) ? <span className="badge warn">{t.reqExpired}</span> : <><button className="btn small tomato" onClick={() => doFulfilReq(q.id)}>{t.reqFulfil}</button>{' '}<button className="btn small outline" onClick={() => doCancelReq(q.id)}>{t.reqCancel}</button></>}</p>
                 ))}
@@ -1336,7 +1348,8 @@ export default function App() {
                   <label>{t.mealPrice}</label><input type="number" min="10" max="2000" value={mealForm.price} onChange={(e) => setMealForm({ ...mealForm, price: e.target.value })} placeholder="250" />
                   <button className="btn tomato" onClick={doAddMeal}>{t.addMealBtn}</button>
                 </div>
-                <div className="card"><h3>{t.reqPending}</h3>
+                <div className="card"><h3>{t.reqPending} <button className="btn small outline" onClick={() => loadTeam()}>{t.refreshBtn}</button></h3>
+                  {reqsUpdatedAt && <p className="muted">{fmt(t.updatedAt, { t: fmtTime(reqsUpdatedAt) })}</p>}
                   {ownerReqs.filter((q) => q.status === 'pending').map((q) => (
                     <p key={q.id}>{fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at), m: mw(q.meals_needed) })}{q.code ? (<> • <b>{t.reqCodeLabel} {q.code}</b></>) : ''}{q.note ? ` — ${q.note}` : ''} {reqExpired(q) ? <span className="badge warn">{t.reqExpired}</span> : <><button className="btn small tomato" onClick={() => doFulfilReq(q.id, loadTeam)}>{t.reqFulfil}</button>{' '}<button className="btn small outline" onClick={() => doCancelReq(q.id, loadTeam)}>{t.reqCancel}</button></>}</p>
                   ))}
@@ -1443,7 +1456,8 @@ export default function App() {
                 {adminReceipts.slice(0, 10).map((rc) => (<p key={rc.id}>{fmtDate(rc.served_at)} — {rc.restaurantName} — {rc.meal_name} × {rc.quantity} — Rs {rc.total_pkr} ({rc.servedBy || ''})</p>))}
                 {adminReceipts.length === 0 && <p className="muted">{t.receiptsNone}</p>}
               </div>
-              <div className="card"><h3>{t.adminReqsTitle}</h3>
+              <div className="card"><h3>{t.adminReqsTitle} <button className="btn small outline" onClick={() => loadAdmin()}>{t.refreshBtn}</button></h3>
+                {reqsUpdatedAt && <p className="muted">{fmt(t.updatedAt, { t: fmtTime(reqsUpdatedAt) })}</p>}
                 {adminReqs.map((q) => (<p key={q.id}>{q.restaurantName} — {fmt(t.reqSentLine, { n: q.meals_needed, t: fmtDate(q.created_at), m: mw(q.meals_needed) })}{q.code ? (<> • <b>{t.reqCodeLabel} {q.code}</b></>) : ''} — {q.status}{reqExpired(q) ? ` (${t.reqExpired})` : ''}</p>))}
                 {adminReqs.length === 0 && <p className="muted">{t.reqNone}</p>}
               </div>
