@@ -1,4 +1,6 @@
-# Pay It Forward Meal — Step-by-Step Learning Build
+# A Plate of Hope — Step-by-Step Learning Build
+> Formerly called "Pay It Forward Meal" (renamed 2026-11-16); old links and docs may still use the old name.
+
 
 School: Jeejal Aman Public School, Bhittaibad
 Goal: rebuild the same working site, one file at a time, so every file is understood.
@@ -45,7 +47,7 @@ Say "next" when you are ready for the next step. Do not skip ahead — each file
 - FULL translation: every UI string lives in the T dictionaries in App.jsx
   (en / ur / sd, 253 keys each, verified equal). The language switcher translates
   the whole site and flips dir to rtl for Urdu/Sindhi. Restaurant names,
-  "Pay It Forward Meal" and SDG 1/2 stay in English inside translations.
+  "A Plate of Hope" and SDG 1/2 stay in English inside translations.
 - Restaurant owners add their OWN staff (new): backend role 'owner' linked to one
   restaurant. Routes (server-side enforced, owner = own restaurant only):
   GET /api/restaurant/staff, POST /api/restaurant/staff (name/email/password,
@@ -72,7 +74,7 @@ Say "next" when you are ready for the next step. Do not skip ahead — each file
   the three trust chips are now one plain line — simple, like the teacher's PDF.
 - LOGO: header now shows an inline SVG logo mark (gold heart over a serving
   plate in a green ring, file: LogoMark in frontend/src/App.jsx) + the school
-  line underneath. The big "Pay It Forward Meal" text title is gone from the
+  line underneath. The big "A Plate of Hope" text title is gone from the
   header (it stays in the footer and on receipts).
 - DUMMY DATA (backend/db.js, seedDemoData): fresh/empty DBs seed 42 donated,
   31 served, 11 available — Sindh Biryani House 25/18/7 (Rs 300), Mehran

@@ -151,7 +151,7 @@ const T = {
     reqFulfil: 'Serve 1 meal', reqCancel: 'Cancel',
     reqFulfilled: 'Request fulfilled — 1 meal served.', reqCancelled: 'Request cancelled.',
     reqExpired: 'Expired', reqStatus: 'Status', reqTime: 'Requested at',
-    receiptServeTitle: '💛 Pay It Forward Meal — Serve receipt',
+    receiptServeTitle: '💛 A Plate of Hope — Serve receipt',
     receiptMeal: 'Meal:', receiptQty: 'Quantity:', receiptPrice: 'Price per meal:', receiptTotal: 'Total:',
     receiptServedBy: 'Served by:', receiptServedToday: 'Meals served today here:', receiptAvailLeft: 'Meals available left:',
     printSlip: 'Print slip', receiptsTitle: 'Served receipts', receiptsNone: 'No served receipts yet.',
@@ -212,9 +212,9 @@ const T = {
     seedNote: 'School admin (seeded, change before real use): admin@payitforward.school / Admin123!',
     ownerSeedNote: 'Demo restaurant owner: owner@payitforward.school / Owner123! (Sindh Biryani House)',
     welcome: 'Welcome, {n} ({r}).', backendErr: 'Backend not running? Start it: cd backend && npm start  •  {e}',
-    footerExplore: 'Explore', footerLang: 'Languages', footerCopy: '© 2026 Pay It Forward Meal • Supports SDG 1 (No Poverty) and SDG 2 (Zero Hunger). No recipient data is ever stored.',
+    footerExplore: 'Explore', footerLang: 'Languages', footerCopy: '© 2026 A Plate of Hope • Supports SDG 1 (No Poverty) and SDG 2 (Zero Hunger). No recipient data is ever stored.',
     badgeHero: '🏆 Meal Hero (10+ served)', badgeHeart: '💛 Kind Heart (5+ served)', badgeNew: '🌱 New Giver (1+ served)', badgeNone: '— no badge yet, donate first',
-    receiptTitle: '💛 Pay It Forward Meal — Donation receipt', receiptDonor: 'Donor:', receiptRest: 'Restaurant:', receiptMeals: 'Meals donated:', receiptServed: 'Served so far from this donation:', receiptAmount: 'Amount:', receiptMethod: 'Method:', receiptStatus: 'Status:', receiptTxn: 'Txn ref:', receiptDate: 'Date:',
+    receiptTitle: '💛 A Plate of Hope — Donation receipt', receiptDonor: 'Donor:', receiptRest: 'Restaurant:', receiptMeals: 'Meals donated:', receiptServed: 'Served so far from this donation:', receiptAmount: 'Amount:', receiptMethod: 'Method:', receiptStatus: 'Status:', receiptTxn: 'Txn ref:', receiptDate: 'Date:',
     receiptNote: 'Thank you — your meal will be served with no questions asked, and no recipient data is ever stored. Payment: test/sandbox mode in the pilot — no real money moves.',
   },
   ur: {
@@ -340,7 +340,7 @@ const T = {
     reqFulfil: '1 کھانا پیش کریں', reqCancel: 'منسوخ کریں',
     reqFulfilled: 'درخواست مکمل — 1 کھانا پیش کر دیا گیا۔', reqCancelled: 'درخواست منسوخ کر دی گئی۔',
     reqExpired: 'میعاد ختم', reqStatus: 'حالت', reqTime: 'درخواست کا وقت',
-    receiptServeTitle: '💛 Pay It Forward Meal — پیش کرنے کی رسید',
+    receiptServeTitle: '💛 A Plate of Hope — پیش کرنے کی رسید',
     receiptMeal: 'کھانا:', receiptQty: 'تعداد:', receiptPrice: 'فی کھانا قیمت:', receiptTotal: 'کل رقم:',
     receiptServedBy: 'پیش کرنے والا:', receiptServedToday: 'آج یہاں پیش شدہ کھانے:', receiptAvailLeft: 'باقی دستیاب کھانے:',
     printSlip: 'پرچی پرنٹ کریں', receiptsTitle: 'پیش کردہ رسیدیں', receiptsNone: 'ابھی کوئی رسید نہیں۔',
@@ -401,9 +401,9 @@ const T = {
     seedNote: 'اسکول ایڈمن (سیڈ، اصلی استعمال سے پہلے پاس ورڈ بدل لیں): admin@payitforward.school / Admin123!',
     ownerSeedNote: 'ڈیمو ریسٹورنٹ مالک: owner@payitforward.school / Owner123! (سندھ بریانی ہاؤس)',
     welcome: 'خوش آمدید، {n} ({r})۔', backendErr: 'بیک اینڈ نہیں چل رہا؟ شروع کریں: cd backend && npm start  •  {e}',
-    footerExplore: 'دریافت کریں', footerLang: 'زبانیں', footerCopy: '© 2026 Pay It Forward Meal • SDG 1 (غربت ختم کریں) اور SDG 2 (بھوک ختم کریں) کی حمایت کرتا ہے۔ وصول کنندہ کا کوئی ڈیٹا کبھی محفوظ نہیں ہوتا۔',
+    footerExplore: 'دریافت کریں', footerLang: 'زبانیں', footerCopy: '© 2026 A Plate of Hope • SDG 1 (غربت ختم کریں) اور SDG 2 (بھوک ختم کریں) کی حمایت کرتا ہے۔ وصول کنندہ کا کوئی ڈیٹا کبھی محفوظ نہیں ہوتا۔',
     badgeHero: '🏆 Meal Hero (10+ پیش شدہ)', badgeHeart: '💛 Kind Heart (5+ پیش شدہ)', badgeNew: '🌱 New Giver (1+ پیش شدہ)', badgeNone: '— ابھی کوئی بیج نہیں، پہلے عطیہ دیں',
-    receiptTitle: '💛 Pay It Forward Meal — عطیہ کی رسید', receiptDonor: 'عطیہ دہندہ:', receiptRest: 'ریسٹورنٹ:', receiptMeals: 'عطیہ شدہ کھانے:', receiptServed: 'اس عطیے سے اب تک پیش شدہ:', receiptAmount: 'رقم:', receiptMethod: 'طریقہ:', receiptStatus: 'حالت:', receiptTxn: 'لین دین نمبر:', receiptDate: 'تاریخ:',
+    receiptTitle: '💛 A Plate of Hope — عطیہ کی رسید', receiptDonor: 'عطیہ دہندہ:', receiptRest: 'ریسٹورنٹ:', receiptMeals: 'عطیہ شدہ کھانے:', receiptServed: 'اس عطیے سے اب تک پیش شدہ:', receiptAmount: 'رقم:', receiptMethod: 'طریقہ:', receiptStatus: 'حالت:', receiptTxn: 'لین دین نمبر:', receiptDate: 'تاریخ:',
     receiptNote: 'شکریہ — آپ کا کھانا بغیر سوال پوچھے پیش کیا جائے گا، اور وصول کنندہ کا کوئی ڈیٹا کبھی محفوظ نہیں ہوتا۔ ادائیگی: پائلٹ میں ٹیسٹ/سینڈ باکس موڈ — کوئی اصلی رقم نہیں چلتی۔',
   },
   sd: {
@@ -529,7 +529,7 @@ const T = {
     reqFulfil: '1 کاڌو پيش ڪريو', reqCancel: 'رد ڪريو',
     reqFulfilled: 'درخواست پوري ٿي — 1 کاڌو پيش ڪيو ويو.', reqCancelled: 'درخواست رد ڪئي وئي.',
     reqExpired: 'مدت ختم', reqStatus: 'حالت', reqTime: 'درخواست جو وقت',
-    receiptServeTitle: '💛 Pay It Forward Meal — پيش ڪرڻ جي رسيد',
+    receiptServeTitle: '💛 A Plate of Hope — پيش ڪرڻ جي رسيد',
     receiptMeal: 'کاڌو:', receiptQty: 'تعداد:', receiptPrice: 'في کاڌو قيمت:', receiptTotal: 'ڪل رقم:',
     receiptServedBy: 'پيش ڪندڙ:', receiptServedToday: 'اڄ هتي پيش ٿيل کاڌا:', receiptAvailLeft: 'باقي دستياب کاڌا:',
     printSlip: 'پرچي پرنٽ ڪريو', receiptsTitle: 'پيش ڪيل رسيدون', receiptsNone: 'هينئر تائين ڪا رسيد ناهي.',
@@ -590,9 +590,9 @@ const T = {
     seedNote: 'اسڪول ايڊمن (سيڊ، حقيقي استعمال کان اڳ پاس ورڊ تبديل ڪريو): admin@payitforward.school / Admin123!',
     ownerSeedNote: 'ڊيمو ريسٽورنٽ مالڪ: owner@payitforward.school / Owner123! (سنڌ برياني هائوس)',
     welcome: 'ڀليڪار، {n} ({r}).', backendErr: 'بيڪ اينڊ نٿو هلي؟ شروع ڪريو: cd backend && npm start  •  {e}',
-    footerExplore: 'دريافت ڪريو', footerLang: 'ٻوليون', footerCopy: '© 2026 Pay It Forward Meal • SDG 1 (غربت ختم ڪريو) ۽ SDG 2 (بک ختم ڪريو) جي حمايت ڪري ٿو. وصول ڪندڙ جو ڪو ڊيٽا ڪڏهن محفوظ نٿو ٿئي.',
+    footerExplore: 'دريافت ڪريو', footerLang: 'ٻوليون', footerCopy: '© 2026 A Plate of Hope • SDG 1 (غربت ختم ڪريو) ۽ SDG 2 (بک ختم ڪريو) جي حمايت ڪري ٿو. وصول ڪندڙ جو ڪو ڊيٽا ڪڏهن محفوظ نٿو ٿئي.',
     badgeHero: '🏆 Meal Hero (10+ پيش ٿيل)', badgeHeart: '💛 Kind Heart (5+ پيش ٿيل)', badgeNew: '🌱 New Giver (1+ پيش ٿيل)', badgeNone: '— هينئر تائين ڪو بيج ناهي، پهرين عطيو ڏيو',
-    receiptTitle: '💛 Pay It Forward Meal — عطيي جي رسيد', receiptDonor: 'عطيو ڏيندڙ:', receiptRest: 'ريسٽورنٽ:', receiptMeals: 'عطيو ٿيل کاڌا:', receiptServed: 'هن عطيي مان هينئر تائين پيش ٿيل:', receiptAmount: 'رقم:', receiptMethod: 'طريقو:', receiptStatus: 'حالت:', receiptTxn: 'لين دين نمبر:', receiptDate: 'تاريخ:',
+    receiptTitle: '💛 A Plate of Hope — عطيي جي رسيد', receiptDonor: 'عطيو ڏيندڙ:', receiptRest: 'ريسٽورنٽ:', receiptMeals: 'عطيو ٿيل کاڌا:', receiptServed: 'هن عطيي مان هينئر تائين پيش ٿيل:', receiptAmount: 'رقم:', receiptMethod: 'طريقو:', receiptStatus: 'حالت:', receiptTxn: 'لين دين نمبر:', receiptDate: 'تاريخ:',
     receiptNote: 'مهرباني — توهان جو کاڌو بغير سوال پڇڻ جي پيش ڪيو ويندو، ۽ وصول ڪندڙ جو ڪو ڊيٽا ڪڏهن محفوظ نٿو ٿئي. ادائيگي: پائلٽ ۾ ٽيسٽ/سينڊ باڪس موڊ — ڪا حقيقي رقم نٿي هلي.',
   },
 };
@@ -616,7 +616,7 @@ const badgeFor = (t, served) => (served >= 10 ? t.badgeHero : served >= 5 ? t.ba
 // Crisp at any size, no external file. The header shows this mark only —
 // no text title, no school line.
 const LogoMark = () => (
-  <svg className="logo-svg" viewBox="0 0 64 64" role="img" aria-label="Pay It Forward Meal">
+  <svg className="logo-svg" viewBox="0 0 64 64" role="img" aria-label="A Plate of Hope">
     {/* Rising heart */}
     <path d="M32 30 C22 23 18 18.5 18 14 C18 10 21.5 7.5 25 7.5 C27.5 7.5 30 9 32 11.5 C34 9 36.5 7.5 39 7.5 C42.5 7.5 46 10 46 14 C46 18.5 42 23 32 30 Z" fill="#d64545" stroke="#172428" strokeWidth="2" strokeLinejoin="round" />
     {/* Bowl */}
@@ -934,7 +934,7 @@ export default function App() {
     const donorName = user?.show_name === 0 ? t.anon : (user?.name || 'Donor');
     const w = window.open('', '_blank', 'width=600,height=700');
     if (!w) { setMsg(t.popups); return; }
-    w.document.write(`<html><head><title>${t.receiptTitle}</title></head><body style="font-family: sans-serif; max-width: 520px; margin: 30px auto; color: #111;"><h2>${t.receiptTitle}</h2><p>Pay It Forward Meal • SDG 1 + SDG 2</p><hr /><p><b>${t.receiptDonor}</b> ${donorName}</p><p><b>${t.receiptRest}</b> ${d.restaurantName}</p><p><b>${t.receiptMeals}</b> ${d.quantity}</p><p><b>${t.receiptServed}</b> ${d.served_qty}/${d.quantity}</p><p><b>${t.receiptAmount}</b> Rs ${amount}</p><p><b>${t.receiptMethod}</b> ${d.method} • <b>${t.receiptStatus}</b> ${d.payment_status}</p>${d.txn_ref ? `<p><b>${t.receiptTxn}</b> ${d.txn_ref}</p>` : ''}<p><b>${t.receiptDate}</b> ${fmtDate(d.created_at)}</p><hr /><p><small>${t.receiptNote}</small></p></body></html>`);
+    w.document.write(`<html><head><title>${t.receiptTitle}</title></head><body style="font-family: sans-serif; max-width: 520px; margin: 30px auto; color: #111;"><h2>${t.receiptTitle}</h2><p>A Plate of Hope • SDG 1 + SDG 2</p><hr /><p><b>${t.receiptDonor}</b> ${donorName}</p><p><b>${t.receiptRest}</b> ${d.restaurantName}</p><p><b>${t.receiptMeals}</b> ${d.quantity}</p><p><b>${t.receiptServed}</b> ${d.served_qty}/${d.quantity}</p><p><b>${t.receiptAmount}</b> Rs ${amount}</p><p><b>${t.receiptMethod}</b> ${d.method} • <b>${t.receiptStatus}</b> ${d.payment_status}</p>${d.txn_ref ? `<p><b>${t.receiptTxn}</b> ${d.txn_ref}</p>` : ''}<p><b>${t.receiptDate}</b> ${fmtDate(d.created_at)}</p><hr /><p><small>${t.receiptNote}</small></p></body></html>`);
     w.document.close(); w.focus(); w.print();
   };
   const logout = () => { localStorage.removeItem('pifm_token'); setToken(''); setUser(null); setTeam(null); go('home'); };
@@ -1031,7 +1031,7 @@ export default function App() {
   const printReqSlip = (slip) => {
     const w = window.open('', '_blank', 'width=600,height=700');
     if (!w) { setMsg(t.popups); return; }
-    w.document.write(`<html><head><title>${t.slipTitle}</title></head><body style="font-family: sans-serif; max-width: 520px; margin: 30px auto; color: #111;"><h2>${t.slipTitle}</h2><p>Pay It Forward Meal • SDG 1 + SDG 2</p><hr /><p><b>${t.receiptRest}</b> ${slip.restaurantName || ''}</p><p><b>${t.slipMeals}</b> ${slip.meals_needed}</p><p><b>${t.receiptDate}</b> ${slip.at || ''}</p><p style="font-size: 30px; font-weight: 900; letter-spacing: 2px;">${slip.code || ''}</p><p><b>${t.slipShow}</b></p><hr /><p><small>${t.receiptNote}</small></p></body></html>`);
+    w.document.write(`<html><head><title>${t.slipTitle}</title></head><body style="font-family: sans-serif; max-width: 520px; margin: 30px auto; color: #111;"><h2>${t.slipTitle}</h2><p>A Plate of Hope • SDG 1 + SDG 2</p><hr /><p><b>${t.receiptRest}</b> ${slip.restaurantName || ''}</p><p><b>${t.slipMeals}</b> ${slip.meals_needed}</p><p><b>${t.receiptDate}</b> ${slip.at || ''}</p><p style="font-size: 30px; font-weight: 900; letter-spacing: 2px;">${slip.code || ''}</p><p><b>${t.slipShow}</b></p><hr /><p><small>${t.receiptNote}</small></p></body></html>`);
     w.document.close(); w.focus(); w.print();
   };
   const doFulfilReq = async (id, after) => {
@@ -1054,7 +1054,7 @@ export default function App() {
   const printServeReceipt = (rc) => {
     const w = window.open('', '_blank', 'width=600,height=700');
     if (!w) { setMsg(t.popups); return; }
-    w.document.write(`<html><head><title>${t.receiptServeTitle}</title></head><body style="font-family: sans-serif; max-width: 520px; margin: 30px auto; color: #111;"><h2>${t.receiptServeTitle}</h2><p>Pay It Forward Meal • SDG 1 + SDG 2</p><hr /><p><b>${t.receiptRest}</b> ${rc.restaurantName || ''}</p><p><b>${t.receiptMeal}</b> ${rc.meal_name}</p><p><b>${t.receiptQty}</b> ${rc.quantity}</p><p><b>${t.receiptPrice}</b> Rs ${rc.price_pkr}</p><p><b>${t.receiptTotal}</b> Rs ${rc.total_pkr}</p><p><b>${t.receiptServedBy}</b> ${rc.servedBy || ''}</p><p><b>${t.receiptDate}</b> ${fmtDate(rc.served_at)}</p><p><b>${t.receiptServedToday}</b> ${rc.servedToday ?? ''}</p><p><b>${t.receiptAvailLeft}</b> ${rc.availLeft ?? ''}</p><hr /><p><small>${t.receiptNote}</small></p></body></html>`);
+    w.document.write(`<html><head><title>${t.receiptServeTitle}</title></head><body style="font-family: sans-serif; max-width: 520px; margin: 30px auto; color: #111;"><h2>${t.receiptServeTitle}</h2><p>A Plate of Hope • SDG 1 + SDG 2</p><hr /><p><b>${t.receiptRest}</b> ${rc.restaurantName || ''}</p><p><b>${t.receiptMeal}</b> ${rc.meal_name}</p><p><b>${t.receiptQty}</b> ${rc.quantity}</p><p><b>${t.receiptPrice}</b> Rs ${rc.price_pkr}</p><p><b>${t.receiptTotal}</b> Rs ${rc.total_pkr}</p><p><b>${t.receiptServedBy}</b> ${rc.servedBy || ''}</p><p><b>${t.receiptDate}</b> ${fmtDate(rc.served_at)}</p><p><b>${t.receiptServedToday}</b> ${rc.servedToday ?? ''}</p><p><b>${t.receiptAvailLeft}</b> ${rc.availLeft ?? ''}</p><hr /><p><small>${t.receiptNote}</small></p></body></html>`);
     w.document.close(); w.focus(); w.print();
   };
   // ---- Admin deletes (all confirmed in the UI first) ----

@@ -48,7 +48,7 @@ function jazzcashCheckoutFields({ merchantId, password, returnUrl, txnRef, amoun
     pp_TxnExpiryDateTime: txnDateTime, // portal generates an expiry; keep in sync there
     pp_ReturnURL: returnUrl,
     pp_BillReference: txnRef,
-    pp_Description: 'Pay It Forward Meal donation',
+    pp_Description: 'A Plate of Hope donation',
   };
   const salt = process.env.JAZZCASH_INTEGRITY_SALT || '';
   if (salt) fields.pp_SecureHash = jazzcashSecureHash(fields, salt);
